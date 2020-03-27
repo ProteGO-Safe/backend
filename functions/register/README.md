@@ -11,11 +11,9 @@ URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/register
 
 #### Successfull call:
 ```
-curl -d 'DOCTOR_ID=1' -X POST ${URL}
+curl -d '{"DOCTOR_ID": 1}' -H "Content-Type: application/json" -X POST ${URL}
 {
-    "credentials": {
-        ...
-    }
+    ...
 }
 ```
 
