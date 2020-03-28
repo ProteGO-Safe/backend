@@ -1,0 +1,43 @@
+openapi: "3.0.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "Anna Project backend"
+
+components:
+  schemas:
+
+    ResponseOkGetStatus:
+      properties:
+        status:
+          example: "orange"
+          type: string
+        beacon_ids:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                description: "Date in format YYYYmmddhh"
+                type: string
+                example: "2020032810"
+              beacon_id:
+                description: "Single beacon id"
+                type: string
+                format: uuid
+                example: "ce83fef9-470c-430f-b4c3-743c26373ab9"
+
+paths:
+  /get_status/:
+    post:
+      tags:
+        - "get_status"
+      summary: "Get user status."
+      description: ""
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseOkGetStatus"
