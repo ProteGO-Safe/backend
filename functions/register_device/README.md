@@ -2,7 +2,7 @@
 
 ### Example calls to endpoint
 
-#### Perequisites:
+#### Prerequisites:
 ```bash
 REGION=europe-west3
 PROJECT_ID=<project_id>
