@@ -89,6 +89,7 @@ def _save_to_datastore(code: str, phone_no: str, date: datetime, registration_id
             'phone_no': phone_no,
             'date': date,
             'registration_id': registration_id,
+            'confirmed': False
         }
     )
 
