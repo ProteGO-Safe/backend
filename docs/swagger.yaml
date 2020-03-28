@@ -36,26 +36,36 @@ components:
           type: string
           example: "Invalid method"
 
-    ResponseErrorCommon:
-      type: object
+    ResponseOkGetStatus:
       properties:
-        data:
-          type: object
-        errors:
+        status:
+          example: "orange"
+          type: string
+        beacon_ids:
           type: array
           items:
             type: object
             properties:
-              field:
+              date:
+                description: "Date in format YYYYmmddhh"
                 type: string
-                description: "used only when type='field'"
-              messages:
-                type: array
-                items:
-                  type: string
-              type:
+                example: "2020032810"
+              beacon_id:
+                description: "Single beacon id"
                 type: string
-                enum: ["general", "field"]
+                format: uuid
+                example: "ce83fef9-470c-430f-b4c3-743c26373ab9"
+
+    ResponseOkCheckVersion:
+      properties:
+        upgrade_required:
+          example: false
+          type: boolean
+        upgrade_url:
+          type: string
+          format: uri
+
+
 paths:
   /register_device/:
     post:
@@ -98,3 +108,28 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/ResponseInvalidData"
+  /get_status/:
+    post:
+      tags:
+        - "get_status"
+      summary: "Get user status."
+      description: ""
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseOkGetStatus"
+
+    /check_version/:
+      post:
+        summary: "Check app status."
+        description: ""
+        responses:
+          200:
+            description: "OK"
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ResponseOkCheckVersion"
