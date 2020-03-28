@@ -27,6 +27,15 @@ components:
                 format: uuid
                 example: "ce83fef9-470c-430f-b4c3-743c26373ab9"
 
+    ResponseOkCheckVersion:
+      properties:
+        upgrade_required:
+          example: false
+          type: boolean
+        upgrade_url:
+          type: string
+          format: uri
+
 paths:
   /get_status/:
     post:
@@ -41,3 +50,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseOkGetStatus"
+
+  /check_version/:
+    post:
+      summary: "Check app status."
+      description: ""
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseOkCheckVersion"
