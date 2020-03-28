@@ -112,6 +112,11 @@ paths:
                   type: string
                   description: "code from sms"
                   example: "ASDFG"
+                registration_id:
+                  type: string
+                  description: "code from sms"
+                  example: "07cff176-0bea-4bbb-9901-70ce82db8886"
+
       responses:
         200:
           description: "OK"

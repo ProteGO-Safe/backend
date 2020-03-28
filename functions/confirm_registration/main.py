@@ -15,7 +15,10 @@ def confirm_registration(request):
              }
         ), 405
 
-    if not request.is_json or 'phone_no' not in request.get_json() or 'code' not in request.get_json():
+    if not request.is_json \
+            or 'phone_no' not in request.get_json() \
+            or 'code' not in request.get_json() \
+            or 'registration_id' not in request.get_json():
         return jsonify(
             {'status': 'failed',
              'message': 'invalid data'
@@ -25,10 +28,11 @@ def confirm_registration(request):
 
     phone_no = request_data['phone_no']
     code = request_data['code']
+    registration_id = request_data['registration_id']
 
-    entity =_get_from_datastore(phone_no)
+    entity = _get_from_datastore(phone_no)
 
-    if not entity or entity['code'] != code:
+    if not entity or entity['code'] != code or entity['registration_id'] != registration_id:
         return jsonify(
             {'status': 'failed',
              'message': 'invalid data'
