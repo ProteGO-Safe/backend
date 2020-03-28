@@ -23,6 +23,7 @@ def send_register_sms(event, context):
 
     if 'phone_no' not in data or 'code' not in data:
         logging.warning('send_register_sms: got incomplete data')
+        return
 
     phone_no = data['phone_no']
     code = data['code']
