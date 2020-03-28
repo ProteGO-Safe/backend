@@ -57,7 +57,7 @@ def _get_from_datastore(phone_no: str) -> Optional[Entity]:
     return datastore_client.get(key=task_key)
 
 
-def _update_entity(entity: Entity, user_id, confirmed=True):
+def _update_entity(entity: Entity, user_id, confirmed=True) -> None:
     entity['user_id'] = user_id
     entity['confirmed'] = confirmed
     datastore_client.put(entity)
