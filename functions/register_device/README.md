@@ -6,7 +6,7 @@
 ```bash
 REGION=europe-west3
 PROJECT_ID=<project_id>
-URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/register_device
+URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/register_device_${STAGE}
 ```
 
 #### Request details:
@@ -35,14 +35,3 @@ STAGE=DEVELOPMENT \
 ./deploy.sh
 ```
 
-or directly by `gcloud`:
-```bash
-gcloud functions deploy register_device \
-    --region=${REGION} \
-    --source=./ \
-    --runtime=python37 \
-    --stage-bucket=${FUNCTIONS_BUCKET} \
-    --trigger-http --allow-unauthenticated \
-    --set-env-vars STAGE=${STAGE}
-
-```

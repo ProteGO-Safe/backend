@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import logging
@@ -8,8 +9,12 @@ import pytz
 from flask import jsonify
 from google.cloud import datastore
 
+from google.cloud import pubsub_v1
+
+
 CODE_CHARACTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 datastore_client = datastore.Client()
+publisher = pubsub_v1.PublisherClient()
 
 
 def register_device(request):
@@ -50,8 +55,7 @@ def register_device(request):
     if os.getenv('STAGE', '') == 'DEVELOPMENT':
         response['code'] = code
     elif os.getenv('STAGE', '') == 'PRODUCTION':
-        # todo: send sms via SMSAPI
-        pass
+        _publish_to_send_register_sms_topic(phone_no, code)
 
     return jsonify(response)
 
@@ -89,3 +93,12 @@ def _save_to_datastore(code: str, phone_no: str, date: datetime, registration_id
     )
 
     datastore_client.put(task)
+
+
+def _publish_to_send_register_sms_topic(phone_no: str, code: str):
+    topic_path = publisher.topic_path(os.getenv('PROJECT_ID', ''), os.getenv('SEND_REGISTER_SMS_TOPIC', ''))
+    data = {
+        'phone_no': phone_no,
+        'code': code
+    }
+    publisher.publish(topic_path, json.dumps(data).encode('utf-8'))
