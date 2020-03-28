@@ -1,0 +1,100 @@
+openapi: "3.0.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "Anna Project backend"
+
+tags:
+- name: "user"
+  description: "User registration, authentication, authorization, etc."
+components:
+  schemas:
+    ResponseOK:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "ok"
+
+    ResponseInvalidData:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "failed"
+        message:
+          type: string
+          example: "invalid data"
+
+    ResponseInvalidMethod:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "failed"
+        message:
+          type: string
+          example: "Invalid method"
+
+    ResponseErrorCommon:
+      type: object
+      properties:
+        data:
+          type: object
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: "used only when type='field'"
+              messages:
+                type: array
+                items:
+                  type: string
+              type:
+                type: string
+                enum: ["general", "field"]
+paths:
+  /register_device/:
+    post:
+      tags:
+      - "register"
+      summary: "Request register device."
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - phone_no
+              properties:
+                phone_no:
+                  type: string
+                  description: "9 digit phone number with prefix +48"
+                  example: "+48123123123"
+
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseOK"
+        405:
+          description: "Invalid method"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidMethod"
+        422:
+          description: "Invalid data"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidData"
