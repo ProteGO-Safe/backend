@@ -4,9 +4,6 @@ info:
   version: "1.0.0"
   title: "Anna Project backend"
 
-tags:
-- name: "user"
-  description: "User registration, authentication, authorization, etc."
 components:
   schemas:
     ResponseOK:
@@ -15,6 +12,9 @@ components:
         status:
           type: string
           example: "ok"
+        registration_id:
+          type: string
+          example: "07cff176-0bea-4bbb-9901-70ce82db8886"
 
     ResponseInvalidData:
       type: object

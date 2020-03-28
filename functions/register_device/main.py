@@ -2,6 +2,7 @@ import os
 import random
 import logging
 from datetime import datetime
+import uuid
 
 import pytz
 from flask import jsonify
@@ -36,11 +37,15 @@ def register_device(request):
 
     phone_no = request_data['phone_no']
     code = ''.join(random.choice(CODE_CHARACTERS) for _ in range(5))
+    registration_id = str(uuid.uuid4())
     date = datetime.now(tz=pytz.utc)
 
-    _save_to_datastore(code, phone_no, date)
+    _save_to_datastore(code, phone_no, date, registration_id)
 
-    response = {'status': 'ok'}
+    response = {
+        'status': 'ok',
+        'registration_id': registration_id
+    }
 
     if os.getenv('STAGE', '') == 'DEVELOPMENT':
         response['code'] = code
@@ -69,9 +74,9 @@ def _check_phone_number(phone_no: str):
     return True
 
 
-def _save_to_datastore(code: str, phone_no: str, date: datetime):
+def _save_to_datastore(code: str, phone_no: str, date: datetime, registration_id: str):
     kind = 'Device'
-    task_key = datastore_client.key(kind, f'{code}{phone_no}')
+    task_key = datastore_client.key(kind, f'{phone_no}')
 
     task = datastore.Entity(key=task_key)
     task.update(
@@ -79,6 +84,7 @@ def _save_to_datastore(code: str, phone_no: str, date: datetime):
             'code': code,
             'phone_no': phone_no,
             'date': date,
+            'registration_id': registration_id,
         }
     )
 
