@@ -36,26 +36,15 @@ components:
           type: string
           example: "Invalid method"
 
-    ResponseErrorCommon:
-      type: object
+    ResponseOKConfirmRegister:
+      allOf:
+        - $ref: "#/components/schemas/ResponseOK"
       properties:
-        data:
-          type: object
-        errors:
-          type: array
-          items:
-            type: object
-            properties:
-              field:
-                type: string
-                description: "used only when type='field'"
-              messages:
-                type: array
-                items:
-                  type: string
-              type:
-                type: string
-                enum: ["general", "field"]
+        user_id:
+          example: "07cff176-0bea-4bbb-9901-70ce82db8886"
+          type: string
+
+
 paths:
   /register_device/:
     post:
@@ -84,6 +73,52 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseOK"
+        405:
+          description: "Invalid method"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidMethod"
+        422:
+          description: "Invalid data"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidData"
+
+  /confirm_registration/:
+    post:
+      tags:
+        - "register"
+      summary: "Confirm register device."
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone_no
+                - code
+              properties:
+                phone_no:
+                  type: string
+                  description: "9 digit phone number with prefix +48"
+                  example: "+48123123123"
+                code:
+                  type: string
+                  description: "code from sms"
+                  example: "ASDFG"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseOKConfirmRegister"
         405:
           description: "Invalid method"
           content:
