@@ -2,7 +2,7 @@
 
 ### Example calls to endpoint
 
-#### Perequisites:
+#### Prerequisites:
 ```bash
 REGION=europe-west3
 PROJECT_ID=<project_id>
@@ -16,7 +16,6 @@ Required variables to deploy function:
 * `PROJECT_ID` - GCP project ID
 * `REGION` - region of the GCP project
 * `FUNCTIONS_BUCKET` - bucket where functions are stored
-* `STAGE` - DEVELOPMENT or PRODUCTION
 
 
 Example deploy function (you have to be authorized to gcloud):
@@ -24,6 +23,5 @@ Example deploy function (you have to be authorized to gcloud):
 REGION=europe-west3 \
 PROJECT_ID=<project_id> \
 FUNCTIONS_BUCKET=${PROJECT_ID}-functions \
-STAGE=DEVELOPMENT \
 ./deploy.sh
 ```
