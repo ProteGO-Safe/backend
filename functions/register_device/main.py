@@ -11,6 +11,9 @@ from google.cloud import datastore
 
 from google.cloud import pubsub_v1
 
+PROJECT_ID = os.environ['PROJECT_ID']
+SEND_REGISTER_SMS_TOPIC = os.environ['SEND_REGISTER_SMS_TOPIC']
+STAGE = os.environ['STAGE']
 
 CODE_CHARACTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 datastore_client = datastore.Client()
@@ -52,9 +55,9 @@ def register_device(request):
         'registration_id': registration_id
     }
 
-    if os.getenv('STAGE', '') == 'DEVELOPMENT':
+    if STAGE == 'DEVELOPMENT':
         response['code'] = code
-    elif os.getenv('STAGE', '') == 'PRODUCTION':
+    elif STAGE == 'PRODUCTION':
         _publish_to_send_register_sms_topic(phone_no, code)
 
     return jsonify(response)
@@ -97,7 +100,7 @@ def _save_to_datastore(code: str, phone_no: str, date: datetime, registration_id
 
 
 def _publish_to_send_register_sms_topic(phone_no: str, code: str):
-    topic_path = publisher.topic_path(os.getenv('PROJECT_ID', ''), os.getenv('SEND_REGISTER_SMS_TOPIC', ''))
+    topic_path = publisher.topic_path(PROJECT_ID, SEND_REGISTER_SMS_TOPIC)
     data = {
         'phone_no': phone_no,
         'code': code
