@@ -36,6 +36,14 @@ components:
           type: string
           example: "Invalid method"
 
+    ResponseOKConfirmRegister:
+      allOf:
+        - $ref: "#/components/schemas/ResponseOK"
+      properties:
+        user_id:
+          example: "07cff176-0bea-4bbb-9901-70ce82db8886"
+          type: string
+
     ResponseOkGetStatus:
       properties:
         status:
@@ -107,6 +115,58 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/ResponseInvalidData"
+
+  /confirm_registration/:
+    post:
+      tags:
+        - "register"
+      summary: "Confirm register device."
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - msisdn
+                - code
+              properties:
+                msisdn:
+                  type: string
+                  description: "9 digit phone number with prefix +48"
+                  example: "+48123123123"
+                code:
+                  type: string
+                  description: "code from sms"
+                  example: "ASDFG"
+                registration_id:
+                  type: string
+                  description: "registration id"
+                  example: "07cff176-0bea-4bbb-9901-70ce82db8886"
+
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseOKConfirmRegister"
+        405:
+          description: "Invalid method"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidMethod"
+        422:
+          description: "Invalid data"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidData"
+
   /get_status/:
     post:
       tags:
@@ -121,14 +181,14 @@ paths:
               schema:
                 $ref: "#/components/schemas/ResponseOkGetStatus"
 
-  /check_version/:
-    post:
-      summary: "Check app status."
-      description: ""
-      responses:
-        200:
-          description: "OK"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResponseOkCheckVersion"
+    /check_version/:
+      post:
+        summary: "Check app status."
+        description: ""
+        responses:
+          200:
+            description: "OK"
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ResponseOkCheckVersion"
