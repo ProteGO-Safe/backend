@@ -2,9 +2,9 @@
 
 set -e
 
-if [[ -z ${REGION} || -z ${FUNCTIONS_BUCKET} || -z ${STAGE} || -z ${PROJECT_ID} ]]; then
+if [[ -z ${REGION} || -z ${FUNCTIONS_BUCKET} || -z ${STAGE} || -z ${PROJECT_ID} || -z ${PUBSUB_SEND_REGISTER_SMS_TOPIC} ]]; then
     echo
-    echo "ERROR! One of variables: [\"REGION\", \"FUNCTIONS_BUCKET\", \"STAGE\"] is not set. Exiting!"
+    echo "ERROR! One of variables: [\"REGION\", \"FUNCTIONS_BUCKET\", \"STAGE\" , \"PUBSUB_SEND_REGISTER_SMS_TOPIC\"] is not set. Exiting!"
     echo
     exit 1
 fi
@@ -16,4 +16,4 @@ gcloud functions deploy register_device_${STAGE} \
     --stage-bucket=${FUNCTIONS_BUCKET} \
     --trigger-http --allow-unauthenticated \
     --entry-point register_device \
-    --set-env-vars STAGE=${STAGE},SEND_REGISTER_SMS_TOPIC=${SEND_REGISTER_SMS_TOPIC},PROJECT_ID=${PROJECT_ID}
+    --set-env-vars STAGE=${STAGE},PUBSUB_SEND_REGISTER_SMS_TOPIC=${PUBSUB_SEND_REGISTER_SMS_TOPIC},PROJECT_ID=${PROJECT_ID}
