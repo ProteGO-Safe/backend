@@ -129,13 +129,9 @@ paths:
             schema:
               type: object
               required:
-                - msisdn
+                - registration_id
                 - code
               properties:
-                msisdn:
-                  type: string
-                  description: "9 digit phone number with prefix +48"
-                  example: "+48123123123"
                 code:
                   type: string
                   description: "code from sms"
