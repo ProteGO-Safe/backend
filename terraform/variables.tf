@@ -23,3 +23,18 @@ variable "sms_api_token" {
   type      = string
   description = "Token for SMS API"
 }
+
+variable "gcp_service_list" {
+  type        =  list(string)
+  description = "List of GCP service to be enabled for a project."
+  default = [
+    "bigquery.googleapis.com",            # BigQuery API
+    "bigquerystorage.googleapis.com",     # BigQuery Storage API
+    "cloudfunctions.googleapis.com",      # CloudFunctions API
+    "datastore.googleapis.com",           # Cloud Datastore API
+    "pubsub.googleapis.com",              # Cloud Pub/Sub API
+    "storage-api.googleapis.com",         # Google Cloud Storage JSON API
+    "storage-component.googleapis.com",   # Cloud Storage
+    "storagetransfer.googleapis.com",     # Storage Transfer API
+  ]
+}

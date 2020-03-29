@@ -1,9 +1,9 @@
 locals {
-  check_version_source_object_file_name         = "check_version-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
-  get_status_source_object_file_name            = "get_status-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
-  confirm_registration_source_object_file_name  = "confirm_registration-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
-  register_device_source_object_file_name       = "register_device-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
-  send_register_sms_source_object_file_name     = "send_register_sms-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
+  check_version_source_object_file_name         = "check_version-${var.project_id}-${var.region}-${var.project_id}-${var.region}-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
+  get_status_source_object_file_name            = "get_status-${var.project_id}-${var.region}-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
+  confirm_registration_source_object_file_name  = "confirm_registration-${var.project_id}-${var.region}-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
+  register_device_source_object_file_name       = "register_device-${var.project_id}-${var.region}-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
+  send_register_sms_source_object_file_name     = "send_register_sms-${var.project_id}-${var.region}-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
 }
 
 
@@ -36,6 +36,7 @@ resource "google_cloudfunctions_function" "check_version" {
   entry_point           = "check_version"
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.check_version.name
+  depends_on            = [google_project_service.gcp_services]
 }
 
 resource "google_cloudfunctions_function_iam_member" "invoker-check_version" {
