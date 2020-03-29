@@ -54,8 +54,8 @@ def confirm_registration(request):
 
 def _get_from_datastore(msisdn: str) -> Optional[Entity]:
     kind = "Device"
-    task_key = datastore_client.key(kind, f"{msisdn}")
-    return datastore_client.get(key=task_key)
+    device_key = datastore_client.key(kind, f"{msisdn}")
+    return datastore_client.get(key=device_key)
 
 
 def _update_entity(entity: Entity, user_id, confirmed=True) -> None:
