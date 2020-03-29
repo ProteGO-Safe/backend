@@ -1,1 +1,4 @@
 .idea
+
+# terrafrom variables
+*.tfvars
