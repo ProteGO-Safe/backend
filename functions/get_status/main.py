@@ -33,7 +33,7 @@ def get_status(request):
 
     request_data = request.get_json()
 
-    for key in ["user_id", "platform", "os_version", "device_name", "app_version", "lang"]:
+    for key in ["user_id", "platform", "os_version", "device_type", "app_version", "lang"]:
         if key not in request_data:
             return jsonify(
                 {
@@ -45,7 +45,7 @@ def get_status(request):
     user_id = request_data["user_id"]
     platform = request_data["platform"]
     os_version = request_data["os_version"]
-    device_name = request_data["device_name"]
+    device_type = request_data["device_type"]
     app_version = request_data["app_version"]
     lang = request_data["lang"]
 
@@ -72,7 +72,7 @@ def get_status(request):
              }
         ), 500
 
-    _update_entity(entity, platform, os_version, app_version, device_name, lang)
+    _update_entity(entity, platform, os_version, app_version, device_type, lang)
     return jsonify(
         {
             "status": "orange",
@@ -94,13 +94,13 @@ def _get_entity_from_datastore(user_id: str) -> Optional[Entity]:
         return None
 
 
-def _update_entity(entity: Entity, platform: str, os_version: str, app_version: str, device_name: str,
+def _update_entity(entity: Entity, platform: str, os_version: str, app_version: str, device_type: str,
                    lang: str) -> None:
     entity.update({
         "platform": platform,
         "os_version": os_version,
         "app_version": app_version,
-        "device_name": device_name,
+        "device_type": device_type,
         "lang": lang,
         "last_status_requested": datetime.utcnow(),
     })
