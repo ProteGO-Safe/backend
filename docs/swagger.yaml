@@ -218,6 +218,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseOkGetStatus"
+        401:
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidData"
         405:
           description: "Invalid method"
           content:

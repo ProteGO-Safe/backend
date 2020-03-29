@@ -40,7 +40,7 @@ def get_status(request):
                     'status': 'failed',
                     'message': f'missing field: {key}',
                 }
-            ), 400
+            ), 422
 
     user_id = request_data["user_id"]
     platform = request_data["platform"]
@@ -54,7 +54,7 @@ def get_status(request):
         return jsonify(
             {
                 'status': 'failed',
-                'message': f'forbidden',
+                'message': f'unauthorized',
             }
         ), 401
 
