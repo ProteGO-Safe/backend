@@ -6,6 +6,35 @@ info:
 
 components:
   schemas:
+    ResponseOK:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "ok"
+        registration_id:
+          type: string
+          example: "07cff176-0bea-4bbb-9901-70ce82db8886"
+
+    ResponseInvalidData:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "failed"
+        message:
+          type: string
+          example: "invalid data"
+
+    ResponseInvalidMethod:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "failed"
+        message:
+          type: string
+          example: "Invalid method"
 
     ResponseOkGetStatus:
       properties:
@@ -37,6 +66,47 @@ components:
           format: uri
 
 paths:
+  /register_device/:
+    post:
+      tags:
+      - "register"
+      summary: "Request register device."
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - msisdn
+              properties:
+                msisdn:
+                  type: string
+                  description: "9 digit phone number with prefix +48"
+                  example: "+48123123123"
+
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseOK"
+        405:
+          description: "Invalid method"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidMethod"
+        422:
+          description: "Invalid data"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidData"
   /get_status/:
     post:
       tags:
