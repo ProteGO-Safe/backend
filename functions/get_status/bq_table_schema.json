@@ -1,0 +1,17 @@
+[
+  {
+    "mode": "REQUIRED", 
+    "name": "user_id", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "REQUIRED", 
+    "name": "beacon_id", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "REQUIRED", 
+    "name": "beacon_date", 
+    "type": "DATETIME"
+  }
+]
