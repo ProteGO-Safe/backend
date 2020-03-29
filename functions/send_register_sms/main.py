@@ -1,7 +1,7 @@
-import json
-import os
 import base64
+import json
 import logging
+import os
 
 from google.cloud import datastore
 from smsapi.client import SmsApiPlClient
@@ -41,7 +41,7 @@ def send_register_sms(event, context):
         return
 
     for result in send_results:
-        logging.info(result.id, result.points, result.error)
+        logging.info(f"{result.id}, {result.points}, {result.error}")
 
     _update_entity(registration_id)
 
@@ -50,7 +50,7 @@ def _update_entity(registration_id: str):
     kind = 'Registrations'
     key = datastore_client.key(kind, f'{registration_id}')
 
-    registration = datastore.Entity(key=key)
+    registration = datastore_client.get(key=key)
     registration.update(
         {
             'sms_send': True,
