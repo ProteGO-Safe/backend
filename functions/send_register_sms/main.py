@@ -21,18 +21,18 @@ def send_register_sms(event, context):
         logging.exception(f"send_register_sms: exception parsing data: {e}")
         return
 
-    if "phone_no" not in data or "code" not in data:
+    if "msisdn" not in data or "code" not in data:
         logging.warning("send_register_sms: got incomplete data")
         return
 
-    phone_no = data["phone_no"]
+    msisdn = data["msisdn"]
     code = data["code"]
     message = f"Kod weryfikacyjny do aplikacji Anna: {code}"
 
     try:
-        send_results = client.sms.send(to=phone_no, message=message)
+        send_results = client.sms.send(to=msisdn, message=message)
     except SmsApiException as e:
-        logging.exception(e.message, e.code, phone_no, code)
+        logging.exception(e.message, e.code, msisdn, code)
         return
 
     for result in send_results:
