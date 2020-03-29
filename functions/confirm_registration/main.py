@@ -17,7 +17,6 @@ def confirm_registration(request):
         ), 405
 
     if not request.is_json \
-            or "msisdn" not in request.get_json() \
             or "code" not in request.get_json() \
             or "registration_id" not in request.get_json():
         return jsonify(
@@ -27,11 +26,10 @@ def confirm_registration(request):
         ), 422
     request_data = request.get_json()
 
-    msisdn = request_data["msisdn"]
     code = request_data["code"]
     registration_id = request_data["registration_id"]
 
-    entity = _get_from_datastore(msisdn)
+    entity = _get_from_datastore(registration_id)
 
     if not entity or entity["code"] != code or entity["registration_id"] != registration_id:
         return jsonify(
@@ -52,9 +50,9 @@ def confirm_registration(request):
     )
 
 
-def _get_from_datastore(msisdn: str) -> Optional[Entity]:
+def _get_from_datastore(registration_id: str) -> Optional[Entity]:
     kind = "Device"
-    device_key = datastore_client.key(kind, f"{msisdn}")
+    device_key = datastore_client.key(kind, f"{registration_id}")
     return datastore_client.get(key=device_key)
 
 
