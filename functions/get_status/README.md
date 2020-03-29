@@ -15,14 +15,14 @@ URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/get_status
 method: POST
 content-type: Application/json
 params:
-registration_id
+user_id
 platform
 os_version
 device_name
 app_version
 lang
 
-curl -X POST ${URL} -d '{"registration_id": "UUID", "platform": "PLATFORM", "os_version": 0.0, "device_name": "NAME", "app_version": 0.0, "lang": "PL"}'
+curl -X POST ${URL} -d '{"user_id": "UUID", "platform": "PLATFORM", "os_version": 0.0, "device_name": "NAME", "app_version": 0.0, "lang": "PL"}'
 {
     "status":"orange"
     "beacon_ids": [
