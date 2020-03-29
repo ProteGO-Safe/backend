@@ -83,7 +83,7 @@ def _check_phone_number(msisdn: str):
 
 def _save_to_datastore(code: str, msisdn: str, date: datetime, registration_id: str):
     kind = 'Registrations'
-    key = datastore_client.key(kind, f'{msisdn}')
+    key = datastore_client.key(kind, f'{registration_id}')
 
     registration = datastore.Entity(key=key)
     registration.update(
