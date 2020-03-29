@@ -6,7 +6,7 @@
 REGION=europe-west3
 PROJECT_ID=<project_id>
 SMS_API_TOKEN=<SMS_API_TOKEN>
-SEND_REGISTER_SMS_TOPIC=<SEND_REGISTER_SMS_TOPIC>
+PUBSUB_SEND_REGISTER_SMS_TOPIC=<PUBSUB_SEND_REGISTER_SMS_TOPIC>
 ```
 
 
@@ -20,7 +20,7 @@ Required variables to deploy function:
 * `REGION` - region of the GCP project
 * `FUNCTIONS_BUCKET` - bucket where functions are stored
 * `SMS_API_TOKEN` - token for sms api
-* `SEND_REGISTER_SMS_TOPIC` - send register sms PubSub topic
+* `PUBSUB_SEND_REGISTER_SMS_TOPIC` - send register sms PubSub topic
 
 
 Example deploy function (you have to be authorized to gcloud):
@@ -29,6 +29,6 @@ REGION=europe-west3 \
 PROJECT_ID=<project_id> \
 FUNCTIONS_BUCKET=${PROJECT_ID}-functions \
 SMS_API_TOKEN=<SMS_API_TOKEN> \
-SEND_REGISTER_SMS_TOPIC=<SEND_REGISTER_SMS_TOPIC> \
+PUBSUB_SEND_REGISTER_SMS_TOPIC=<PUBSUB_SEND_REGISTER_SMS_TOPIC> \
 ./deploy.sh
 ```
