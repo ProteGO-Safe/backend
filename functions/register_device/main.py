@@ -2,8 +2,8 @@ import json
 import os
 import random
 import logging
+import secrets
 from datetime import datetime
-import uuid
 
 import pytz
 from flask import jsonify
@@ -45,7 +45,7 @@ def register_device(request):
 
     msisdn = request_data['msisdn']
     code = ''.join(random.choice(CODE_CHARACTERS) for _ in range(5))
-    registration_id = str(uuid.uuid4())
+    registration_id = secrets.token_hex(16)
     date = datetime.now(tz=pytz.utc)
 
     _save_to_datastore(code, msisdn, date, registration_id)

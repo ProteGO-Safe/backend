@@ -1,5 +1,5 @@
+import secrets
 from typing import Optional
-import uuid
 
 import pytz
 from flask import jsonify
@@ -44,7 +44,7 @@ def confirm_registration(request):
              }
         ), 422
 
-    user_id = str(uuid.uuid4())
+    user_id = secrets.token_hex(16)
     date = datetime.now(tz=pytz.utc)
 
     _update_registration(registration_entity)

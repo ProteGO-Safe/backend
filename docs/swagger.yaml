@@ -14,7 +14,7 @@ components:
           example: "ok"
         registration_id:
           type: string
-          example: "07cff176-0bea-4bbb-9901-70ce82db8886"
+          example: "0cf2bccee3e67ec7f542f83c718ee18d"
 
     ResponseInvalidData:
       type: object
@@ -41,7 +41,7 @@ components:
         - $ref: "#/components/schemas/ResponseOK"
       properties:
         user_id:
-          example: "07cff176-0bea-4bbb-9901-70ce82db8886"
+          example: "ab7737a6806da3fdd4b158cd1f1b05d2"
           type: string
 
     ResponseOkGetStatus:
@@ -61,8 +61,8 @@ components:
               beacon_id:
                 description: "Single beacon id"
                 type: string
-                format: uuid
-                example: "ce83fef9-470c-430f-b4c3-743c26373ab9"
+                format: string
+                example: "a7e643062de788742779d9d6c12598a9"
 
     ResponseOkCheckVersion:
       properties:
@@ -143,7 +143,7 @@ paths:
                 registration_id:
                   type: string
                   description: "registration id"
-                  example: "07cff176-0bea-4bbb-9901-70ce82db8886"
+                  example: "975663bbbde5ebdbb8db122958a2a644"
 
       responses:
         200:
@@ -190,7 +190,7 @@ paths:
                 user_id:
                   type: string
                   description: "ID of a user"
-                  example: "70286984-5f0d-4bf1-9d3e-daea2e4bfc62"
+                  example: "c904f5ba7e1a4878d4293d8d3bcef1cc"
                 platform:
                   type: string
                   description: "Name of the plafform"

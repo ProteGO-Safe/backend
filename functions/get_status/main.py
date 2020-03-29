@@ -1,6 +1,6 @@
 import logging
 import os
-import uuid
+import secrets
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -107,7 +107,7 @@ def _generate_beacons():
     return [
         {
             "date": _get_beacon_date(timedelta(hours=i)),
-            "beacon_id": str(uuid.uuid4())
+            "beacon_id": secrets.token_hex(16)
         } for i in range(0, NR_BEACON_IDS)
     ]
 
