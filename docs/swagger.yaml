@@ -57,7 +57,7 @@ paths:
                 - app_version
                 - lang
               properties:
-                registration_id:
+                user_id:
                   type: string
                   description: "ID of a user"
                   example: "70286984-5f0d-4bf1-9d3e-daea2e4bfc62"

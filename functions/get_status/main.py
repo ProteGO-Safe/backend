@@ -11,7 +11,7 @@ from google.cloud.datastore import Entity
 
 NR_BEACON_IDS = 24 * 7
 
-BQ_TABLE = os.environ["BQ_TABLE"]
+BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
 
 datastore_client = datastore.Client()
 
@@ -123,7 +123,7 @@ def _get_beacon_date(delta: timedelta = None) -> datetime:
 
 def _save_beacons_to_bigquery(user_id, beacons):
     client = bigquery.Client()
-    table = client.get_table(BQ_TABLE)
+    table = client.get_table(BQ_TABLE_ID)
 
     rows_to_insert = [(user_id, beacon["beacon_id"], beacon["date"]) for beacon in beacons]
 

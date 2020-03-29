@@ -48,7 +48,8 @@ Example deploy function (you have to be authorized to gcloud):
 REGION=europe-west3 \
 PROJECT_ID=<project_id> \
 FUNCTIONS_BUCKET=${PROJECT_ID}-functions \
-BQ_TABLE=<table-id> \
+BQ_DATASET=<dataset-name> \
+BQ_TABLE=<table-name> \
 ./deploy.sh
 ```
 
@@ -59,6 +60,6 @@ gcloud functions deploy get_status \
     --source=./ \
     --runtime=python37 \
     --stage-bucket=${FUNCTIONS_BUCKET} \
-    --set-env-vars BQ_TABLE=${BQ_TABLE} \
+    --set-env-vars BQ_DATASET=${BQ_DATASET},BQ_TABLE=${BQ_TABLE} \
     --trigger-http --allow-unauthenticated
 ```
