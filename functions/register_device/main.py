@@ -35,7 +35,7 @@ def register_device(request):
              }
         ), 422
     request_data = request.get_json()
-    if 'phone_no' not in request_data or not _check_phone_number(request_data['phone_no']):
+    if 'msisdn' not in request_data or not _check_phone_number(request_data['msisdn']):
         return jsonify(
             {
                 'status': 'failed',
@@ -43,12 +43,12 @@ def register_device(request):
             }
         ), 422
 
-    phone_no = request_data['phone_no']
+    msisdn = request_data['msisdn']
     code = ''.join(random.choice(CODE_CHARACTERS) for _ in range(5))
     registration_id = str(uuid.uuid4())
     date = datetime.now(tz=pytz.utc)
 
-    _save_to_datastore(code, phone_no, date, registration_id)
+    _save_to_datastore(code, msisdn, date, registration_id)
 
     response = {
         'status': 'ok',
@@ -58,38 +58,38 @@ def register_device(request):
     if STAGE == 'DEVELOPMENT':
         response['code'] = code
     elif STAGE == 'PRODUCTION':
-        _publish_to_send_register_sms_topic(phone_no, code)
+        _publish_to_send_register_sms_topic(msisdn, code)
 
     return jsonify(response)
 
 
-def _check_phone_number(phone_no: str):
-    phone_no = phone_no.strip().replace(' ', '')
-    if not phone_no.startswith('+48'):
-        logging.warning(f'check_phone_number: invalid prefix: {phone_no}')
+def _check_phone_number(msisdn: str):
+    msisdn = msisdn.strip().replace(' ', '')
+    if not msisdn.startswith('+48'):
+        logging.warning(f'check_phone_number: invalid prefix: {msisdn}')
         return False
-    if len(phone_no) != 12:
-        logging.warning(f'check_phone_number: invalid phone_no length: {phone_no}')
+    if len(msisdn) != 12:
+        logging.warning(f'check_phone_number: invalid msisdn length: {msisdn}')
         return False
 
     try:
-        int(phone_no)
+        int(msisdn)
     except ValueError:
-        logging.warning(f'check_phone_number: invalid value: {phone_no}')
+        logging.warning(f'check_phone_number: invalid value: {msisdn}')
         return False
 
     return True
 
 
-def _save_to_datastore(code: str, phone_no: str, date: datetime, registration_id: str):
+def _save_to_datastore(code: str, msisdn: str, date: datetime, registration_id: str):
     kind = 'Device'
-    task_key = datastore_client.key(kind, f'{phone_no}')
+    task_key = datastore_client.key(kind, f'{msisdn}')
 
     task = datastore.Entity(key=task_key)
     task.update(
         {
             'code': code,
-            'phone_no': phone_no,
+            'msisdn': msisdn,
             'date': date,
             'registration_id': registration_id,
             'confirmed': False
@@ -99,10 +99,10 @@ def _save_to_datastore(code: str, phone_no: str, date: datetime, registration_id
     datastore_client.put(task)
 
 
-def _publish_to_send_register_sms_topic(phone_no: str, code: str):
+def _publish_to_send_register_sms_topic(msisdn: str, code: str):
     topic_path = publisher.topic_path(PROJECT_ID, PUBSUB_SEND_REGISTER_SMS_TOPIC)
     data = {
-        'phone_no': phone_no,
+        'msisdn': msisdn,
         'code': code
     }
     publisher.publish(topic_path, json.dumps(data).encode('utf-8'))

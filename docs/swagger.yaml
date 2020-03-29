@@ -79,9 +79,9 @@ paths:
             schema:
               type: object
               required:
-              - phone_no
+              - msisdn
               properties:
-                phone_no:
+                msisdn:
                   type: string
                   description: "9 digit phone number with prefix +48"
                   example: "+48123123123"

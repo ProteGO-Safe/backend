@@ -13,8 +13,8 @@ URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/register_device_${STAGE}
 ```
 method: POST
 content-type: Application/json
-params: phone_no
-phone_no has to start with +48
+params: msisdn
+msisdn has to start with +48
 ```
 
 ### Deployment
