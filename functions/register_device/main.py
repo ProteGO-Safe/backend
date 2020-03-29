@@ -11,7 +11,7 @@ from google.cloud import datastore
 
 from google.cloud import pubsub_v1
 
-PROJECT_ID = os.environ['PROJECT_ID']
+PROJECT_ID = os.environ['GCP_PROJECT']
 PUBSUB_SEND_REGISTER_SMS_TOPIC = os.environ['PUBSUB_SEND_REGISTER_SMS_TOPIC']
 STAGE = os.environ['STAGE']
 
