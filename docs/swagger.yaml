@@ -43,6 +43,44 @@ paths:
         - "get_status"
       summary: "Get user status."
       description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - platform
+                - os_version
+                - device_name
+                - app_version
+                - lang
+              properties:
+                registration_id:
+                  type: string
+                  description: "ID of a user"
+                  example: "70286984-5f0d-4bf1-9d3e-daea2e4bfc62"
+                platform:
+                  type: string
+                  description: "Name of the plafform"
+                  example: "android"
+                os_version:
+                  type: string
+                  description: "Phone's operating system version"
+                  example: "12.0"
+                device_name:
+                  type: string
+                  description: "Name of the device"
+                  example: "Jan's iPhone"
+                app_version:
+                  type: string
+                  description: "Version of the Anna app"
+                  example: "1.0.0"
+                lang:
+                  type: string
+                  description: "Phone's language"
+                  example: "PL"
       responses:
         200:
           description: "OK"
