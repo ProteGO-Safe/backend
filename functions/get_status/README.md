@@ -22,12 +22,12 @@ device_name
 app_version
 lang
 
-curl -X POST ${URL} -d '{"user_id": "UUID", "platform": "PLATFORM", "os_version": 0.0, "device_name": "NAME", "app_version": 0.0, "lang": "PL"}'
+curl -X POST ${URL} -d '{"user_id": "user-id", "platform": "PLATFORM", "os_version": 0.0, "device_name": "NAME", "app_version": 0.0, "lang": "PL"}'
 {
     "status":"orange"
     "beacon_ids": [
         {
-           "beacon_id": "8d672642-7046-11ea-8e40-3f45fb5912b4", 
+           "beacon_id": "3982a27de2d8166b3c1588e7be560b11", 
             "date":"2020032716"
         },
         [...]

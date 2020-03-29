@@ -2,8 +2,8 @@ import json
 import os
 import random
 import logging
+import secrets
 from datetime import datetime
-import uuid
 
 import pytz
 from flask import jsonify
@@ -45,10 +45,10 @@ def register_device(request):
 
     msisdn = request_data['msisdn']
     code = ''.join(random.choice(CODE_CHARACTERS) for _ in range(5))
-    registration_id = str(uuid.uuid4())
+    registration_id = secrets.token_hex(16)
     date = datetime.now(tz=pytz.utc)
 
-    _save_to_datastore(code, msisdn, date, registration_id)
+    _save_to_datastore(code, msisdn, date, registration_id, request.remote_addr)
 
     response = {
         'status': 'ok',
@@ -81,22 +81,24 @@ def _check_phone_number(msisdn: str):
     return True
 
 
-def _save_to_datastore(code: str, msisdn: str, date: datetime, registration_id: str):
-    kind = 'Device'
-    device_key = datastore_client.key(kind, f'{registration_id}')
+def _save_to_datastore(code: str, msisdn: str, date: datetime, registration_id: str, ip: str):
+    kind = 'Registrations'
+    key = datastore_client.key(kind, f'{registration_id}')
 
-    device = datastore.Entity(key=device_key)
-    device.update(
+    registration = datastore.Entity(key=key)
+    registration.update(
         {
             'code': code,
             'msisdn': msisdn,
             'date': date,
             'registration_id': registration_id,
+            'sms_send': False,
+            'ip': ip,
             'confirmed': False
         }
     )
 
-    datastore_client.put(device)
+    datastore_client.put(registration)
 
 
 def _publish_to_send_register_sms_topic(msisdn: str, code: str):

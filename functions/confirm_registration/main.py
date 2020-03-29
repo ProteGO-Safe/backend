@@ -1,7 +1,9 @@
+import secrets
 from typing import Optional
-import uuid
 
+import pytz
 from flask import jsonify
+from datetime import datetime
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
@@ -29,18 +31,22 @@ def confirm_registration(request):
     code = request_data["code"]
     registration_id = request_data["registration_id"]
 
-    entity = _get_from_datastore(registration_id)
+    registration_entity = _get_registration_entity(registration_id)
 
-    if not entity or entity["code"] != code or entity["registration_id"] != registration_id:
+    if not registration_entity \
+            or registration_entity["code"] != code \
+            or registration_entity["registration_id"] != registration_id:
         return jsonify(
             {"status": "failed",
              "message": "invalid data"
              }
         ), 422
 
-    user_id = str(uuid.uuid4())
+    user_id = secrets.token_hex(16)
+    date = datetime.now(tz=pytz.utc)
 
-    _update_entity(entity, user_id)
+    _update_registration(registration_entity)
+    _create_user(registration_entity["msisdn"], user_id, date)
 
     return jsonify(
         {
@@ -50,18 +56,30 @@ def confirm_registration(request):
     )
 
 
-def _get_from_datastore(registration_id: str) -> Optional[Entity]:
-    kind = "Device"
-    device_key = datastore_client.key(kind, f"{registration_id}")
-    return datastore_client.get(key=device_key)
+def _get_registration_entity(registration_id: str) -> Optional[Entity]:
+    kind = "Registrations"
+    key = datastore_client.key(kind, f"{registration_id}")
+    return datastore_client.get(key=key)
 
 
-def _update_entity(entity: Entity, user_id, confirmed=True) -> None:
-    entity.update(
+def _update_registration(entity: Entity):
+    entity.update({
+        "confirmed": True,
+    })
+    datastore_client.put(entity)
+
+
+def _create_user(msisdn, user_id, date) -> None:
+    kind = "Users"
+    key = datastore_client.key(kind, f"{user_id}")
+
+    registration = datastore.Entity(key=key)
+    registration.update(
         {
-            "user_id": user_id,
-            "confirmed": confirmed,
+            'user_id': user_id,
+            'msisdn': msisdn,
+            'created': date,
         }
     )
 
-    datastore_client.put(entity)
+    datastore_client.put(registration)

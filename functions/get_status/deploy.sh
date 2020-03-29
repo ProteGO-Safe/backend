@@ -14,5 +14,6 @@ gcloud functions deploy get_status \
     --source=./ \
     --runtime=python37 \
     --stage-bucket=${FUNCTIONS_BUCKET} \
+    --entry-point get_status \
     --set-env-vars BQ_DATASET=${BQ_DATASET},BQ_TABLE=${BQ_TABLE} \
     --trigger-http --allow-unauthenticated

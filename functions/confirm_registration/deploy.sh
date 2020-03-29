@@ -13,5 +13,6 @@ gcloud functions deploy confirm_registration \
     --region=${REGION} \
     --source=./ \
     --runtime=python37 \
+    --entry-point confirm_registration \
     --stage-bucket=${FUNCTIONS_BUCKET} \
     --trigger-http --allow-unauthenticated

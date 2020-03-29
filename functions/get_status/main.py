@@ -1,6 +1,6 @@
 import logging
 import os
-import uuid
+import secrets
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -49,8 +49,8 @@ def get_status(request):
     app_version = request_data["app_version"]
     lang = request_data["lang"]
 
-    entity = _get_entity_from_datastore(user_id)
-    if not entity:
+    user_entity = _get_user_entity(user_id)
+    if not user_entity:
         return jsonify(
             {
                 'status': 'failed',
@@ -72,7 +72,7 @@ def get_status(request):
              }
         ), 500
 
-    _update_entity(entity, platform, os_version, app_version, device_type, lang)
+    _update_user_entity(user_entity, platform, os_version, app_version, device_type, lang)
     return jsonify(
         {
             "status": "orange",
@@ -84,18 +84,14 @@ def get_status(request):
     )
 
 
-def _get_entity_from_datastore(user_id: str) -> Optional[Entity]:
-    kind = "Device"
-    query = datastore_client.query(kind=kind)
-    query.add_filter('user_id', '=', user_id)
-    try:
-        return list(query.fetch())[0]
-    except IndexError:
-        return None
+def _get_user_entity(user_id: str) -> Optional[Entity]:
+    kind = "Users"
+    device_key = datastore_client.key(kind, f"{user_id}")
+    return datastore_client.get(key=device_key)
 
 
-def _update_entity(entity: Entity, platform: str, os_version: str, app_version: str, device_type: str,
-                   lang: str) -> None:
+def _update_user_entity(entity: Entity, platform: str, os_version: str, app_version: str, device_type: str,
+                        lang: str) -> None:
     entity.update({
         "platform": platform,
         "os_version": os_version,
@@ -111,7 +107,7 @@ def _generate_beacons():
     return [
         {
             "date": _get_beacon_date(timedelta(hours=i)),
-            "beacon_id": str(uuid.uuid4())
+            "beacon_id": secrets.token_hex(16)
         } for i in range(0, NR_BEACON_IDS)
     ]
 
