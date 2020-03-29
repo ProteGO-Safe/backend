@@ -1,7 +1,9 @@
 from typing import Optional
 import uuid
 
+import pytz
 from flask import jsonify
+from datetime import datetime
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
@@ -31,9 +33,11 @@ def confirm_registration(request):
     code = request_data["code"]
     registration_id = request_data["registration_id"]
 
-    entity = _get_from_datastore(msisdn)
+    registration_entity = _get_registration_entity(msisdn)
 
-    if not entity or entity["code"] != code or entity["registration_id"] != registration_id:
+    if not registration_entity \
+            or registration_entity["code"] != code \
+            or registration_entity["registration_id"] != registration_id:
         return jsonify(
             {"status": "failed",
              "message": "invalid data"
@@ -41,8 +45,10 @@ def confirm_registration(request):
         ), 422
 
     user_id = str(uuid.uuid4())
+    date = datetime.now(tz=pytz.utc)
 
-    _update_entity(entity, user_id)
+    _update_registration(registration_entity)
+    _create_user(msisdn, user_id, date)
 
     return jsonify(
         {
@@ -52,18 +58,30 @@ def confirm_registration(request):
     )
 
 
-def _get_from_datastore(msisdn: str) -> Optional[Entity]:
-    kind = "Device"
+def _get_registration_entity(msisdn: str) -> Optional[Entity]:
+    kind = "Registrations"
     device_key = datastore_client.key(kind, f"{msisdn}")
     return datastore_client.get(key=device_key)
 
 
-def _update_entity(entity: Entity, user_id, confirmed=True) -> None:
-    entity.update(
+def _update_registration(entity: Entity):
+    entity.update({
+        "confirmed": True,
+    })
+    datastore_client.put(entity)
+
+
+def _create_user(msisdn, user_id, date) -> None:
+    kind = "Users"
+    key = datastore_client.key(kind, f"{user_id}")
+
+    registration = datastore.Entity(key=key)
+    registration.update(
         {
-            "user_id": user_id,
-            "confirmed": confirmed,
+            'user_id': user_id,
+            'msisdn': msisdn,
+            'created': date,
         }
     )
 
-    datastore_client.put(entity)
+    datastore_client.put(registration)

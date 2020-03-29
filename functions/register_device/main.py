@@ -82,21 +82,22 @@ def _check_phone_number(msisdn: str):
 
 
 def _save_to_datastore(code: str, msisdn: str, date: datetime, registration_id: str):
-    kind = 'Device'
-    device_key = datastore_client.key(kind, f'{msisdn}')
+    kind = 'Registrations'
+    key = datastore_client.key(kind, f'{msisdn}')
 
-    device = datastore.Entity(key=device_key)
-    device.update(
+    registration = datastore.Entity(key=key)
+    registration.update(
         {
             'code': code,
             'msisdn': msisdn,
             'date': date,
             'registration_id': registration_id,
+            'sms_send': False,
             'confirmed': False
         }
     )
 
-    datastore_client.put(device)
+    datastore_client.put(registration)
 
 
 def _publish_to_send_register_sms_topic(msisdn: str, code: str):

@@ -2,12 +2,16 @@ import json
 import os
 import base64
 import logging
+
+from google.cloud import datastore
 from smsapi.client import SmsApiPlClient
 from smsapi.exception import SmsApiException
 
 token = os.environ["SMS_API_TOKEN"]
 
 client = SmsApiPlClient(access_token=token)
+
+datastore_client = datastore.Client()
 
 
 def send_register_sms(event, context):
@@ -37,3 +41,19 @@ def send_register_sms(event, context):
 
     for result in send_results:
         logging.info(result.id, result.points, result.error)
+
+    _update_entity(msisdn)
+
+
+def _update_entity(msisdn: str):
+    kind = 'Registrations'
+    key = datastore_client.key(kind, f'{msisdn}')
+
+    registration = datastore.Entity(key=key)
+    registration.update(
+        {
+            'sms_send': True,
+        }
+    )
+
+    datastore_client.put(registration)
