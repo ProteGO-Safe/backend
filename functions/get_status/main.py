@@ -121,11 +121,11 @@ def _get_beacon_date(delta: timedelta = None) -> datetime:
     return datetime.utcnow().replace(tzinfo=pytz.utc, minute=0, second=0, microsecond=0) + delta
 
 
-def _save_beacons_to_bigquery(registration_id, beacons):
+def _save_beacons_to_bigquery(user_id, beacons):
     client = bigquery.Client()
     table = client.get_table(BQ_TABLE)
 
-    rows_to_insert = [(registration_id, beacon["beacon_id"], beacon["date"]) for beacon in beacons]
+    rows_to_insert = [(user_id, beacon["beacon_id"], beacon["date"]) for beacon in beacons]
 
     errors = client.insert_rows(table, rows_to_insert)
     if errors:
