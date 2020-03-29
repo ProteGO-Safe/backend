@@ -59,6 +59,11 @@ def _get_from_datastore(msisdn: str) -> Optional[Entity]:
 
 
 def _update_entity(entity: Entity, user_id, confirmed=True) -> None:
-    entity["user_id"] = user_id
-    entity["confirmed"] = confirmed
+    entity.update(
+        {
+            "user_id": user_id,
+            "confirmed": confirmed,
+        }
+    )
+
     datastore_client.put(entity)

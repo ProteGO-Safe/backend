@@ -142,7 +142,7 @@ paths:
                   example: "ASDFG"
                 registration_id:
                   type: string
-                  description: "code from sms"
+                  description: "registration id"
                   example: "07cff176-0bea-4bbb-9901-70ce82db8886"
 
       responses:
