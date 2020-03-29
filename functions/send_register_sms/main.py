@@ -30,6 +30,7 @@ def send_register_sms(event, context):
         return
 
     msisdn = data["msisdn"]
+    registration_id = data["registration_id"]
     code = data["code"]
     message = f"Kod weryfikacyjny do aplikacji Anna: {code}"
 
@@ -42,12 +43,12 @@ def send_register_sms(event, context):
     for result in send_results:
         logging.info(result.id, result.points, result.error)
 
-    _update_entity(msisdn)
+    _update_entity(registration_id)
 
 
-def _update_entity(msisdn: str):
+def _update_entity(registration_id: str):
     kind = 'Registrations'
-    key = datastore_client.key(kind, f'{msisdn}')
+    key = datastore_client.key(kind, f'{registration_id}')
 
     registration = datastore.Entity(key=key)
     registration.update(
