@@ -48,7 +48,7 @@ def register_device(request):
     registration_id = secrets.token_hex(16)
     date = datetime.now(tz=pytz.utc)
 
-    _save_to_datastore(code, msisdn, date, registration_id)
+    _save_to_datastore(code, msisdn, date, registration_id, request.remote_addr)
 
     response = {
         'status': 'ok',
@@ -81,7 +81,7 @@ def _check_phone_number(msisdn: str):
     return True
 
 
-def _save_to_datastore(code: str, msisdn: str, date: datetime, registration_id: str):
+def _save_to_datastore(code: str, msisdn: str, date: datetime, registration_id: str, ip: str):
     kind = 'Registrations'
     key = datastore_client.key(kind, f'{registration_id}')
 
@@ -93,6 +93,7 @@ def _save_to_datastore(code: str, msisdn: str, date: datetime, registration_id: 
             'date': date,
             'registration_id': registration_id,
             'sms_send': False,
+            'ip': ip,
             'confirmed': False
         }
     )
