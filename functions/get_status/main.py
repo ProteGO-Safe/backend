@@ -10,7 +10,8 @@ from google.cloud import bigquery, datastore
 from google.cloud.datastore import Entity
 
 NR_BEACON_IDS = 24 * 7
-
+BEACON_DATE_FORMAT = "%Y%m%d%H"
+MINIMAL_BEACON_TTL_IN_DAYS = 2
 BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
 
 datastore_client = datastore.Client()
@@ -33,7 +34,7 @@ def get_status(request):
 
     request_data = request.get_json()
 
-    for key in ["user_id", "platform", "os_version", "device_type", "app_version", "lang"]:
+    for key in ["user_id", "platform", "os_version", "device_type", "app_version", "lang", "last_beacon_date"]:
         if key not in request_data:
             return jsonify(
                 {
@@ -48,6 +49,7 @@ def get_status(request):
     device_type = request_data["device_type"]
     app_version = request_data["app_version"]
     lang = request_data["lang"]
+    last_beacon_date = request_data.get["last_beacon_date"]
 
     user_entity = _get_user_entity(user_id)
     if not user_entity:
@@ -58,26 +60,28 @@ def get_status(request):
             }
         ), 401
 
-    beacons = _generate_beacons()
-    try:
-        # This must be synchronous call - successful saving beacon_ids to BigQuery is essential
-        _save_beacons_to_bigquery(user_id, beacons)
-    except SaveToBigQueryFailedException as error:
-        logging.error(f'Unable to save beacon_ids for user_id: {user_id}')
-        for e in error.bq_errors:
-            logging.error(e)
-        return jsonify(
-            {'status': 'failed',
-             'message': 'internal exception'
-             }
-        ), 500
+    beacons = []
+    if _should_generate_beacons(last_beacon_date):
+        beacons = _generate_beacons()
+        try:
+            # This must be synchronous call - successful saving beacon_ids to BigQuery is essential
+            _save_beacons_to_bigquery(user_id, beacons)
+        except SaveToBigQueryFailedException as error:
+            logging.error(f'Unable to save beacon_ids for user_id: {user_id}')
+            for e in error.bq_errors:
+                logging.error(e)
+            return jsonify(
+                {'status': 'failed',
+                 'message': 'internal exception'
+                 }
+            ), 500
 
     _update_user_entity(user_entity, platform, os_version, app_version, device_type, lang)
     return jsonify(
         {
             "status": "orange",
             "beacon_ids": [{
-                "date": beacon["date"].strftime("%Y%m%d%H%M%S"),
+                "date": beacon["date"].strftime(BEACON_DATE_FORMAT),
                 "beacon_id": beacon["beacon_id"],
             } for beacon in beacons],
         }
@@ -101,6 +105,12 @@ def _update_user_entity(entity: Entity, platform: str, os_version: str, app_vers
         "last_status_requested": datetime.utcnow(),
     })
     datastore_client.put(entity)
+
+
+# New beacons should be generated if last beacon date is closer than {MINIMAL_BEACON_TTL_IN_DAYS} days from now
+def _should_generate_beacons(last_beacon_date_str: str) -> bool:
+    last_beacon_date = datetime.strptime(last_beacon_date_str, BEACON_DATE_FORMAT)
+    return last_beacon_date < (datetime.today() + timedelta(days=2))
 
 
 def _generate_beacons():
