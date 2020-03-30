@@ -1,9 +1,9 @@
 import secrets
+from datetime import datetime
 from typing import Optional
 
 import pytz
 from flask import jsonify
-from datetime import datetime
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
@@ -79,6 +79,7 @@ def _create_user(msisdn, user_id, date) -> None:
             'user_id': user_id,
             'msisdn': msisdn,
             'created': date,
+            'status': 'orange',
         }
     )
 

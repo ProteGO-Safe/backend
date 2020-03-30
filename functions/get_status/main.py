@@ -75,7 +75,7 @@ def get_status(request):
     _update_user_entity(user_entity, platform, os_version, app_version, device_type, lang)
     return jsonify(
         {
-            "status": "orange",
+            "status": user_entity['status'],
             "beacon_ids": [{
                 "date": beacon["date"].strftime("%Y%m%d%H%M%S"),
                 "beacon_id": beacon["beacon_id"],
