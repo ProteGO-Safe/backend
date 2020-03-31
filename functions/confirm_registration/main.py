@@ -42,7 +42,7 @@ def confirm_registration(request):
              }
         ), 422
 
-    user_id = secrets.token_hex(16)
+    user_id = secrets.token_hex(32)
     date = datetime.now(tz=pytz.utc)
 
     _update_registration(registration_entity)
