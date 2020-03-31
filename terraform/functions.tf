@@ -1,9 +1,10 @@
 locals {
-  check_version_source_object_file_name        = "check_version-${var.project_id}-${var.region}-${var.project_id}-${var.region}-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
-  get_status_source_object_file_name           = "get_status-${var.project_id}-${var.region}-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
-  confirm_registration_source_object_file_name = "confirm_registration-${var.project_id}-${var.region}-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
-  register_device_source_object_file_name      = "register_device-${var.project_id}-${var.region}-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
-  send_register_sms_source_object_file_name    = "send_register_sms-${var.project_id}-${var.region}-${formatdate("DDMMYYYYhhmmssZZZ", timestamp())}.zip"
+  source_object_file_name_prefix               = "${var.region}/${var.project_id}/"
+  check_version_source_object_file_name        = "${local.source_object_file_name_prefix}check_version.zip"
+  get_status_source_object_file_name           = "${local.source_object_file_name_prefix}get_status.zip"
+  confirm_registration_source_object_file_name = "${local.source_object_file_name_prefix}confirm_registration.zip"
+  register_device_source_object_file_name      = "${local.source_object_file_name_prefix}register_device.zip"
+  send_register_sms_source_object_file_name    = "${local.source_object_file_name_prefix}send_register_sms.zip"
 }
 
 
