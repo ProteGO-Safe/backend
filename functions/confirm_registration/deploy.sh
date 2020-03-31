@@ -2,9 +2,9 @@
 
 set -e
 
-if [[ -z ${REGION} || -z ${FUNCTIONS_BUCKET} ]]; then
+if [[ -z ${REGION} || -z ${FUNCTIONS_BUCKET} || -z ${CONFIRMATIONS_PER_MSISDN_LIMIT} ]]; then
     echo
-    echo "ERROR! One of variables: [\"REGION\", \"FUNCTIONS_BUCKET\"] is not set. Exiting!"
+    echo "ERROR! One of variables: [\"REGION\", \"FUNCTIONS_BUCKET\" \"CONFIRMATIONS_PER_MSISDN_LIMIT\"] is not set. Exiting!"
     echo
     exit 1
 fi
@@ -15,4 +15,6 @@ gcloud functions deploy confirm_registration \
     --runtime=python37 \
     --entry-point confirm_registration \
     --stage-bucket=${FUNCTIONS_BUCKET} \
-    --trigger-http --allow-unauthenticated
+    --trigger-http --allow-unauthenticated \
+     --set-env-vars CONFIRMATIONS_PER_MSISDN_LIMIT=${CONFIRMATIONS_PER_MSISDN_LIMIT}
+

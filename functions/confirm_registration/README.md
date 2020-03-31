@@ -16,6 +16,7 @@ Required variables to deploy function:
 * `PROJECT_ID` - GCP project ID
 * `REGION` - region of the GCP project
 * `FUNCTIONS_BUCKET` - bucket where functions are stored
+* `CONFIRMATIONS_PER_MSISDN_LIMIT` - confirmations_per_msisdn_limit
 
 
 Example deploy function (you have to be authorized to gcloud):
@@ -23,5 +24,6 @@ Example deploy function (you have to be authorized to gcloud):
 REGION=europe-west3 \
 PROJECT_ID=<project_id> \
 FUNCTIONS_BUCKET=${PROJECT_ID}-functions \
+CONFIRMATIONS_PER_MSISDN_LIMIT=3 \
 ./deploy.sh
 ```
