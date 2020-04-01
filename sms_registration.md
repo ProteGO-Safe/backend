@@ -65,5 +65,7 @@ W przeciwnym wypadku wygeneruj nowego `User` i zwróć `User.user_id`.
 
 
 Źródła i inspiracje:
+
 https://www.twilio.com/docs/verify/developer-best-practices
+
 https://stackoverflow.com/questions/20839638/how-do-you-prevent-verification-code-attack-to-server
