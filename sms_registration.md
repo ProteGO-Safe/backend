@@ -1,5 +1,7 @@
 # Rejestracja SMS
 
+## Wprowadzenie
+
 Proces rejestracji jest najbardziej newralgicznym elementem naszego systemu. Musimy zabezpieczyć się przed następującymi próbami nadużyć:
 
 * ktoś spamuje różne numery telefonu naszymi kodami (i naraża nas na koszty)
@@ -25,7 +27,7 @@ Treści wiadomości:
 pl: `Twój kod dla NAZWA to: 123-456`
 en: `Your NAZWA code is: 123-456`
 
-Pseudokod:
+## Pseudokod
 
 Parametry:
 `invalid_regs_per_IP = 10`
