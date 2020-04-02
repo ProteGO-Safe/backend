@@ -2,6 +2,7 @@ locals {
   source_object_file_name_prefix               = "${var.region}/${var.project_id}/"
   check_version_source_object_file_name        = "${local.source_object_file_name_prefix}check_version.zip"
   get_status_source_object_file_name           = "${local.source_object_file_name_prefix}get_status.zip"
+  send_encounters_source_object_file_name      = "${local.source_object_file_name_prefix}send_encounters.zip"
   confirm_registration_source_object_file_name = "${local.source_object_file_name_prefix}confirm_registration.zip"
   register_device_source_object_file_name      = "${local.source_object_file_name_prefix}register_device.zip"
   send_register_sms_source_object_file_name    = "${local.source_object_file_name_prefix}send_register_sms.zip"
@@ -155,6 +156,62 @@ resource "google_cloudfunctions_function_iam_member" "invoker-get_status" {
   member         = "allUsers"
 }
 // END get_status function
+
+// START send_encounters
+data "local_file" "send_encounters_main" {
+  filename = "${path.module}/../functions/send_encounters/main.py"
+}
+
+data "local_file" "send_encounters_requirements" {
+  filename = "${path.module}/../functions/send_encounters/requirements.txt"
+}
+
+data "archive_file" "send_encounters" {
+  type        = "zip"
+  output_path = "${path.module}/files/send_encounters-${local.send_encounters_source_object_file_name}"
+
+  source {
+    content  = "${file("${data.local_file.send_encounters_main.filename}")}"
+    filename = "main.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.send_encounters_requirements.filename}")}"
+    filename = "requirements.txt"
+  }
+
+}
+
+resource "google_storage_bucket_object" "send_encounters" {
+  name       = local.send_encounters_source_object_file_name
+  bucket     = google_storage_bucket.functions.name
+  source     = data.archive_file.send_encounters.output_path
+  depends_on = [data.archive_file.send_encounters]
+}
+
+resource "google_cloudfunctions_function" "send_encounters" {
+  name                  = "send_encounters"
+  runtime               = "python37"
+  trigger_http          = true
+  entry_point           = "send_encounters"
+  source_archive_bucket = google_storage_bucket.functions.name
+  source_archive_object = google_storage_bucket_object.send_encounters.name
+
+  environment_variables = {
+    BQ_DATASET = google_bigquery_dataset.protego_main_dataset.dataset_id
+    BQ_TABLE   = google_bigquery_table.encounters.table_id
+  }
+
+}
+
+resource "google_cloudfunctions_function_iam_member" "invoker-send_encounters" {
+  project        = google_cloudfunctions_function.send_encounters.project
+  region         = google_cloudfunctions_function.send_encounters.region
+  cloud_function = google_cloudfunctions_function.send_encounters.name
+  role           = "roles/cloudfunctions.invoker"
+  member         = "allUsers"
+}
+// END send_encounters function
 
 
 // START register_device
