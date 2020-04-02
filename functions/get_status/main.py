@@ -47,7 +47,7 @@ def get_status(request):
     device_type = request_data["device_type"]
     app_version = request_data["app_version"]
     lang = request_data["lang"]
-    last_beacon_date = request_data.get["last_beacon_date"]
+    last_beacon_date = request_data["last_beacon_date"]
 
     user_entity = _get_user_entity(user_id)
     if not user_entity:
