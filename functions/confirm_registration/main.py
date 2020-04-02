@@ -9,8 +9,7 @@ from flask import jsonify
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
-CONFIRMATIONS_PER_MSISDN_LIMIT = int(os.environ["CONFIRMATIONS_PER_MSISDN_LIMIT"])
-
+CONFIRMATIONS_PER_MSISDN_LIMIT = 3
 REGISTRATION_STATUS_COMPLETED = "completed"
 REGISTRATION_STATUS_INCORRECT = "incorrect"
 DATA_STORE_REGISTRATION_KIND = "Registrations"
@@ -73,7 +72,7 @@ def confirm_registration(request):
     user_id = _get_existing_user_id(registration_entity["msisdn"])
 
     if not user_id:
-        user_id = secrets.token_hex(16)
+        user_id = secrets.token_hex(32)
         date = datetime.now(tz=pytz.utc)
         _create_user(registration_entity["msisdn"], user_id, date)
 
@@ -108,7 +107,7 @@ def _get_existing_user_id(msisdn: str) -> Optional[str]:
     return None
 
 
-def _create_user(msisdn, user_id, date) -> None:
+def _create_user(msisdn: str, user_id: str, date: datetime) -> None:
     key = datastore_client.key(DATA_STORE_USERS_KIND, f"{user_id}")
 
     user = datastore.Entity(key=key)
@@ -124,10 +123,11 @@ def _create_user(msisdn, user_id, date) -> None:
     datastore_client.put(user)
 
 
-def _confirmation_limit_reached(msisdn: str):
+def _confirmation_limit_reached(msisdn: str) -> bool:
+    start_date = datetime.now(tz=pytz.utc) - timedelta(hours=1)
+
     query = datastore_client.query(kind=DATA_STORE_REGISTRATION_KIND)
     query.add_filter("msisdn", "=", msisdn)
-    start_date = datetime.now(tz=pytz.utc) - timedelta(hours=1)
     query.add_filter(
         "date", ">", start_date
     )
@@ -136,3 +136,5 @@ def _confirmation_limit_reached(msisdn: str):
     if len(registration_entities) >= CONFIRMATIONS_PER_MSISDN_LIMIT:
         logging.warning(f"_confirmation_limit_reached: msisdn: {msisdn}")
         return True
+
+    return False

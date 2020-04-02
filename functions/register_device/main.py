@@ -16,9 +16,10 @@ from google.cloud import pubsub_v1
 PROJECT_ID = os.environ["GCP_PROJECT"]
 PUBSUB_SEND_REGISTER_SMS_TOPIC = os.environ["PUBSUB_SEND_REGISTER_SMS_TOPIC"]
 STAGE = os.environ["STAGE"]
-INVALID_REGS_PER_IP_LIMIT = int(os.environ["INVALID_REGS_PER_IP_LIMIT"])
-INVALID_REGS_PER_MSISDN_LIMIT = int(os.environ["INVALID_REGS_PER_MSISDN_LIMIT"])
 
+
+INVALID_REGS_PER_IP_LIMIT = 10
+INVALID_REGS_PER_MSISDN_LIMIT = 4
 CODE_CHARACTERS = string.digits
 DATA_STORE_REGISTRATION_KIND = "Registrations"
 REGISTRATION_STATUS_PENDING = "pending"
@@ -37,8 +38,8 @@ def register_device(request):
     msisdn = request_data["msisdn"]
     ip = request.headers.get('X-Forwarded-For')
 
-    code = _get_pending_registration_code(msisdn) or "".join(random.choice(CODE_CHARACTERS) for _ in range(5))
-    registration_id = secrets.token_hex(16)
+    code = _get_pending_registration_code(msisdn) or "".join(random.choice(CODE_CHARACTERS) for _ in range(6))
+    registration_id = secrets.token_hex(32)
     date = datetime.now(tz=pytz.utc)
 
     _save_to_datastore(code, msisdn, date, registration_id, ip)
