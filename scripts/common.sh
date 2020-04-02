@@ -74,7 +74,7 @@ get_project() {
 #   None
 check_variable_set() {
   if [[ -z ${!1-} ]]; then
-    echo "Variable ${1} have to be set!" 1>&2
+    echo "Variable \"${1}\" have to be set!" 1>&2
     exit 1;
   fi
   return 0
@@ -142,8 +142,8 @@ ask_for_confirmation() {
   while true; do
       read -p "Answer: " yn
       case $yn in
-          [Yy]* ) echo; break;;
-          [Nn]* ) echo "Quitting..."; exit;;
+          Yes|yes ) echo; break;;
+          No|no ) echo "Quitting..."; exit;;
           * ) echo "Please answer yes or no.";;
       esac
   done
