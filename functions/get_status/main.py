@@ -4,14 +4,12 @@ import secrets
 from datetime import datetime, timedelta
 from typing import Optional
 
-import pytz
 from flask import jsonify
 from google.cloud import bigquery, datastore
 from google.cloud.datastore import Entity
 
-NR_BEACON_IDS = 24 * 7
 BEACON_DATE_FORMAT = "%Y%m%d%H"
-MINIMAL_BEACON_TTL_IN_DAYS = 2
+MAX_NR_OF_BEACON_IDS = 21 * 24  # 21 days x 24 hours
 BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
 
 datastore_client = datastore.Client()
@@ -60,21 +58,9 @@ def get_status(request):
             }
         ), 401
 
-    beacons = []
-    if _should_generate_beacons(last_beacon_date):
-        beacons = _generate_beacons()
-        try:
-            # This must be synchronous call - successful saving beacon_ids to BigQuery is essential
-            _save_beacons_to_bigquery(user_id, beacons)
-        except SaveToBigQueryFailedException as error:
-            logging.error(f'Unable to save beacon_ids for user_id: {user_id}')
-            for e in error.bq_errors:
-                logging.error(e)
-            return jsonify(
-                {'status': 'failed',
-                 'message': 'internal exception'
-                 }
-            ), 500
+    beacons = _generate_beacons(last_beacon_date)
+    if not _save_beacons_to_bigquery(user_id, beacons):
+        beacons = []  # if saving beacons to BigQuery failed, return no new beacons
 
     _update_user_entity(user_entity, platform, os_version, app_version, device_type, lang)
     return jsonify(
@@ -107,27 +93,25 @@ def _update_user_entity(entity: Entity, platform: str, os_version: str, app_vers
     datastore_client.put(entity)
 
 
-# New beacons should be generated if last beacon date is closer than {MINIMAL_BEACON_TTL_IN_DAYS} days from now
-def _should_generate_beacons(last_beacon_date_str: str) -> bool:
+def _generate_beacons(last_beacon_date_str: str) -> list:
     last_beacon_date = datetime.strptime(last_beacon_date_str, BEACON_DATE_FORMAT)
-    return last_beacon_date < (datetime.today() + timedelta(days=2))
+    now = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+    last_beacon_date_should_be = now + timedelta(hours=MAX_NR_OF_BEACON_IDS)
+    diff = (last_beacon_date_should_be - last_beacon_date)
+    diff_in_hours = int(diff.total_seconds() / 3600) + 1
 
-
-def _generate_beacons():
     return [
         {
-            "date": _get_beacon_date(timedelta(hours=i)),
+            "date": last_beacon_date + timedelta(hours=i),
             "beacon_id": secrets.token_hex(16)
-        } for i in range(0, NR_BEACON_IDS)
+        } for i in range(0, diff_in_hours)
     ]
 
 
-def _get_beacon_date(delta: timedelta = None) -> datetime:
-    delta = delta if delta is not None else timedelta()
-    return datetime.utcnow().replace(tzinfo=pytz.utc, minute=0, second=0, microsecond=0) + delta
+def _save_beacons_to_bigquery(user_id: str, beacons: list) -> bool:
+    if not beacons:
+        return True
 
-
-def _save_beacons_to_bigquery(user_id, beacons):
     client = bigquery.Client()
     table = client.get_table(BQ_TABLE_ID)
 
@@ -135,4 +119,9 @@ def _save_beacons_to_bigquery(user_id, beacons):
 
     errors = client.insert_rows(table, rows_to_insert)
     if errors:
-        raise SaveToBigQueryFailedException(errors)
+        logging.error(f'Unable to save beacon_ids for user_id: {user_id}')
+        for e in errors:
+            logging.error(e)
+        return False
+
+    return True
