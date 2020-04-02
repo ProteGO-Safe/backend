@@ -30,8 +30,20 @@ check_variable_set "STAGE"
 check_variable_set "SMS_API_TOKEN"
 check_stage_variable_set
 
+echo
+echo "Do you want to run \"terraform destroy\" on project \"${PROJECT}\" ?"
+ask_for_confirmation
 
+# Show plan
+(cd "${ROOT}/terraform" && terraform plan \
+  -destroy \
+  -input=false \
+  -var "project_id=${PROJECT}" \
+  -var "stage=${STAGE}" \
+  -var "sms_api_token=${SMS_API_TOKEN}" \
+)
 
+# Destroy
 (cd "${ROOT}/terraform" && terraform destroy \
   -auto-approve \
   -var "project_id=${PROJECT}" \

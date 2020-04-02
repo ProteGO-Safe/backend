@@ -18,10 +18,19 @@ set -euo pipefail
 
 
 run_terraform() {
-  echo "bucket=${TERRAFORM_BACKEND_BUCKET}"
+  # Init with backend on gcs bucket
   (cd "$ROOT/terraform"; terraform init \
     -input=false \
     -backend-config="bucket=${PROJECT}-tfstate")
+
+  # Show plan
+  (cd "$ROOT/terraform"; terraform plan \
+    -input=false \
+    -var "project_id=${PROJECT}" \
+    -var "stage=${STAGE}" \
+    -var "sms_api_token=${SMS_API_TOKEN}")
+
+  # Apply
   (cd "$ROOT/terraform"; terraform apply \
     -input=false \
     -auto-approve \
@@ -39,7 +48,16 @@ check_dependency_installed gcloud
 check_dependency_installed terraform
 
 get_project
+
+# Ask
+echo
+echo "Do you want to run \"terraform apply\" on project: \"${PROJECT}\" ?"
+ask_for_confirmation
+echo
+
 get_terraform_backend_bucket
+
+# Check variables
 check_variable_set "PROJECT"
 check_variable_set "STAGE"
 check_variable_set "SMS_API_TOKEN"

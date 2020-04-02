@@ -107,7 +107,8 @@ check_stage_variable_set() {
 #   TERRAFORM_BACKEND_BUCKET - name of the bucket
 get_terraform_backend_bucket() {
   TERRAFORM_BACKEND_BUCKET="${PROJECT}-tfstate"
-  gsutil ls -b "gs://${TERRAFORM_BACKEND_BUCKET}" || \
+  echo "Terraform backend state will be present on GCS bucket: gs://${TERRAFORM_BACKEND_BUCKET}"
+  gsutil ls -b "gs://${TERRAFORM_BACKEND_BUCKET}" >/dev/null 2>&1 || \
     (gsutil mb "gs://${TERRAFORM_BACKEND_BUCKET}" && gsutil versioning set on "gs://${TERRAFORM_BACKEND_BUCKET}")
   return 0
 }
@@ -121,6 +122,29 @@ get_terraform_backend_bucket() {
 #   TERRAFORM_BACKEND_BUCKET - name of the bucket
 delete_terraform_backend_bucket() {
   TERRAFORM_BACKEND_BUCKET="${PROJECT}-tfstate"
+  echo
+  echo "Do you want to delete bucket gs://${TERRAFORM_BACKEND_BUCKET} ?"
+  ask_for_confirmation
   gsutil ls -b "gs://${TERRAFORM_BACKEND_BUCKET}" && gsutil -m rm -r "gs://${TERRAFORM_BACKEND_BUCKET}"
   return 0
+}
+
+# Helper function to ask yes/no question.
+# Globals:
+#   None
+# Arguments:
+#   None
+# Returns:
+#   None
+ask_for_confirmation() {
+  echo
+  echo "Please answer yes or no."
+  while true; do
+      read -p "Answer: " yn
+      case $yn in
+          [Yy]* ) echo; break;;
+          [Nn]* ) echo "Quitting..."; exit;;
+          * ) echo "Please answer yes or no.";;
+      esac
+  done
 }
