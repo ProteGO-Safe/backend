@@ -16,6 +16,14 @@ indexes:
   - name: date
     direction: desc
 
+- kind: Registrations
+  ancestor: no
+  properties:
+  - name: msisdn
+  - name: date
+    direction: desc
+
+
 - kind: Users
   ancestor: no
   properties:

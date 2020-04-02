@@ -1,11 +1,11 @@
 import logging
 import os
 import secrets
+from datetime import datetime, timedelta
 from typing import Optional
 
 import pytz
 from flask import jsonify
-from datetime import datetime, timedelta
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
@@ -32,7 +32,7 @@ def confirm_registration(request):
             or "registration_id" not in request.get_json():
         return jsonify(
             {"status": "failed",
-             "message": "invalid data"
+             "message": "Invalid data"
              }
         ), 422
     request_data = request.get_json()
@@ -48,7 +48,7 @@ def confirm_registration(request):
         return jsonify(
             {
                 "status": "failed",
-                "message": "invalid data"
+                "message": "Invalid data"
             }
         ), 422
 
@@ -64,7 +64,7 @@ def confirm_registration(request):
         _update_registration(registration_entity, REGISTRATION_STATUS_INCORRECT)
         return jsonify(
             {"status": "failed",
-             "message": "invalid data"
+             "message": "Invalid data"
              }
         ), 422
 
@@ -111,27 +111,28 @@ def _get_existing_user_id(msisdn: str) -> Optional[str]:
 def _create_user(msisdn, user_id, date) -> None:
     key = datastore_client.key(DATA_STORE_USERS_KIND, f"{user_id}")
 
-    registration = datastore.Entity(key=key)
-    registration.update(
+    user = datastore.Entity(key=key)
+    user.update(
         {
             "user_id": user_id,
             "msisdn": msisdn,
             "created": date,
+            "status": "orange",
         }
     )
 
-    datastore_client.put(registration)
+    datastore_client.put(user)
 
 
 def _confirmation_limit_reached(msisdn: str):
-    query = datastore_client.query(kind=DATA_STORE_USERS_KIND)
+    query = datastore_client.query(kind=DATA_STORE_REGISTRATION_KIND)
     query.add_filter("msisdn", "=", msisdn)
     start_date = datetime.now(tz=pytz.utc) - timedelta(hours=1)
     query.add_filter(
-        "created", ">", start_date
+        "date", ">", start_date
     )
 
     registration_entities = list(query.fetch())
-    if len(registration_entities) > CONFIRMATIONS_PER_MSISDN_LIMIT:
+    if len(registration_entities) >= CONFIRMATIONS_PER_MSISDN_LIMIT:
         logging.warning(f"_confirmation_limit_reached: msisdn: {msisdn}")
         return True

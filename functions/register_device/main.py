@@ -122,7 +122,7 @@ def _is_too_many_requests_for(field: str, value: str, limit: int) -> bool:
     registration_entities += _get_registration_entities(field, value, timedelta(hours=1),
                                                         status=REGISTRATION_STATUS_INCORRECT)
 
-    if len(registration_entities) > limit:
+    if len(registration_entities) >= limit:
         logging.warning(f"_is_too_many_requests_for: {field}: {value}")
         return True
 
