@@ -10,6 +10,7 @@ from google.cloud.datastore import Entity
 
 BEACON_DATE_FORMAT = "%Y%m%d%H"
 MAX_NR_OF_BEACON_IDS = 21 * 24  # 21 days x 24 hours
+GENERATE_BEACONS_THRESHOLD = 24  # if there is less beacons to generate than this value, don't generate
 BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
 
 datastore_client = datastore.Client()
@@ -103,7 +104,8 @@ def _generate_beacons(last_beacon_date_str: str) -> list:
     last_beacon_date_should_be = now + timedelta(hours=MAX_NR_OF_BEACON_IDS)
     diff = (last_beacon_date_should_be - last_beacon_date)
     diff_in_hours = int(diff.total_seconds() / 3600) + 1
-
+    if diff_in_hours < GENERATE_BEACONS_THRESHOLD:
+        return []
     return [
         {
             "date": last_beacon_date + timedelta(hours=i),
