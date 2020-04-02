@@ -94,8 +94,12 @@ def _update_user_entity(entity: Entity, platform: str, os_version: str, app_vers
 
 
 def _generate_beacons(last_beacon_date_str: str) -> list:
-    last_beacon_date = datetime.strptime(last_beacon_date_str, BEACON_DATE_FORMAT)
     now = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+    if last_beacon_date_str:
+        last_beacon_date = datetime.strptime(last_beacon_date_str, BEACON_DATE_FORMAT)
+    else:
+        last_beacon_date = now
+
     last_beacon_date_should_be = now + timedelta(hours=MAX_NR_OF_BEACON_IDS)
     diff = (last_beacon_date_should_be - last_beacon_date)
     diff_in_hours = int(diff.total_seconds() / 3600) + 1
