@@ -2,7 +2,7 @@ openapi: "3.0.0"
 info:
   description: ""
   version: "1.0.0"
-  title: "Anna Project backend"
+  title: "ProteGO Project backend"
 
 components:
   schemas:
@@ -201,7 +201,7 @@ paths:
                   example: "iPhone X"
                 app_version:
                   type: string
-                  description: "Version of the Anna app"
+                  description: "Version of the ProteGO app"
                   example: "1.0.0"
                 lang:
                   type: string

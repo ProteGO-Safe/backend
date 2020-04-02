@@ -1,9 +1,9 @@
 import secrets
+from datetime import datetime
 from typing import Optional
 
 import pytz
 from flask import jsonify
-from datetime import datetime
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
@@ -42,7 +42,7 @@ def confirm_registration(request):
              }
         ), 422
 
-    user_id = secrets.token_hex(16)
+    user_id = secrets.token_hex(32)
     date = datetime.now(tz=pytz.utc)
 
     _update_registration(registration_entity)
@@ -79,6 +79,7 @@ def _create_user(msisdn, user_id, date) -> None:
             'user_id': user_id,
             'msisdn': msisdn,
             'created': date,
+            'status': 'orange',
         }
     )
 
