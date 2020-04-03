@@ -12,9 +12,18 @@ components:
         status:
           type: string
           example: "ok"
+
+    ResponseOKRegister:
+      allOf:
+        - $ref: "#/components/schemas/ResponseOK"
+      properties:
         registration_id:
           type: string
-          example: "0cf2bccee3e67ec7f542f83c718ee18d"
+          example: "08c20a125d978f082ee9f92611eb43185082a10f862c698740917b5ae08cd723"
+        code:
+          type: string
+          description: "Only on DEVELOPMET if send_sms=False"
+          example: "123456"
 
     ResponseInvalidData:
       type: object
@@ -93,6 +102,10 @@ paths:
                   type: string
                   description: "9 digit phone number with prefix +48"
                   example: "+48123123123"
+                send_sms:
+                  type: bool
+                  description: "If False returns code in response. Works only on DEVELOPMENT"
+                  example: false
 
       responses:
         200:
@@ -100,7 +113,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseOK"
+                $ref: "#/components/schemas/ResponseOKRegister"
         405:
           description: "Invalid method"
           content:
