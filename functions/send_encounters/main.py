@@ -120,6 +120,8 @@ def _save_encounter_uploads_to_datastore(user_id: str, upload_id: str) -> None:
         'user_id': user_id,
         'upload_id': upload_id,
         'date': datetime.utcnow(),
+        'processed_by_health_authority': False,
+        'confirmed_by_health_authority': None,
     })
     datastore_client.put(entity)
 
