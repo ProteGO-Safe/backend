@@ -32,7 +32,11 @@ def send_register_sms(event, context):
     msisdn = data["msisdn"]
     registration_id = data["registration_id"]
     code = data["code"]
-    message = f"Twój kod dla ProteGO to: {code}"
+    lang = data["lang"]
+    if lang=="pl":
+        message = f"Twój kod dla ProteGO to: {code}"
+    else:
+        message = f"Your ProteGO code is: {code}"
 
     try:
         send_results = client.sms.send(to=msisdn, message=message, encoding="utf-8")
