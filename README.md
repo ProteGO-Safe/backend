@@ -87,7 +87,7 @@ In order to run test you need to set environment variables:
 
 `STAGE` - DEVELOPMENT or PRODUCTION
 
-`SEND_SMS_NUMBER` - 9 digit - requiered only in case of PRODUCTION
+`SEND_SMS_NUMBER` - 9 digit - required only in case of PRODUCTION
 
 `GOOGLE_APPLICATION_CREDENTIALS` - path to account credentials file
 
