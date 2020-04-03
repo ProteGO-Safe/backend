@@ -33,7 +33,7 @@ def send_register_sms(event, context):
     registration_id = data["registration_id"]
     code = data["code"]
     lang = data["lang"]
-    if lang=="pl":
+    if lang == "pl":
         message = f"Twój kod dla ProteGO to: {code}"
     else:
         message = f"Your ProteGO code is: {code}"
