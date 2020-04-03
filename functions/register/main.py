@@ -29,7 +29,7 @@ datastore_client = datastore.Client()
 publisher = pubsub_v1.PublisherClient()
 
 
-def register_device(request):
+def register(request):
     is_request_valid, response = _is_request_valid(request)
     if not is_request_valid:
         return response

@@ -6,7 +6,7 @@
 ```bash
 REGION=europe-west3
 PROJECT_ID=<project_id>
-URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/register_device_${STAGE}
+URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/register_${STAGE}
 ```
 
 #### Request details:
