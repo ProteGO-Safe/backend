@@ -9,11 +9,11 @@ if [[ -z ${REGION} || -z ${FUNCTIONS_BUCKET} || -z ${STAGE} || -z ${PUBSUB_SEND_
     exit 1
 fi
 
-gcloud functions deploy register_device_${STAGE} \
+gcloud functions deploy register_${STAGE} \
     --region=${REGION} \
     --source=./ \
     --runtime=python37 \
     --stage-bucket=${FUNCTIONS_BUCKET} \
     --trigger-http --allow-unauthenticated \
-    --entry-point register_device \
+    --entry-point register \
     --set-env-vars STAGE=${STAGE},PUBSUB_SEND_REGISTER_SMS_TOPIC=${PUBSUB_SEND_REGISTER_SMS_TOPIC}

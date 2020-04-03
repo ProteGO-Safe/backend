@@ -74,7 +74,7 @@ components:
           format: uri
 
 paths:
-  /register_device/:
+  /register/:
     post:
       tags:
       - "register"

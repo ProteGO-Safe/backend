@@ -38,7 +38,7 @@ FUNCTIONS_BUCKET=${PROJECT_ID}-functions \
 
 or directly by `gcloud`:
 ```bash
-gcloud functions deploy register_device \
+gcloud functions deploy register \
     --region=${REGION} \
     --source=./ \
     --runtime=python37 \

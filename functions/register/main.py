@@ -20,7 +20,7 @@ datastore_client = datastore.Client()
 publisher = pubsub_v1.PublisherClient()
 
 
-def register_device(request):
+def register(request):
     if request.method != "POST":
         return jsonify(
             {'status': 'failed',

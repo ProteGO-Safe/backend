@@ -155,45 +155,45 @@ resource "google_cloudfunctions_function_iam_member" "invoker-get_status" {
 // END get_status function
 
 
-// START register_device
-data "local_file" "register_device_main" {
-  filename = "${path.module}/../functions/register_device/main.py"
+// START register
+data "local_file" "register_main" {
+  filename = "${path.module}/../functions/register/main.py"
 }
 
-data "local_file" "register_device_requirements" {
-  filename = "${path.module}/../functions/register_device/requirements.txt"
+data "local_file" "register_requirements" {
+  filename = "${path.module}/../functions/register/requirements.txt"
 }
 
-data "archive_file" "register_device" {
+data "archive_file" "register" {
   type        = "zip"
-  output_path = "${path.module}/files/register_device.zip"
+  output_path = "${path.module}/files/register.zip"
 
   source {
-    content  = "${file("${data.local_file.register_device_main.filename}")}"
+    content  = "${file("${data.local_file.register_main.filename}")}"
     filename = "main.py"
   }
 
   source {
-    content  = "${file("${data.local_file.register_device_requirements.filename}")}"
+    content  = "${file("${data.local_file.register_requirements.filename}")}"
     filename = "requirements.txt"
   }
 }
 
-resource "google_storage_bucket_object" "register_device" {
+resource "google_storage_bucket_object" "register" {
   // we append hash to the filename as a temporary workaround for https://github.com/terraform-providers/terraform-provider-google/issues/1938
-  name       = "${local.source_object_file_name_prefix}register_device-${lower(replace(base64encode(data.archive_file.register_device.output_md5), "=", ""))}.zip"
+  name       = "${local.source_object_file_name_prefix}register-${lower(replace(base64encode(data.archive_file.register.output_md5), "=", ""))}.zip"
   bucket     = google_storage_bucket.functions.name
-  source     = data.archive_file.register_device.output_path
-  depends_on = [data.archive_file.register_device]
+  source     = data.archive_file.register.output_path
+  depends_on = [data.archive_file.register]
 }
 
-resource "google_cloudfunctions_function" "register_device" {
-  name                  = "register_device"
+resource "google_cloudfunctions_function" "register" {
+  name                  = "register"
   runtime               = "python37"
   trigger_http          = true
-  entry_point           = "register_device"
+  entry_point           = "register"
   source_archive_bucket = google_storage_bucket.functions.name
-  source_archive_object = google_storage_bucket_object.register_device.name
+  source_archive_object = google_storage_bucket_object.register.name
 
   environment_variables = {
     PUBSUB_SEND_REGISTER_SMS_TOPIC = google_pubsub_topic.pubsub_send_register_sms_topic.name
@@ -203,14 +203,14 @@ resource "google_cloudfunctions_function" "register_device" {
   depends_on = [google_pubsub_topic.pubsub_send_register_sms_topic]
 }
 
-resource "google_cloudfunctions_function_iam_member" "invoker-register_device" {
-  project        = google_cloudfunctions_function.register_device.project
-  region         = google_cloudfunctions_function.register_device.region
-  cloud_function = google_cloudfunctions_function.register_device.name
+resource "google_cloudfunctions_function_iam_member" "invoker-register" {
+  project        = google_cloudfunctions_function.register.project
+  region         = google_cloudfunctions_function.register.region
+  cloud_function = google_cloudfunctions_function.register.name
   role           = "roles/cloudfunctions.invoker"
   member         = "allUsers"
 }
-// END register_device
+// END register
 
 
 // START send_register_sms
