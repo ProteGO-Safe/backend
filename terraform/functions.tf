@@ -1,11 +1,5 @@
 locals {
-  source_object_file_name_prefix               = "${var.region}/${var.project_id}/"
-  check_version_source_object_file_name        = "${local.source_object_file_name_prefix}check_version.zip"
-  get_status_source_object_file_name           = "${local.source_object_file_name_prefix}get_status.zip"
-  send_encounters_source_object_file_name      = "${local.source_object_file_name_prefix}send_encounters.zip"
-  confirm_registration_source_object_file_name = "${local.source_object_file_name_prefix}confirm_registration.zip"
-  register_device_source_object_file_name      = "${local.source_object_file_name_prefix}register_device.zip"
-  send_register_sms_source_object_file_name    = "${local.source_object_file_name_prefix}send_register_sms.zip"
+  source_object_file_name_prefix = "${var.region}/${var.project_id}/"
 }
 
 
@@ -16,7 +10,7 @@ data "local_file" "check_version" {
 
 data "archive_file" "check_version" {
   type        = "zip"
-  output_path = "${path.module}/files/check_version-${local.check_version_source_object_file_name}"
+  output_path = "${path.module}/files/check_version.zip"
 
   source {
     content  = "${file("${data.local_file.check_version.filename}")}"
@@ -25,7 +19,8 @@ data "archive_file" "check_version" {
 }
 
 resource "google_storage_bucket_object" "check_version" {
-  name       = local.check_version_source_object_file_name
+  // we append hash to the filename as a temporary workaround for https://github.com/terraform-providers/terraform-provider-google/issues/1938
+  name       = "${local.source_object_file_name_prefix}check_version-${lower(replace(base64encode(data.archive_file.check_version.output_md5), "=", ""))}.zip"
   bucket     = google_storage_bucket.functions.name
   source     = data.archive_file.check_version.output_path
   depends_on = [data.archive_file.check_version]
@@ -62,7 +57,7 @@ data "local_file" "confirm_registration_requirements" {
 
 data "archive_file" "confirm_registration" {
   type        = "zip"
-  output_path = "${path.module}/files/confirm_registration-${local.confirm_registration_source_object_file_name}"
+  output_path = "${path.module}/files/confirm_registration.zip"
 
   source {
     content  = "${file("${data.local_file.confirm_registration_main.filename}")}"
@@ -76,7 +71,8 @@ data "archive_file" "confirm_registration" {
 }
 
 resource "google_storage_bucket_object" "confirm_registration" {
-  name       = local.confirm_registration_source_object_file_name
+  // we append hash to the filename as a temporary workaround for https://github.com/terraform-providers/terraform-provider-google/issues/1938
+  name       = "${local.source_object_file_name_prefix}confirm_registration-${lower(replace(base64encode(data.archive_file.confirm_registration.output_md5), "=", ""))}.zip"
   bucket     = google_storage_bucket.functions.name
   source     = data.archive_file.confirm_registration.output_path
   depends_on = [data.archive_file.confirm_registration]
@@ -112,7 +108,7 @@ data "local_file" "get_status_requirements" {
 
 data "archive_file" "get_status" {
   type        = "zip"
-  output_path = "${path.module}/files/get_status-${local.get_status_source_object_file_name}"
+  output_path = "${path.module}/files/get_status.zip"
 
   source {
     content  = "${file("${data.local_file.get_status_main.filename}")}"
@@ -127,7 +123,8 @@ data "archive_file" "get_status" {
 }
 
 resource "google_storage_bucket_object" "get_status" {
-  name       = local.get_status_source_object_file_name
+  // we append hash to the filename as a temporary workaround for https://github.com/terraform-providers/terraform-provider-google/issues/1938
+  name       = "${local.source_object_file_name_prefix}get_status-${lower(replace(base64encode(data.archive_file.get_status.output_md5), "=", ""))}.zip"
   bucket     = google_storage_bucket.functions.name
   source     = data.archive_file.get_status.output_path
   depends_on = [data.archive_file.get_status]
@@ -183,7 +180,8 @@ data "archive_file" "send_encounters" {
 }
 
 resource "google_storage_bucket_object" "send_encounters" {
-  name       = local.send_encounters_source_object_file_name
+  // we append hash to the filename as a temporary workaround for https://github.com/terraform-providers/terraform-provider-google/issues/1938
+  name       = "${local.source_object_file_name_prefix}send_encounters-${lower(replace(base64encode(data.archive_file.send_encounters.output_md5), "=", ""))}.zip"
   bucket     = google_storage_bucket.functions.name
   source     = data.archive_file.send_encounters.output_path
   depends_on = [data.archive_file.send_encounters]
@@ -214,44 +212,45 @@ resource "google_cloudfunctions_function_iam_member" "invoker-send_encounters" {
 // END send_encounters function
 
 
-// START register_device
-data "local_file" "register_device_main" {
-  filename = "${path.module}/../functions/register_device/main.py"
+// START register
+data "local_file" "register_main" {
+  filename = "${path.module}/../functions/register/main.py"
 }
 
-data "local_file" "register_device_requirements" {
-  filename = "${path.module}/../functions/register_device/requirements.txt"
+data "local_file" "register_requirements" {
+  filename = "${path.module}/../functions/register/requirements.txt"
 }
 
-data "archive_file" "register_device" {
+data "archive_file" "register" {
   type        = "zip"
-  output_path = "${path.module}/files/register_device-${local.register_device_source_object_file_name}"
+  output_path = "${path.module}/files/register.zip"
 
   source {
-    content  = "${file("${data.local_file.register_device_main.filename}")}"
+    content  = "${file("${data.local_file.register_main.filename}")}"
     filename = "main.py"
   }
 
   source {
-    content  = "${file("${data.local_file.register_device_requirements.filename}")}"
+    content  = "${file("${data.local_file.register_requirements.filename}")}"
     filename = "requirements.txt"
   }
 }
 
-resource "google_storage_bucket_object" "register_device" {
-  name       = local.register_device_source_object_file_name
+resource "google_storage_bucket_object" "register" {
+  // we append hash to the filename as a temporary workaround for https://github.com/terraform-providers/terraform-provider-google/issues/1938
+  name       = "${local.source_object_file_name_prefix}register-${lower(replace(base64encode(data.archive_file.register.output_md5), "=", ""))}.zip"
   bucket     = google_storage_bucket.functions.name
-  source     = data.archive_file.register_device.output_path
-  depends_on = [data.archive_file.register_device]
+  source     = data.archive_file.register.output_path
+  depends_on = [data.archive_file.register]
 }
 
-resource "google_cloudfunctions_function" "register_device" {
-  name                  = "register_device"
+resource "google_cloudfunctions_function" "register" {
+  name                  = "register"
   runtime               = "python37"
   trigger_http          = true
-  entry_point           = "register_device"
+  entry_point           = "register"
   source_archive_bucket = google_storage_bucket.functions.name
-  source_archive_object = google_storage_bucket_object.register_device.name
+  source_archive_object = google_storage_bucket_object.register.name
 
   environment_variables = {
     PUBSUB_SEND_REGISTER_SMS_TOPIC = google_pubsub_topic.pubsub_send_register_sms_topic.name
@@ -261,14 +260,14 @@ resource "google_cloudfunctions_function" "register_device" {
   depends_on = [google_pubsub_topic.pubsub_send_register_sms_topic]
 }
 
-resource "google_cloudfunctions_function_iam_member" "invoker-register_device" {
-  project        = google_cloudfunctions_function.register_device.project
-  region         = google_cloudfunctions_function.register_device.region
-  cloud_function = google_cloudfunctions_function.register_device.name
+resource "google_cloudfunctions_function_iam_member" "invoker-register" {
+  project        = google_cloudfunctions_function.register.project
+  region         = google_cloudfunctions_function.register.region
+  cloud_function = google_cloudfunctions_function.register.name
   role           = "roles/cloudfunctions.invoker"
   member         = "allUsers"
 }
-// END register_device
+// END register
 
 
 // START send_register_sms
@@ -282,7 +281,7 @@ data "local_file" "send_register_sms_requirements" {
 
 data "archive_file" "send_register_sms" {
   type        = "zip"
-  output_path = "${path.module}/files/send_register_sms-${local.send_register_sms_source_object_file_name}"
+  output_path = "${path.module}/files/send_register_sms.zip"
 
   source {
     content  = "${file("${data.local_file.send_register_sms_main.filename}")}"
@@ -296,7 +295,8 @@ data "archive_file" "send_register_sms" {
 }
 
 resource "google_storage_bucket_object" "send_register_sms" {
-  name       = local.send_register_sms_source_object_file_name
+  // we append hash to the filename as a temporary workaround for https://github.com/terraform-providers/terraform-provider-google/issues/1938
+  name       = "${local.source_object_file_name_prefix}send_register_sms-${lower(replace(base64encode(data.archive_file.send_register_sms.output_md5), "=", ""))}.zip"
   bucket     = google_storage_bucket.functions.name
   source     = data.archive_file.send_register_sms.output_path
   depends_on = [data.archive_file.send_register_sms]

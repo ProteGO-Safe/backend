@@ -6,7 +6,7 @@
 ```bash
 REGION=europe-west3
 PROJECT_ID=<project_id>
-URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/register_device_${STAGE}
+URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/register_${STAGE}
 ```
 
 #### Request details:
@@ -25,6 +25,7 @@ Required variables to deploy function:
 * `FUNCTIONS_BUCKET` - bucket where functions are stored
 * `STAGE` - DEVELOPMENT or PRODUCTION
 * `PUBSUB_SEND_REGISTER_SMS_TOPIC` - send_register_sms_topic
+
 
 
 Example deploy function (you have to be authorized to gcloud):
