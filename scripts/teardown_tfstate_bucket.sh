@@ -23,4 +23,6 @@ source "$ROOT/scripts/common.sh"
 check_dependency_installed gcloud
 
 get_project
+
+echo "This script will destroy bucket where terraform backend status is stored."
 delete_terraform_backend_bucket

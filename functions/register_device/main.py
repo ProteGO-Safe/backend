@@ -49,9 +49,10 @@ def register_device(request):
         "registration_id": registration_id
     }
 
-    if STAGE == "DEVELOPMENT":
+    send_sms = request_data.get("send_sms", True)
+    if STAGE == "DEVELOPMENT" and not send_sms:
         response["code"] = code
-    elif STAGE == "PRODUCTION" and _should_send_sms(msisdn):
+    else:
         _publish_to_send_register_sms_topic(msisdn, registration_id, code)
 
     return jsonify(response)

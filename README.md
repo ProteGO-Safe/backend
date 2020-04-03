@@ -1,37 +1,36 @@
-# ProteGO
+# ProteGO - serwer
 
+## Instalacja na serwerze
 
-### Deployment
+### Informacje wstępne
 
-## Informacje wstępne
+Korzystamy z Google Cloud Platform (GCP) udostępnionego przez [Operatora Chmury Krajowej](https://chmurakrajowa.pl/).
 
-Deployment jest wykonany przez ustawienie środowiska na Google Cloud Platform.
+### Stworzenie i konfiguracja nowego projektu na Google Cloud Platform
 
-## Ustawienie projektu Google Cloud Platform [GCP]
-
-Ustawienie projektu GCP składa się z następnujących kroków:
+Stworzenie nowego projektu GCP składa się z następnujących kroków:
 
 1. Stworzenie projektu na platformie [Google Cloud](https://cloud.google.com/)
 
 2. Na stronie projektu [console.cloud.google.com](https://console.cloud.google.com/) należy wykonać następujące ustawienia:
     * Billing - podpiąć płatność na stronie [Billing](https://console.cloud.google.com/billing/)
-    * Datastore - ustawić *Datastore Mode* na stronie [Datastore](https://console.cloud.google.com/datastore/)
+    * Datastore - ustawić *Datastore Mode* na stronie [Datastore](https://console.cloud.google.com/datastore/) i wybrać `eur3 (Europe)` jako `database location`
 
-## Instalacja narzędzi 
+### Instalacja narzędzi 
 
-Deployment jest wykonywany przy użyciu narzędzia [Terraform](https://www.terraform.io/) oraz [gcloud](https://cloud.google.com/sdk/gcloud).
-Przed przystąpieniem do deploymentu należy wykonać następujące kroki:
+Instalacja oprogramowania serwera wymaga narzędzi [Terraform](https://www.terraform.io/) oraz [gcloud](https://cloud.google.com/sdk/gcloud).
+Przed przystąpieniem do instalacji należy wykonać następujące kroki:
 
-1. Zainstalować narzędzie `gcloud`. Instrukcje można znaleźć na [cloud.google.com/sdk/install](https://cloud.google.com/sdk/install)
+1. Zainstalować narzędzie `gcloud` zgodnie z instrukcją na [cloud.google.com/sdk/install](https://cloud.google.com/sdk/install)
 
-2. Zainstalować narzędzie `terraform`. Instrukcje można znaleźć na [learn.hashicorp.com/terraform/getting-started/install](https://learn.hashicorp.com/terraform/getting-started/install.html#installing-terraform)
+2. Zainstalować narzędzie `terraform` zgodnie z instrukcją na [learn.hashicorp.com/terraform/getting-started/install](https://learn.hashicorp.com/terraform/getting-started/install.html#installing-terraform)
 
-## Deployment
+### Instalacja ProteGO na serwerze
 
 1. Używając narzędzia `gcloud` Należy zalogować się do **GCP** przy użyciu strony logowana lub Service Account z odpowiednimi uprawnieniami:
    ```bash
    # strona logowania
-   gcloud auth login
+   gcloud auth application-default login
    
    # service account
    gcloud auth activate-service-account --key-file=<credentials.json>
@@ -49,7 +48,11 @@ Przed przystąpieniem do deploymentu należy wykonać następujące kroki:
         # wyświetlenie aktywnego projektu
         gcloud config list project
         ```
-3. Ustawienie zmiennych środowiskowych.
+3. Pobranie źródeł ProteGO:
+
+```git clone git@github.com:ProteGO-app/backend.git```
+        
+4. Ustawienie zmiennych środowiskowych.
     * `STAGE` - `DEVELOPMENT` lub `PRODUCTION` to jedyne dopuszczalne wartości. Zmienna ta mówi czy jest do środowisko produkcyjne (wysyłanie SMSów jest aktywne) czy deweloperskie.
     * `SMS_API_TOKEN` - Token do bramki SMS. Zmienna ta jest wymagana zawsze wymagana (dla środowiska deweloperskiego wartość ta nie musi być poprawna).
    
@@ -58,7 +61,7 @@ Przed przystąpieniem do deploymentu należy wykonać następujące kroki:
    export SMS_API_TOKEN=1234
    ```
    
-4. Uruchomienie skryptu tworzącego środowisko:
+5. Uruchomienie skryptu tworzącego środowisko:
     ```bash
     bash scripts/create.sh
     ```
@@ -66,7 +69,7 @@ Przed przystąpieniem do deploymentu należy wykonać następujące kroki:
    Nazwa bucketu skłąda się z ID projektu i końcówki "_-tfstate_"  ("_PROJECT_ID-tfstate_").
    Przechowywanie konfiguracji w _bucket_ jest wygodne ze względu na możliwość bezkonfliktowego używania narzędzia przez większą ilość osób.
    
-## Wyczyszczenie środowiska
+## Wyczyszczenie środowiska (uwaga: niebezpieczne)
 
 Aby wyczyścić środowisko należy wyskonać następącujące komendy:
 * Usunięcie zasobów zarządzanych przez `terraform`:
