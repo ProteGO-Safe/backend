@@ -22,7 +22,7 @@ components:
           example: "08c20a125d978f082ee9f92611eb43185082a10f862c698740917b5ae08cd723"
         code:
           type: string
-          description: "Only on DEVELOPMET if send_sms=False"
+          description: "Only on DEVELOPMENT if send_sms=False"
           example: "123456"
 
     ResponseInvalidData:
