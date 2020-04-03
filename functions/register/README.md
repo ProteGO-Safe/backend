@@ -27,6 +27,7 @@ Required variables to deploy function:
 * `PUBSUB_SEND_REGISTER_SMS_TOPIC` - send_register_sms_topic
 
 
+
 Example deploy function (you have to be authorized to gcloud):
 ```bash
 REGION=europe-west3 \

@@ -2,9 +2,9 @@
 
 set -e
 
-if [[ -z ${REGION} || -z ${FUNCTIONS_BUCKET} || -z ${STAGE} || -z ${PUBSUB_SEND_REGISTER_SMS_TOPIC} ]]; then
+if [[ -z ${REGION} || -z ${FUNCTIONS_BUCKET} || -z ${STAGE} || -z ${PUBSUB_SEND_REGISTER_SMS_TOPIC}  ]]; then
     echo
-    echo "ERROR! One of variables: [\"REGION\", \"FUNCTIONS_BUCKET\", \"STAGE\" , \"PUBSUB_SEND_REGISTER_SMS_TOPIC\"] is not set. Exiting!"
+    echo "ERROR! One of variables: [\"REGION\", \"FUNCTIONS_BUCKET\", \"STAGE\" , \"PUBSUB_SEND_REGISTER_SMS_TOPIC\" ] is not set. Exiting!"
     echo
     exit 1
 fi
