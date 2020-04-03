@@ -4,13 +4,13 @@ import secrets
 from datetime import datetime, timedelta
 from typing import Optional
 
-import pytz
 from flask import jsonify
 from google.cloud import bigquery, datastore
 from google.cloud.datastore import Entity
 
-NR_BEACON_IDS = 24 * 7
-
+BEACON_DATE_FORMAT = "%Y%m%d%H"
+MAX_NR_OF_BEACON_IDS = 21 * 24  # 21 days x 24 hours
+GENERATE_BEACONS_THRESHOLD = 24  # if there is less beacons to generate than this value, don't generate
 BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
 
 datastore_client = datastore.Client()
@@ -33,7 +33,7 @@ def get_status(request):
 
     request_data = request.get_json()
 
-    for key in ["user_id", "platform", "os_version", "device_type", "app_version", "lang"]:
+    for key in ["user_id", "platform", "os_version", "device_type", "app_version", "lang", "last_beacon_date"]:
         if key not in request_data:
             return jsonify(
                 {
@@ -48,6 +48,7 @@ def get_status(request):
     device_type = request_data["device_type"]
     app_version = request_data["app_version"]
     lang = request_data["lang"]
+    last_beacon_date = request_data["last_beacon_date"]
 
     user_entity = _get_user_entity(user_id)
     if not user_entity:
@@ -58,26 +59,16 @@ def get_status(request):
             }
         ), 401
 
-    beacons = _generate_beacons()
-    try:
-        # This must be synchronous call - successful saving beacon_ids to BigQuery is essential
-        _save_beacons_to_bigquery(user_id, beacons)
-    except SaveToBigQueryFailedException as error:
-        logging.error(f'Unable to save beacon_ids for user_id: {user_id}')
-        for e in error.bq_errors:
-            logging.error(e)
-        return jsonify(
-            {'status': 'failed',
-             'message': 'internal exception'
-             }
-        ), 500
+    beacons = _generate_beacons(last_beacon_date)
+    if not _save_beacons_to_bigquery(user_id, beacons):
+        beacons = []  # if saving beacons to BigQuery failed, return no new beacons
 
     _update_user_entity(user_entity, platform, os_version, app_version, device_type, lang)
     return jsonify(
         {
             "status": user_entity['status'],
             "beacon_ids": [{
-                "date": beacon["date"].strftime("%Y%m%d%H%M%S"),
+                "date": beacon["date"].strftime(BEACON_DATE_FORMAT),
                 "beacon_id": beacon["beacon_id"],
             } for beacon in beacons],
         }
@@ -103,21 +94,30 @@ def _update_user_entity(entity: Entity, platform: str, os_version: str, app_vers
     datastore_client.put(entity)
 
 
-def _generate_beacons():
+def _generate_beacons(last_beacon_date_str: str) -> list:
+    now = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+    if last_beacon_date_str:
+        last_beacon_date = datetime.strptime(last_beacon_date_str, BEACON_DATE_FORMAT)
+    else:
+        last_beacon_date = now
+
+    last_beacon_date_should_be = now + timedelta(hours=MAX_NR_OF_BEACON_IDS)
+    diff = (last_beacon_date_should_be - last_beacon_date)
+    diff_in_hours = int(diff.total_seconds() / 3600) + 1
+    if diff_in_hours < GENERATE_BEACONS_THRESHOLD:
+        return []
     return [
         {
-            "date": _get_beacon_date(timedelta(hours=i)),
+            "date": last_beacon_date + timedelta(hours=i),
             "beacon_id": secrets.token_hex(16)
-        } for i in range(0, NR_BEACON_IDS)
+        } for i in range(1, diff_in_hours)
     ]
 
 
-def _get_beacon_date(delta: timedelta = None) -> datetime:
-    delta = delta if delta is not None else timedelta()
-    return datetime.utcnow().replace(tzinfo=pytz.utc, minute=0, second=0, microsecond=0) + delta
+def _save_beacons_to_bigquery(user_id: str, beacons: list) -> bool:
+    if not beacons:
+        return True
 
-
-def _save_beacons_to_bigquery(user_id, beacons):
     client = bigquery.Client()
     table = client.get_table(BQ_TABLE_ID)
 
@@ -125,4 +125,9 @@ def _save_beacons_to_bigquery(user_id, beacons):
 
     errors = client.insert_rows(table, rows_to_insert)
     if errors:
-        raise SaveToBigQueryFailedException(errors)
+        logging.error(f'Unable to save beacon_ids for user_id: {user_id}')
+        for e in errors:
+            logging.error(e)
+        return False
+
+    return True
