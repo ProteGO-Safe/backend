@@ -110,7 +110,7 @@ def _generate_beacons(last_beacon_date_str: str) -> list:
         {
             "date": last_beacon_date + timedelta(hours=i),
             "beacon_id": secrets.token_hex(16)
-        } for i in range(0, diff_in_hours)
+        } for i in range(1, diff_in_hours)
     ]
 
 
