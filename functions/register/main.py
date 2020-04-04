@@ -36,7 +36,7 @@ def register(request):
 
     request_data = request.get_json()
     msisdn = request_data["msisdn"]
-    ip = request.headers.get('X-Forwarded-For')
+    ip = request.headers.get('X-Forwarded-For').split(',')[-1]
 
     code = _get_pending_registration_code(msisdn) or "".join(random.choice(CODE_CHARACTERS) for _ in range(6))
     registration_id = secrets.token_hex(32)
@@ -86,7 +86,7 @@ def _is_request_valid(request: Request) -> Tuple[bool, Optional[Tuple[Response, 
 
     msisdn = request_data["msisdn"]
 
-    ip = request.headers.get('X-Forwarded-For')
+    ip = request.headers.get('X-Forwarded-For').split(',')[-1]
 
     if _is_too_many_requests_for("ip", ip, limit=INVALID_REGS_PER_IP_LIMIT) \
             or _is_too_many_requests_for("msisdn", msisdn, limit=INVALID_REGS_PER_MSISDN_LIMIT):
