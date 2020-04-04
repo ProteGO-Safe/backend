@@ -2,20 +2,7 @@
 
 ### Example calls to endpoint
 
-#### Prerequisites:
-```bash
-REGION=europe-west3
-PROJECT_ID=<project_id>
-URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/register_${STAGE}
-```
-
-#### Request details:
-```
-method: POST
-content-type: Application/json
-params: msisdn
-msisdn has to start with +48
-```
+[Swagger](https://swagger.io/) file is available [here](../../docs/swagger.yaml). 
 
 ### Deployment
 

@@ -2,38 +2,7 @@
 
 ### Example calls to endpoint
 
-#### Prerequisites:
-
-```bash
-REGION=europe-west3
-PROJECT_ID=<project_id>
-URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/get_status
-```
-
-#### Request details:
-```
-method: POST
-content-type: Application/json
-params:
-user_id
-platform
-os_version
-device_name
-app_version
-lang
-
-curl -X POST ${URL} -d '{"user_id": "user-id", "platform": "PLATFORM", "os_version": 0.0, "device_name": "NAME", "app_version": 0.0, "lang": "PL"}'
-{
-    "status":"orange"
-    "beacon_ids": [
-        {
-           "beacon_id": "3982a27de2d8166b3c1588e7be560b11", 
-            "date":"2020032716"
-        },
-        [...]
-    ],
-}
-```
+[Swagger](https://swagger.io/) file is available [here](../../docs/swagger.yaml). 
 
 ### Deployment
 

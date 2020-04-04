@@ -2,23 +2,7 @@
 
 ### Example calls to endpoint
 
-#### Prerequisites:
-
-```bash
-REGION=europe-west3
-PROJECT_ID=<project_id>
-URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/check_version
-```
-
-#### Request details:
-```
-method: GET
-```
-
-```
-curl ${URL}
-{"upgrade_required":false,"upgrade_url":""}
-```
+[Swagger](https://swagger.io/) file is available [here](../../docs/swagger.yaml). 
 
 ### Deployment
 
