@@ -4,6 +4,7 @@ import random
 import logging
 import secrets
 import string
+import re
 from datetime import datetime, timedelta
 from typing import Optional, List, Tuple
 
@@ -24,6 +25,8 @@ CODE_CHARACTERS = string.digits
 DATA_STORE_REGISTRATION_KIND = "Registrations"
 REGISTRATION_STATUS_PENDING = "pending"
 REGISTRATION_STATUS_INCORRECT = "incorrect"
+
+PHONE_NUMBER_ALLOWED_CHARS = "+0123456789"
 
 datastore_client = datastore.Client()
 publisher = pubsub_v1.PublisherClient()
@@ -101,18 +104,10 @@ def _is_request_valid(request: Request) -> Tuple[bool, Optional[Tuple[Response, 
 
 
 def _check_phone_number(msisdn: str):
-    msisdn = msisdn.strip().replace(" ", "")
-    if not msisdn.startswith("+48"):
-        logging.warning(f"check_phone_number: invalid prefix: {msisdn}")
-        return False
-    if len(msisdn) != 12:
-        logging.warning(f"check_phone_number: invalid msisdn length: {msisdn}")
-        return False
-
-    try:
-        int(msisdn)
-    except ValueError:
-        logging.warning(f"check_phone_number: invalid value: {msisdn}")
+    msisdn = re.sub('[^0-9,+]', '', msisdn)
+    if (not msisdn.startswith("+48") and len(msisdn) != 12) \
+            or (not msisdn.startswith("48") and len(msisdn) != 11):
+        logging.warning(f"check_phone_number: invalid phone number: {msisdn}")
         return False
 
     return True
@@ -163,6 +158,7 @@ def _get_registration_entities(field: str, value: str, time_period: timedelta,
     query.add_filter(
         "date", ">", start_date
     )
+    query.order = ["-date"]
     return list(query.fetch())
 
 
