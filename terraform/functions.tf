@@ -55,6 +55,10 @@ data "local_file" "confirm_registration_requirements" {
   filename = "${path.module}/../functions/confirm_registration/requirements.txt"
 }
 
+data "local_file" "confirm_registration_messages" {
+  filename = "${path.module}/../functions/confirm_registration/messages.json"
+}
+
 data "archive_file" "confirm_registration" {
   type        = "zip"
   output_path = "${path.module}/files/confirm_registration.zip"
@@ -67,6 +71,11 @@ data "archive_file" "confirm_registration" {
   source {
     content  = "${file("${data.local_file.confirm_registration_requirements.filename}")}"
     filename = "requirements.txt"
+  }
+
+  source {
+    content  = "${file("${data.local_file.confirm_registration_messages.filename}")}"
+    filename = "messages.json"
   }
 }
 
@@ -106,6 +115,10 @@ data "local_file" "get_status_requirements" {
   filename = "${path.module}/../functions/get_status/requirements.txt"
 }
 
+data "local_file" "get_status_messages" {
+  filename = "${path.module}/../functions/get_status/messages.json"
+}
+
 data "archive_file" "get_status" {
   type        = "zip"
   output_path = "${path.module}/files/get_status.zip"
@@ -118,6 +131,11 @@ data "archive_file" "get_status" {
   source {
     content  = "${file("${data.local_file.get_status_requirements.filename}")}"
     filename = "requirements.txt"
+  }
+
+  source {
+    content  = "${file("${data.local_file.get_status_messages.filename}")}"
+    filename = "messages.json"
   }
 
 }
@@ -164,6 +182,11 @@ data "local_file" "register_requirements" {
   filename = "${path.module}/../functions/register/requirements.txt"
 }
 
+
+data "local_file" "register_messages" {
+  filename = "${path.module}/../functions/register/messages.json"
+}
+
 data "archive_file" "register" {
   type        = "zip"
   output_path = "${path.module}/files/register.zip"
@@ -176,6 +199,11 @@ data "archive_file" "register" {
   source {
     content  = "${file("${data.local_file.register_requirements.filename}")}"
     filename = "requirements.txt"
+  }
+
+  source {
+    content  = "${file("${data.local_file.register_messages.filename}")}"
+    filename = "messages.json"
   }
 }
 

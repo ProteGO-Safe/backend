@@ -8,15 +8,15 @@ from datetime import datetime, timedelta
 from typing import Optional, List, Tuple
 
 import pytz
-from flask import jsonify, Request, Response
+from flask import jsonify, Request, Response, current_app
 from google.cloud import datastore
 
 from google.cloud import pubsub_v1
 
+current_app.config['JSON_AS_ASCII'] = False
 PROJECT_ID = os.environ["GCP_PROJECT"]
 PUBSUB_SEND_REGISTER_SMS_TOPIC = os.environ["PUBSUB_SEND_REGISTER_SMS_TOPIC"]
 STAGE = os.environ["STAGE"]
-
 
 INVALID_REGS_PER_IP_LIMIT = 10
 INVALID_REGS_PER_MSISDN_LIMIT = 4
@@ -24,6 +24,13 @@ CODE_CHARACTERS = string.digits
 DATA_STORE_REGISTRATION_KIND = "Registrations"
 REGISTRATION_STATUS_PENDING = "pending"
 REGISTRATION_STATUS_INCORRECT = "incorrect"
+
+LANG = None
+MESSAGE_INVALID_PHONE_NUMBER = "invalid_phone_number"
+MESSAGE_REGISTRATION_NOT_AVAILABLE = "registration_not_available"
+
+with open("messages.json") as file:
+    MESSAGES = json.load(file)
 
 datastore_client = datastore.Client()
 publisher = pubsub_v1.PublisherClient()
@@ -36,7 +43,7 @@ def register(request):
 
     request_data = request.get_json()
     msisdn = request_data["msisdn"]
-    ip = request.headers.get('X-Forwarded-For')
+    ip = request.headers.get("X-Forwarded-For")
 
     code = _get_pending_registration_code(msisdn) or "".join(random.choice(CODE_CHARACTERS) for _ in range(6))
     registration_id = secrets.token_hex(32)
@@ -76,28 +83,56 @@ def _is_request_valid(request: Request) -> Tuple[bool, Optional[Tuple[Response, 
         ), 422)
 
     request_data = request.get_json()
+
+    if not _is_language_valid(request_data):
+        return False, (jsonify(
+            {
+                "status": "failed",
+                "message": "Set lang parameter to pl or en"
+            }
+        ), 422)
+
+    _set_language(request_data['lang'])
+
     if "msisdn" not in request_data or not _check_phone_number(request_data["msisdn"]):
         return False, (jsonify(
             {
                 "status": "failed",
-                "message": "Invalid phone number"
+                "message": _get_message(MESSAGE_INVALID_PHONE_NUMBER)
             }
         ), 422)
 
     msisdn = request_data["msisdn"]
 
-    ip = request.headers.get('X-Forwarded-For')
+    ip = request.headers.get("X-Forwarded-For")
 
     if _is_too_many_requests_for("ip", ip, limit=INVALID_REGS_PER_IP_LIMIT) \
             or _is_too_many_requests_for("msisdn", msisdn, limit=INVALID_REGS_PER_MSISDN_LIMIT):
         return False, (jsonify(
             {
                 "status": "failed",
-                "message": "Registration temporarily not available. Try again in an hour"
+                "message": _get_message(MESSAGE_REGISTRATION_NOT_AVAILABLE)
             }
         ), 429)
 
     return True, None
+
+
+def _is_language_valid(request_data: dict) -> bool:
+    languages_available = ("pl", "en")
+    lang = request_data.get("lang")
+    if lang not in languages_available:
+        return False
+    return True
+
+
+def _set_language(lang: str) -> None:
+    global LANG
+    LANG = lang
+
+
+def _get_message(message_code: str) -> str:
+    return MESSAGES[message_code][LANG]
 
 
 def _check_phone_number(msisdn: str):
@@ -190,6 +225,7 @@ def _publish_to_send_register_sms_topic(msisdn: str, registration_id: str, code:
     data = {
         "registration_id": registration_id,
         "msisdn": msisdn,
-        "code": code
+        "code": code,
+        "lang": LANG,
     }
     publisher.publish(topic_path, json.dumps(data).encode("utf-8"))

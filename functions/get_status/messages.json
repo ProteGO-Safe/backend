@@ -1,0 +1,10 @@
+{
+  "missing_field": {
+    "pl": "Brakujący parametr",
+    "en": "Missing field"
+  },
+  "unauthorized": {
+    "pl": "Brak autoryzacji",
+    "en": "Unauthorized"
+  }
+}

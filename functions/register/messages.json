@@ -1,0 +1,10 @@
+{
+  "invalid_phone_number": {
+    "pl": "Niepoprawny numer telefonu",
+    "en": "Invalid phone number"
+  },
+  "registration_not_available": {
+    "pl": "Rejestracja chwilowo niedostępna. Spróbuj za godzinę",
+    "en": "Registration temporarily not available. Try again in an hour"
+  }
+}

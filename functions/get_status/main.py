@@ -1,17 +1,27 @@
+import json
 import logging
 import os
 import secrets
 from datetime import datetime, timedelta
 from typing import Optional
 
-from flask import jsonify
+from flask import jsonify, current_app
 from google.cloud import bigquery, datastore
 from google.cloud.datastore import Entity
 
+current_app.config['JSON_AS_ASCII'] = False
 BEACON_DATE_FORMAT = "%Y%m%d%H"
 MAX_NR_OF_BEACON_IDS = 21 * 24  # 21 days x 24 hours
 GENERATE_BEACONS_THRESHOLD = 24  # if there is less beacons to generate than this value, don't generate
 BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
+
+LANG = None
+MESSAGE_MISSING_FIELD = 'missing_field'
+MESSAGE_UNAUTHORIZED = 'unauthorized'
+
+with open("messages.json") as file:
+    MESSAGES = json.load(file)
+
 
 datastore_client = datastore.Client()
 
@@ -27,18 +37,28 @@ def get_status(request):
     if not request.is_json:
         return jsonify(
             {'status': 'failed',
-             'message': 'invalid data'
+             'message': 'Invalid data'
              }
         ), 422
 
     request_data = request.get_json()
+
+    if not _is_language_valid(request_data):
+        return False, (jsonify(
+            {
+                "status": "failed",
+                "message": "Set lang parameter to pl or en"
+            }
+        ), 422)
+
+    _set_language(request_data['lang'])
 
     for key in ["user_id", "platform", "os_version", "device_type", "app_version", "lang", "last_beacon_date"]:
         if key not in request_data:
             return jsonify(
                 {
                     'status': 'failed',
-                    'message': f'missing field: {key}',
+                    'message': f'{_get_message(MESSAGE_MISSING_FIELD)}: {key}',
                 }
             ), 422
 
@@ -55,7 +75,7 @@ def get_status(request):
         return jsonify(
             {
                 'status': 'failed',
-                'message': f'unauthorized',
+                'message': _get_message(MESSAGE_UNAUTHORIZED),
             }
         ), 401
 
@@ -73,6 +93,23 @@ def get_status(request):
             } for beacon in beacons],
         }
     )
+
+
+def _is_language_valid(request_data: dict) -> bool:
+    languages_available = ("pl", "en")
+    lang = request_data.get("lang")
+    if lang not in languages_available:
+        return False
+    return True
+
+
+def _set_language(lang: str) -> None:
+    global LANG
+    LANG = lang
+
+
+def _get_message(message_code: str) -> str:
+    return MESSAGES[message_code][LANG]
 
 
 def _get_user_entity(user_id: str) -> Optional[Entity]:

@@ -1,18 +1,26 @@
+import json
 import logging
 import secrets
 from datetime import datetime, timedelta
 from typing import Optional
 
 import pytz
-from flask import jsonify
+from flask import jsonify, current_app
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
+current_app.config['JSON_AS_ASCII'] = False
 CONFIRMATIONS_PER_MSISDN_LIMIT = 3
 REGISTRATION_STATUS_COMPLETED = "completed"
 REGISTRATION_STATUS_INCORRECT = "incorrect"
 DATA_STORE_REGISTRATION_KIND = "Registrations"
 DATA_STORE_USERS_KIND = "Users"
+
+LANG = None
+MESSAGE_INVALID_DATA = 'invalid_data'
+MESSAGE_REGISTRATION_EXPIRED = 'registration_expired'
+with open("messages.json") as file:
+    MESSAGES = json.load(file)
 
 datastore_client = datastore.Client()
 
@@ -35,6 +43,16 @@ def confirm_registration(request):
         ), 422
     request_data = request.get_json()
 
+    if not _is_language_valid(request_data):
+        return False, (jsonify(
+            {
+                "status": "failed",
+                "message": "Set lang parameter to pl or en"
+            }
+        ), 422)
+
+    _set_language(request_data['lang'])
+
     code = request_data["code"]
     registration_id = request_data["registration_id"]
 
@@ -46,7 +64,7 @@ def confirm_registration(request):
         return jsonify(
             {
                 "status": "failed",
-                "message": "Invalid data"
+                "message": _get_message(MESSAGE_INVALID_DATA)
             }
         ), 422
 
@@ -54,7 +72,7 @@ def confirm_registration(request):
         return jsonify(
             {
                 "status": "failed",
-                "message": "Rejestracja wygasła. Spróbuj ponownie"
+                "message":  _get_message(MESSAGE_REGISTRATION_EXPIRED)
             }
         ), 422
 
@@ -62,7 +80,7 @@ def confirm_registration(request):
         _update_registration(registration_entity, REGISTRATION_STATUS_INCORRECT)
         return jsonify(
             {"status": "failed",
-             "message": "Invalid data"
+             "message": _get_message(MESSAGE_INVALID_DATA)
              }
         ), 422
 
@@ -81,6 +99,23 @@ def confirm_registration(request):
             "user_id": user_id,
         }
     )
+
+
+def _is_language_valid(request_data: dict) -> bool:
+    languages_available = ("pl", "en")
+    lang = request_data.get("lang")
+    if lang not in languages_available:
+        return False
+    return True
+
+
+def _set_language(lang: str) -> None:
+    global LANG
+    LANG = lang
+
+
+def _get_message(message_code: str) -> str:
+    return MESSAGES[message_code][LANG]
 
 
 def _get_registration_entity(registration_id: str) -> Optional[Entity]:

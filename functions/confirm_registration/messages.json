@@ -1,0 +1,10 @@
+{
+  "invalid_data": {
+    "pl": "Niepoprawne dane",
+    "en": "Invalid data"
+  },
+  "registration_expired": {
+    "pl": "Rejestracja wygasła. Spróbuj ponownie",
+    "en": "Registration expired. Try again"
+  }
+}
