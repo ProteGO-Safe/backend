@@ -1,10 +1,10 @@
 {
   "missing_field": {
-    "pl": "Brakujący parametr",
-    "en": "Missing field"
+    "pl": "Brakujący parametr. Odinstaluj i zainstaluj aplikację ponownie.",
+    "en": "Missing field. Delete and install the application again."
   },
   "unauthorized": {
-    "pl": "Brak autoryzacji",
-    "en": "Unauthorized"
+    "pl": "Brak autoryzacji. Odinstaluj i zainstaluj aplikację ponownie.",
+    "en": "Unauthorized. Delete and install the application again."
   }
 }
