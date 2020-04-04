@@ -26,8 +26,6 @@ DATA_STORE_REGISTRATION_KIND = "Registrations"
 REGISTRATION_STATUS_PENDING = "pending"
 REGISTRATION_STATUS_INCORRECT = "incorrect"
 
-PHONE_NUMBER_ALLOWED_CHARS = "+0123456789"
-
 datastore_client = datastore.Client()
 publisher = pubsub_v1.PublisherClient()
 
