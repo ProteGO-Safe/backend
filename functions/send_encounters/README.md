@@ -1,33 +1,8 @@
-# Get status endpoint
+# Send Encounters endpoint
 
 ### Example calls to endpoint
 
-#### Prerequisites:
-
-```bash
-REGION=europe-west3
-PROJECT_ID=<project_id>
-URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/send_encounters
-```
-
-#### Request details:
-```
-method: POST
-content-type: Application/json
-params:
-user_id
-platform
-os_version
-device_name
-app_version
-lang
-encounters
-
-curl -X POST ${URL} -d '{"user_id": "user-id", "platform": "PLATFORM", "os_version": 0.0, "device_name": "NAME", "app_version": 0.0, "lang": "PL", "encounters": [{"beacon_id": "beacon_id", "encounter_date":"encounter_date", "signal_strength": "signal_strength"}]}'
-{
-    "status":"OK"
-}
-```
+[Swagger](https://swagger.io/) file is available [here](../../docs/swagger.yaml). 
 
 ### Deployment
 
