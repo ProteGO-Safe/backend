@@ -1,6 +1,7 @@
 import logging
 import secrets
 from datetime import datetime, timedelta
+from http import HTTPStatus
 from typing import Optional
 
 import pytz
@@ -8,57 +9,71 @@ from flask import jsonify
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
+from utils import (
+    validate_request_parameters,
+    get_request_data,
+    ExtraParam,
+    InvalidRequestException,
+    REGISTRATION_STATUS_COMPLETED,
+    REGISTRATION_STATUS_INCORRECT,
+    create_user,
+    DATASTORE_KIND_REGISTRATIONS,
+    DATASTORE_KIND_USERS,
+)
+
 CONFIRMATIONS_PER_MSISDN_LIMIT = 3
-REGISTRATION_STATUS_COMPLETED = "completed"
-REGISTRATION_STATUS_INCORRECT = "incorrect"
-DATA_STORE_REGISTRATION_KIND = "Registrations"
-DATA_STORE_USERS_KIND = "Users"
+
+KEY_CODE = "code"
+KEY_REGISTRATION_ID = "registration_id"
 
 datastore_client = datastore.Client()
 
 
 def confirm_registration(request):
-    if request.method != "POST":
-        return jsonify({"status": "failed", "message": "Invalid method"}), 405
+    try:
+        request_data = get_request_data(request)
+        validate_request_parameters(
+            request_data, validate_standard_params=False, extra_params=[ExtraParam(KEY_CODE), ExtraParam(KEY_REGISTRATION_ID)]
+        )
+    except InvalidRequestException as e:
+        return jsonify(e.response), e.status
 
-    if not request.is_json or "code" not in request.get_json() or "registration_id" not in request.get_json():
-        return jsonify({"status": "failed", "message": "Invalid data"}), 422
-    request_data = request.get_json()
+    code = request_data[KEY_CODE]
+    registration_id = request_data[KEY_REGISTRATION_ID]
 
-    code = request_data["code"]
-    registration_id = request_data["registration_id"]
-
-    registration_entity = _get_registration_entity(registration_id)
+    registration = _get_registration(registration_id)
 
     if (
-        not registration_entity
-        or registration_entity["status"] == REGISTRATION_STATUS_COMPLETED
-        or _confirmation_limit_reached(registration_entity["msisdn"])
+        not registration
+        or registration["status"] == REGISTRATION_STATUS_COMPLETED
+        or _is_confirmation_limit_reached(registration["msisdn"])
     ):
-        return jsonify({"status": "failed", "message": "Invalid data"}), 422
+        return jsonify({"status": "failed", "message": "Invalid data"}), HTTPStatus.UNPROCESSABLE_ENTITY
 
-    if registration_entity["date"] < datetime.now(tz=pytz.utc) - timedelta(minutes=10):
-        return jsonify({"status": "failed", "message": "Rejestracja wygasła. Spróbuj ponownie"}), 422
+    if registration["date"] < datetime.now(tz=pytz.utc) - timedelta(minutes=10):
+        return (
+            jsonify({"status": "failed", "message": "Rejestracja wygasła. Spróbuj ponownie"}),
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+        )
 
-    if registration_entity["code"] != code:
-        _update_registration(registration_entity, REGISTRATION_STATUS_INCORRECT)
-        return jsonify({"status": "failed", "message": "Invalid data"}), 422
+    if registration["code"] != code:
+        _update_registration(registration, REGISTRATION_STATUS_INCORRECT)
+        return jsonify({"status": "failed", "message": "Invalid data"}), HTTPStatus.UNPROCESSABLE_ENTITY
 
-    _update_registration(registration_entity, REGISTRATION_STATUS_COMPLETED)
+    _update_registration(registration, REGISTRATION_STATUS_COMPLETED)
 
-    user_id = _get_existing_user_id(registration_entity["msisdn"])
+    user = _find_user_by_msisdn(registration["msisdn"])
 
-    if not user_id:
+    if not user:
         user_id = secrets.token_hex(32)
         date = datetime.now(tz=pytz.utc)
-        _create_user(registration_entity["msisdn"], user_id, date)
+        user = create_user(user_id, date, registration["msisdn"])
 
-    return jsonify({"status": "ok", "user_id": user_id})
+    return jsonify({"status": "ok", "user_id": user["user_id"]})
 
 
-def _get_registration_entity(registration_id: str) -> Optional[Entity]:
-    kind = DATA_STORE_REGISTRATION_KIND
-    key = datastore_client.key(kind, f"{registration_id}")
+def _get_registration(registration_id: str) -> Optional[Entity]:
+    key = datastore_client.key(DATASTORE_KIND_REGISTRATIONS, f"{registration_id}")
     return datastore_client.get(key=key)
 
 
@@ -67,29 +82,20 @@ def _update_registration(entity: Entity, status: str):
     datastore_client.put(entity)
 
 
-def _get_existing_user_id(msisdn: str) -> Optional[str]:
-    query = datastore_client.query(kind=DATA_STORE_USERS_KIND)
+def _find_user_by_msisdn(msisdn: str) -> Optional[str]:
+    query = datastore_client.query(kind=DATASTORE_KIND_USERS)
     query.add_filter("msisdn", "=", msisdn)
     entities = list(query.fetch())
     if len(entities) > 0:
-        return entities[0]["user_id"]
+        return entities[0]
 
     return None
 
 
-def _create_user(msisdn: str, user_id: str, date: datetime) -> None:
-    key = datastore_client.key(DATA_STORE_USERS_KIND, f"{user_id}")
-
-    user = datastore.Entity(key=key)
-    user.update({"user_id": user_id, "msisdn": msisdn, "created": date, "status": "orange"})
-
-    datastore_client.put(user)
-
-
-def _confirmation_limit_reached(msisdn: str) -> bool:
+def _is_confirmation_limit_reached(msisdn: str) -> bool:
     start_date = datetime.now(tz=pytz.utc) - timedelta(hours=1)
 
-    query = datastore_client.query(kind=DATA_STORE_REGISTRATION_KIND)
+    query = datastore_client.query(kind=DATASTORE_KIND_REGISTRATIONS)
     query.add_filter("msisdn", "=", msisdn)
     query.add_filter("date", ">", start_date)
 

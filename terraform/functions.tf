@@ -2,6 +2,10 @@ locals {
   source_object_file_name_prefix = "${var.region}/${var.project_id}/"
 }
 
+data "local_file" "utils" {
+  filename = "${path.module}/utils.py"
+}
+
 
 // START check_version
 data "local_file" "check_version" {
@@ -15,6 +19,11 @@ data "archive_file" "check_version" {
   source {
     content  = "${file("${data.local_file.check_version.filename}")}"
     filename = "main.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.utils.filename}")}"
+    filename = "utils.py"
   }
 }
 
@@ -68,6 +77,12 @@ data "archive_file" "confirm_registration" {
     content  = "${file("${data.local_file.confirm_registration_requirements.filename}")}"
     filename = "requirements.txt"
   }
+
+  source {
+    content  = "${file("${data.local_file.utils.filename}")}"
+    filename = "utils.py"
+  }
+
 }
 
 resource "google_storage_bucket_object" "confirm_registration" {
@@ -120,6 +135,10 @@ data "archive_file" "get_status" {
     filename = "requirements.txt"
   }
 
+  source {
+    content  = "${file("${data.local_file.utils.filename}")}"
+    filename = "utils.py"
+  }
 }
 
 resource "google_storage_bucket_object" "get_status" {
@@ -177,6 +196,10 @@ data "archive_file" "send_encounters" {
     filename = "requirements.txt"
   }
 
+  source {
+    content  = "${file("${data.local_file.utils.filename}")}"
+    filename = "utils.py"
+  }
 }
 
 resource "google_storage_bucket_object" "send_encounters" {
@@ -233,6 +256,11 @@ data "archive_file" "register" {
   source {
     content  = "${file("${data.local_file.register_requirements.filename}")}"
     filename = "requirements.txt"
+  }
+
+  source {
+    content  = "${file("${data.local_file.utils.filename}")}"
+    filename = "utils.py"
   }
 }
 
@@ -341,6 +369,11 @@ data "archive_file" "send_register_sms" {
   source {
     content  = "${file("${data.local_file.send_register_sms_requirements.filename}")}"
     filename = "requirements.txt"
+  }
+
+  source {
+    content  = "${file("${data.local_file.utils.filename}")}"
+    filename = "utils.py"
   }
 }
 

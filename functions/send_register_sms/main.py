@@ -7,6 +7,8 @@ from google.cloud import datastore
 from smsapi.client import SmsApiPlClient
 from smsapi.exception import SmsApiException
 
+from utils import DATASTORE_KIND_REGISTRATIONS
+
 token = os.environ["SMS_API_TOKEN"]
 
 client = SmsApiPlClient(access_token=token)
@@ -47,8 +49,7 @@ def send_register_sms(event, context):
 
 
 def _update_entity(registration_id: str):
-    kind = "Registrations"
-    key = datastore_client.key(kind, f"{registration_id}")
+    key = datastore_client.key(DATASTORE_KIND_REGISTRATIONS, f"{registration_id}")
 
     registration = datastore_client.get(key=key)
     registration.update({"sms_send": True})

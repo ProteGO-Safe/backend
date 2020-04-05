@@ -1,2 +1,3 @@
+pytz==2019.3
 google-cloud-bigquery==1.24.0
 google-cloud-datastore==1.11.0
