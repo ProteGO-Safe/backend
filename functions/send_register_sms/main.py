@@ -47,14 +47,10 @@ def send_register_sms(event, context):
 
 
 def _update_entity(registration_id: str):
-    kind = 'Registrations'
-    key = datastore_client.key(kind, f'{registration_id}')
+    kind = "Registrations"
+    key = datastore_client.key(kind, f"{registration_id}")
 
     registration = datastore_client.get(key=key)
-    registration.update(
-        {
-            'sms_send': True,
-        }
-    )
+    registration.update({"sms_send": True})
 
     datastore_client.put(registration)

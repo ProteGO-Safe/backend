@@ -1,17 +1,7 @@
-# Send register sms endpoint
-
-#### Prerequisites:
-
-```bash
-REGION=europe-west3
-PROJECT_ID=<project_id>
-SMS_API_TOKEN=<SMS_API_TOKEN>
-PUBSUB_SEND_REGISTER_SMS_TOPIC=<PUBSUB_SEND_REGISTER_SMS_TOPIC>
-```
-
+# Send register sms
 
 #### Running:
-Triggered by PubSub topic: send_register_sms_topic
+Triggered by PubSub topic: <PUBSUB_SEND_REGISTER_SMS_TOPIC>
 
 ### Deployment
 
