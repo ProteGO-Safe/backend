@@ -92,6 +92,14 @@ def _parse_request(request: Request) -> dict:
                     'message': f'missing field: {key}'
                 }
             )
+        if not request_data[key]:
+            raise InvalidRequestException(
+                422,
+                {
+                    'status': 'failed',
+                    'message': f'empty field: {key}'
+                }
+            )
 
     for encounter in request_data["encounters"]:
         for key in [KEY_ENCOUNTER_DATE, KEY_BEACON_ID, KEY_SIGNAL_STRENGTH]:
