@@ -99,6 +99,7 @@ def _is_language_valid(request_data: dict) -> bool:
     languages_available = ("pl", "en")
     lang = request_data.get("lang")
     if lang not in languages_available:
+        logging.warning(f"Invalid lang: {lang}")
         return False
     return True
 
