@@ -4,6 +4,7 @@ import secrets
 from datetime import datetime
 from typing import Optional
 
+import pytz
 from flask import jsonify, Request
 from google.cloud import bigquery, datastore
 from google.cloud.datastore import Entity
@@ -72,10 +73,12 @@ def _parse_request(request: Request) -> dict:
         if not request_data[key]:
             raise InvalidRequestException(422, {"status": "failed", "message": f"empty field: {key}"})
 
-    for encounter in request_data["encounters"]:
+    for encounter in request_data[KEY_ENCOUNTERS]:
         for key in [KEY_ENCOUNTER_DATE, KEY_BEACON_ID, KEY_SIGNAL_STRENGTH]:
             if key not in encounter:
-                raise InvalidRequestException(422, {"status": "failed", "message": f"missing field in encounters: {key}"})
+                raise InvalidRequestException(
+                    422, {"status": "failed", "message": f"missing field in {KEY_ENCOUNTERS}: {key}"}
+                )
 
     return request_data
 
@@ -93,7 +96,7 @@ def _save_encounter_uploads_to_datastore(user_id: str, upload_id: str) -> None:
         {
             "user_id": user_id,
             "upload_id": upload_id,
-            "date": datetime.utcnow(),
+            "date": datetime.now(tz=pytz.utc),
             "processed_by_health_authority": False,
             "confirmed_by_health_authority": None,
         }
@@ -107,7 +110,7 @@ def _save_encounters_to_bigquery(user_id: str, upload_id: str, encounters: list)
 
     rows_to_insert = []
     for encounter in encounters:
-        encounter_date = datetime.strptime(encounter[KEY_ENCOUNTER_DATE], "%Y%m%d%H")
+        encounter_date = datetime.strptime(encounter[KEY_ENCOUNTER_DATE], "%Y%m%d%H").replace(tzinfo=pytz.utc)
         beacon_id = encounter[KEY_BEACON_ID]
         signal_strength = encounter[KEY_SIGNAL_STRENGTH]
         rows_to_insert.append((upload_id, user_id, encounter_date, beacon_id, signal_strength))
@@ -130,7 +133,7 @@ def _update_user_entity(entity: Entity, platform: str, os_version: str, app_vers
             "app_version": app_version,
             "device_type": device_type,
             "lang": lang,
-            "last_status_requested": datetime.utcnow(),
+            "last_status_requested": datetime.now(tz=pytz.utc),
         }
     )
     datastore_client.put(entity)
