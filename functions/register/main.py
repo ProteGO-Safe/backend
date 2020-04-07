@@ -130,9 +130,11 @@ def _should_send_sms(msisdn: str) -> bool:
     registration_entities_last_hour = _get_registration_entities("msisdn", msisdn, timedelta(hours=1))
     registration_entities_last_24_hours = _get_registration_entities("msisdn", msisdn, timedelta(days=1))
 
-    if len(registration_entities_last_minute) > SEND_SMS_LIMIT_PER_MINUTE \
-            or len(registration_entities_last_hour) > SEND_SMS_LIMIT_PER_HOUR \
-            or len(registration_entities_last_24_hours) > SEND_SMS_LIMIT_PER_24_HOURS:
+    if (
+        len(registration_entities_last_minute) > SEND_SMS_LIMIT_PER_MINUTE
+        or len(registration_entities_last_hour) > SEND_SMS_LIMIT_PER_HOUR
+        or len(registration_entities_last_24_hours) > SEND_SMS_LIMIT_PER_24_HOURS
+    ):
         logging.warning(f"_should_send_sms: resend sms request for msisdn: {msisdn}")
         return False
 
