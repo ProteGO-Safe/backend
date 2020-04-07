@@ -269,6 +269,56 @@ resource "google_cloudfunctions_function_iam_member" "invoker-register" {
 }
 // END register
 
+// START register_no_msisdn
+data "local_file" "register_no_msisdn_main" {
+  filename = "${path.module}/../functions/register_no_msisdn/main.py"
+}
+
+data "local_file" "register_no_msisdn_requirements" {
+  filename = "${path.module}/../functions/register_no_msisdn/requirements.txt"
+}
+
+data "archive_file" "register_no_msisdn" {
+  type        = "zip"
+  output_path = "${path.module}/files/register_no_msisdn.zip"
+
+  source {
+    content  = "${file("${data.local_file.register_no_msisdn_main.filename}")}"
+    filename = "main.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.register_no_msisdn_requirements.filename}")}"
+    filename = "requirements.txt"
+  }
+}
+
+resource "google_storage_bucket_object" "register_no_msisdn" {
+  // we append hash to the filename as a temporary workaround for https://github.com/terraform-providers/terraform-provider-google/issues/1938
+  name       = "${local.source_object_file_name_prefix}register_no_msisdn-${lower(replace(base64encode(data.archive_file.register_no_msisdn.output_md5), "=", ""))}.zip"
+  bucket     = google_storage_bucket.functions.name
+  source     = data.archive_file.register_no_msisdn.output_path
+  depends_on = [data.archive_file.register_no_msisdn]
+}
+
+resource "google_cloudfunctions_function" "register_no_msisdn" {
+  name                  = "register_no_msisdn"
+  runtime               = "python37"
+  trigger_http          = true
+  entry_point           = "register_no_msisdn"
+  source_archive_bucket = google_storage_bucket.functions.name
+  source_archive_object = google_storage_bucket_object.register_no_msisdn.name
+}
+
+resource "google_cloudfunctions_function_iam_member" "invoker-register_no_msisdn" {
+  project        = google_cloudfunctions_function.register_no_msisdn.project
+  region         = google_cloudfunctions_function.register_no_msisdn.region
+  cloud_function = google_cloudfunctions_function.register_no_msisdn.name
+  role           = "roles/cloudfunctions.invoker"
+  member         = "allUsers"
+}
+// END register_no_msisdn
+
 
 // START send_register_sms
 data "local_file" "send_register_sms_main" {

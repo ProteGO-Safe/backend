@@ -164,6 +164,21 @@ paths:
                 type: object
                 $ref: "#/components/schemas/ResponseInvalidData"
 
+  /register_no_msisdn:
+    post:
+      tags:
+      - "register"
+      summary: "Request register device without msisdn."
+      description: ""
+
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseOKConfirmRegister"
+
   /confirm_registration/:
     post:
       tags:
