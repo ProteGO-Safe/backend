@@ -53,7 +53,7 @@ def confirm_registration(request):
         date = datetime.now(tz=pytz.utc)
         _create_user(registration_entity["msisdn"], user_id, date)
 
-    return jsonify({"status": "ok", "user_id": user_id})
+    return jsonify({"status": "ok", "user_id": user_id}), 201
 
 
 def _get_registration_entity(registration_id: str) -> Optional[Entity]:

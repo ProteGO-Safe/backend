@@ -52,7 +52,7 @@ def register(request):
     else:
         _publish_to_send_register_sms_topic(msisdn, registration_id, code)
 
-    return jsonify(response)
+    return jsonify(response), 201
 
 
 def _is_request_valid(request: Request) -> Tuple[bool, Optional[Tuple[Response, int]]]:
