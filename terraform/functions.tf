@@ -165,7 +165,7 @@ data "local_file" "send_encounters_requirements" {
 
 data "archive_file" "send_encounters" {
   type        = "zip"
-  output_path = "${path.module}/files/send_encounters-${local.send_encounters_source_object_file_name}"
+  output_path = "${path.module}/files/send_encounters.zip"
 
   source {
     content  = "${file("${data.local_file.send_encounters_main.filename}")}"
