@@ -53,12 +53,11 @@ def send_encounters(request):
     if not user_entity:
         return jsonify({"status": "failed", "message": "unauthorized"}), 401
 
-    if encounters:
-        upload_id = secrets.token_hex(32)
+    upload_id = secrets.token_hex(32)
 
-        _save_encounter_uploads_to_datastore(user_id, upload_id, proof)
-        if not _save_encounters_to_bigquery(user_id, upload_id, encounters):
-            return jsonify({"status": "failed", "message": "Internal error"}), 500
+    _save_encounter_uploads_to_datastore(user_id, upload_id, proof)
+    if encounters and not _save_encounters_to_bigquery(user_id, upload_id, encounters):
+        return jsonify({"status": "failed", "message": "Internal error"}), 500
 
     _update_user_entity(user_entity, platform, os_version, app_version, device_type, lang)
     return jsonify({"status": "OK"})
