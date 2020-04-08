@@ -18,6 +18,7 @@ KEY_OS_VERSION = "os_version"
 KEY_DEVICE_TYPE = "device_type"
 KEY_APP_VERSION = "app_version"
 KEY_LANG = "lang"
+KEY_PROOF = "proof"
 KEY_ENCOUNTERS = "encounters"
 KEY_ENCOUNTER_DATE = "encounter_date"
 KEY_BEACON_ID = "beacon_id"
@@ -44,6 +45,7 @@ def send_encounters(request):
     device_type = request_data[KEY_DEVICE_TYPE]
     app_version = request_data[KEY_APP_VERSION]
     lang = request_data[KEY_LANG]
+    proof = request_data[KEY_PROOF]
     encounters = request_data[KEY_ENCOUNTERS]
 
     user_entity = _get_user_entity(user_id)
@@ -53,7 +55,7 @@ def send_encounters(request):
 
     upload_id = secrets.token_hex(32)
 
-    _save_encounter_uploads_to_datastore(user_id, upload_id)
+    _save_encounter_uploads_to_datastore(user_id, upload_id, proof)
     if not _save_encounters_to_bigquery(user_id, upload_id, encounters):
         return jsonify({"status": "failed", "message": "Internal error"}), 500
 
@@ -67,7 +69,16 @@ def _parse_request(request: Request) -> dict:
 
     request_data = request.get_json()
 
-    for key in [KEY_USER_ID, KEY_PLATFORM, KEY_OS_VERSION, KEY_DEVICE_TYPE, KEY_APP_VERSION, KEY_LANG, KEY_ENCOUNTERS]:
+    for key in [
+        KEY_USER_ID,
+        KEY_PLATFORM,
+        KEY_OS_VERSION,
+        KEY_DEVICE_TYPE,
+        KEY_APP_VERSION,
+        KEY_LANG,
+        KEY_PROOF,
+        KEY_ENCOUNTERS,
+    ]:
         if key not in request_data:
             raise InvalidRequestException(422, {"status": "failed", "message": f"missing field: {key}"})
         if not request_data[key]:
@@ -88,7 +99,7 @@ def _get_user_entity(user_id: str) -> Optional[Entity]:
     return datastore_client.get(key=device_key)
 
 
-def _save_encounter_uploads_to_datastore(user_id: str, upload_id: str) -> None:
+def _save_encounter_uploads_to_datastore(user_id: str, upload_id: str, proof: str) -> None:
     uploads_key = datastore_client.key(ENCOUNTER_UPLOADS_DATASTORE_KIND, f"{upload_id}")
     entity = datastore.Entity(key=uploads_key)
 
@@ -96,6 +107,7 @@ def _save_encounter_uploads_to_datastore(user_id: str, upload_id: str) -> None:
         {
             "user_id": user_id,
             "upload_id": upload_id,
+            "proof": proof,
             "date": datetime.now(tz=pytz.utc),
             "processed_by_health_authority": False,
             "confirmed_by_health_authority": None,

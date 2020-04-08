@@ -283,8 +283,11 @@ paths:
                 - $ref: '#/components/schemas/CommonRequestParameters'
                 - type: object
                   required:
+                    - proof
                     - encounters
                   properties:
+                    proof:
+                      type: string
                     encounters:
                       type: array
                       items:
