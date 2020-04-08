@@ -284,7 +284,6 @@ paths:
                 - type: object
                   required:
                     - proof
-                    - encounters
                   properties:
                     proof:
                       type: string
