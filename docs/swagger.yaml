@@ -82,6 +82,41 @@ components:
           type: string
           format: uri
 
+    CommonRequestParameters:
+      type: object
+      required:
+        - user_id
+        - platform
+        - os_version
+        - device_type
+        - app_version
+        - lang
+      properties:
+        user_id:
+          type: string
+          description: "ID of a user"
+          example: "c904f5ba7e1a4878d4293d8d3bcef1cc"
+        platform:
+          type: string
+          description: "Name of the plafform"
+          example: "android"
+        os_version:
+          type: string
+          description: "Phone's operating system version"
+          example: "12.0"
+        device_type:
+          type: string
+          description: "Type of the device"
+          example: "iPhone X"
+        app_version:
+          type: string
+          description: "Version of the ProteGO app"
+          example: "1.0.0"
+        lang:
+          type: string
+          description: "Phone's language"
+          example: "PL"
+
 paths:
   /register/:
     post:
@@ -128,6 +163,21 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/ResponseInvalidData"
+
+  /register_no_msisdn:
+    post:
+      tags:
+      - "register"
+      summary: "Request register device without msisdn."
+      description: ""
+
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseOKConfirmRegister"
 
   /confirm_registration/:
     post:
@@ -187,39 +237,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - user_id
-                - platform
-                - os_version
-                - device_type
-                - app_version
-                - lang
-              properties:
-                user_id:
-                  type: string
-                  description: "ID of a user"
-                  example: "c904f5ba7e1a4878d4293d8d3bcef1cc"
-                platform:
-                  type: string
-                  description: "Name of the plafform"
-                  example: "android"
-                os_version:
-                  type: string
-                  description: "Phone's operating system version"
-                  example: "12.0"
-                device_type:
-                  type: string
-                  description: "Type of the device"
-                  example: "iPhone X"
-                app_version:
-                  type: string
-                  description: "Version of the ProteGO app"
-                  example: "1.0.0"
-                lang:
-                  type: string
-                  description: "Phone's language"
-                  example: "PL"
+              $ref: "#components/schemas/CommonRequestParameters"
       responses:
         200:
           description: "OK"
@@ -227,6 +245,72 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseOkGetStatus"
+        401:
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidData"
+        405:
+          description: "Invalid method"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidMethod"
+        422:
+          description: "Invalid data"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ResponseInvalidData"
+
+  /send_encounters:
+    post:
+      tags:
+        - "send_encounters"
+      summary: "Send encounters."
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: '#/components/schemas/CommonRequestParameters'
+                - type: object
+                  required:
+                    - proof
+                  properties:
+                    proof:
+                      type: string
+                    encounters:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          beacon_id:
+                            type: string
+                            description: "Beacon ID"
+                            example: "c904f5ba7e1a4878d4293d8d3bcef1cc"
+                          encounter_date:
+                            description: "Date in format YYYYmmddhh"
+                            type: string
+                            example: "2020032810"
+                          signal_strength:
+                            type: float
+                            description: "Bluetooth signal strength"
+                            example: "-82.00"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseOK"
         401:
           description: "Unauthorized"
           content:

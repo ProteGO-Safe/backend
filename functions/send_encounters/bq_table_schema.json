@@ -1,0 +1,27 @@
+[
+  {
+    "mode": "REQUIRED", 
+    "name": "upload_id",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "user_id",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "encounter_date",
+    "type": "DATETIME"
+  },
+  {
+    "mode": "REQUIRED", 
+    "name": "beacon_id", 
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "signal_strength",
+    "type": "FLOAT"
+  }
+]
