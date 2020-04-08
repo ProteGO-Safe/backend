@@ -46,18 +46,19 @@ def send_encounters(request):
     app_version = request_data[KEY_APP_VERSION]
     lang = request_data[KEY_LANG]
     proof = request_data[KEY_PROOF]
-    encounters = request_data[KEY_ENCOUNTERS]
+    encounters = request_data.get(KEY_ENCOUNTERS)
 
     user_entity = _get_user_entity(user_id)
 
     if not user_entity:
         return jsonify({"status": "failed", "message": "unauthorized"}), 401
 
-    upload_id = secrets.token_hex(32)
+    if encounters:
+        upload_id = secrets.token_hex(32)
 
-    _save_encounter_uploads_to_datastore(user_id, upload_id, proof)
-    if not _save_encounters_to_bigquery(user_id, upload_id, encounters):
-        return jsonify({"status": "failed", "message": "Internal error"}), 500
+        _save_encounter_uploads_to_datastore(user_id, upload_id, proof)
+        if not _save_encounters_to_bigquery(user_id, upload_id, encounters):
+            return jsonify({"status": "failed", "message": "Internal error"}), 500
 
     _update_user_entity(user_entity, platform, os_version, app_version, device_type, lang)
     return jsonify({"status": "OK"})
@@ -77,14 +78,13 @@ def _parse_request(request: Request) -> dict:
         KEY_APP_VERSION,
         KEY_LANG,
         KEY_PROOF,
-        KEY_ENCOUNTERS,
     ]:
         if key not in request_data:
             raise InvalidRequestException(422, {"status": "failed", "message": f"missing field: {key}"})
         if not request_data[key]:
             raise InvalidRequestException(422, {"status": "failed", "message": f"empty field: {key}"})
 
-    for encounter in request_data[KEY_ENCOUNTERS]:
+    for encounter in request_data.get(KEY_ENCOUNTERS, []):
         for key in [KEY_ENCOUNTER_DATE, KEY_BEACON_ID, KEY_SIGNAL_STRENGTH]:
             if key not in encounter:
                 raise InvalidRequestException(
