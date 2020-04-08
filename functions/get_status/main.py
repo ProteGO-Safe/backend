@@ -29,7 +29,7 @@ def get_status(request):
 
     request_data = request.get_json()
 
-    for key in ["user_id", "platform", "os_version", "device_type", "app_version", "lang", "last_beacon_date"]:
+    for key in ["user_id", "platform", "os_version", "device_type", "app_version", "lang"]:
         if key not in request_data:
             return jsonify({"status": "failed", "message": f"missing field: {key}"}), 422
 
@@ -39,7 +39,7 @@ def get_status(request):
     device_type = request_data["device_type"]
     app_version = request_data["app_version"]
     lang = request_data["lang"]
-    last_beacon_date = request_data["last_beacon_date"]
+    last_beacon_date = request_data.get("last_beacon_date", "")
 
     user_entity = _get_user_entity(user_id)
     if not user_entity:
