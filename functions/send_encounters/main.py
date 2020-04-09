@@ -8,6 +8,8 @@ import pytz
 from flask import jsonify, Request
 from google.cloud import bigquery, datastore
 from google.cloud.datastore import Entity
+
+from commons.messages import get_message, MESSAGE_UNAUTHORIZED, MESSAGE_INTERNAL_SERVER_ERROR
 from commons.rate_limit import limit_requests
 
 BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
@@ -53,13 +55,13 @@ def send_encounters(request):
     user_entity = _get_user_entity(user_id)
 
     if not user_entity:
-        return jsonify({"status": "failed", "message": "unauthorized"}), 401
+        return jsonify({"status": "failed", "message": get_message(MESSAGE_UNAUTHORIZED, lang)}), 401
 
     upload_id = secrets.token_hex(32)
 
     _save_encounter_uploads_to_datastore(user_id, upload_id, proof)
     if encounters and not _save_encounters_to_bigquery(user_id, upload_id, encounters):
-        return jsonify({"status": "failed", "message": "Internal error"}), 500
+        return jsonify({"status": "failed", "message": get_message(MESSAGE_INTERNAL_SERVER_ERROR, lang)}), 500
 
     _update_user_entity(user_entity, platform, os_version, app_version, device_type, lang)
     return jsonify({"status": "OK"})

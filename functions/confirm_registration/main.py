@@ -1,4 +1,3 @@
-import json
 import logging
 import secrets
 from datetime import datetime, timedelta
@@ -9,6 +8,7 @@ from flask import jsonify, current_app
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
+from commons.messages import get_message, MESSAGE_INVALID_DATA, MESSAGE_REGISTRATION_EXPIRED
 from commons.rate_limit import limit_requests
 
 current_app.config["JSON_AS_ASCII"] = False
@@ -17,11 +17,6 @@ REGISTRATION_STATUS_COMPLETED = "completed"
 REGISTRATION_STATUS_INCORRECT = "incorrect"
 DATA_STORE_REGISTRATION_KIND = "Registrations"
 DATA_STORE_USERS_KIND = "Users"
-
-MESSAGE_INVALID_DATA = "invalid_data"
-MESSAGE_REGISTRATION_EXPIRED = "registration_expired"
-with open("messages.json") as file:
-    MESSAGES = json.load(file)
 
 datastore_client = datastore.Client()
 
@@ -49,14 +44,14 @@ def confirm_registration(request):
         or registration_entity["status"] == REGISTRATION_STATUS_COMPLETED
         or _confirmation_limit_reached(registration_entity["msisdn"])
     ):
-        return jsonify({"status": "failed", "message": _get_message(MESSAGE_INVALID_DATA, lang)}), 422
+        return jsonify({"status": "failed", "message": get_message(MESSAGE_INVALID_DATA, lang)}), 422
 
     if registration_entity["date"] < datetime.now(tz=pytz.utc) - timedelta(minutes=10):
-        return jsonify({"status": "failed", "message": _get_message(MESSAGE_REGISTRATION_EXPIRED, lang)}), 422
+        return jsonify({"status": "failed", "message": get_message(MESSAGE_REGISTRATION_EXPIRED, lang)}), 422
 
     if registration_entity["code"] != code:
         _update_registration(registration_entity, REGISTRATION_STATUS_INCORRECT)
-        return jsonify({"status": "failed", "message": _get_message(MESSAGE_INVALID_DATA, lang)}), 422
+        return jsonify({"status": "failed", "message": get_message(MESSAGE_INVALID_DATA, lang)}), 422
 
     _update_registration(registration_entity, REGISTRATION_STATUS_COMPLETED)
 
@@ -77,10 +72,6 @@ def _is_language_valid(request_data: dict) -> bool:
         logging.warning(f"Invalid lang: {lang}")
         return False
     return True
-
-
-def _get_message(message_code: str, lang: str) -> str:
-    return MESSAGES[message_code][lang]
 
 
 def _get_registration_entity(registration_id: str) -> Optional[Entity]:

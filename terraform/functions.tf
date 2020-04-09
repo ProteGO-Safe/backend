@@ -5,6 +5,12 @@ locals {
 data "local_file" "rate_limit" {
   filename = "${path.module}/../commons/rate_limit.py"
 }
+data "local_file" "messages" {
+  filename = "${path.module}/../commons/messages.py"
+}
+data "local_file" "messages_json" {
+  filename = "${path.module}/../commons/messages.json"
+}
 
 
 // START check_version
@@ -33,6 +39,16 @@ data "archive_file" "check_version" {
   source {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
     filename = "rate_limit.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.messages.filename}")}"
+    filename = "messages.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.messages_json.filename}")}"
+    filename = "messages.json"
   }
 }
 
@@ -99,9 +115,20 @@ data "archive_file" "confirm_registration" {
     content  = "${file("${data.local_file.confirm_registration_messages.filename}")}"
     filename = "messages.json"
   }
+
   source {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
     filename = "rate_limit.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.messages.filename}")}"
+    filename = "messages.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.messages_json.filename}")}"
+    filename = "messages.json"
   }
 }
 
@@ -172,6 +199,16 @@ data "archive_file" "get_status" {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
     filename = "rate_limit.py"
   }
+
+  source {
+    content  = "${file("${data.local_file.messages.filename}")}"
+    filename = "messages.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.messages_json.filename}")}"
+    filename = "messages.json"
+  }
 }
 
 resource "google_storage_bucket_object" "get_status" {
@@ -234,6 +271,16 @@ data "archive_file" "send_encounters" {
   source {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
     filename = "rate_limit.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.messages.filename}")}"
+    filename = "messages.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.messages_json.filename}")}"
+    filename = "messages.json"
   }
 }
 
@@ -309,6 +356,16 @@ data "archive_file" "register" {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
     filename = "rate_limit.py"
   }
+
+  source {
+    content  = "${file("${data.local_file.messages.filename}")}"
+    filename = "messages.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.messages_json.filename}")}"
+    filename = "messages.json"
+  }
 }
 
 resource "google_storage_bucket_object" "register" {
@@ -372,6 +429,16 @@ data "archive_file" "register_no_msisdn" {
   source {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
     filename = "rate_limit.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.messages.filename}")}"
+    filename = "messages.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.messages_json.filename}")}"
+    filename = "messages.json"
   }
 }
 

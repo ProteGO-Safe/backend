@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import secrets
@@ -9,6 +8,7 @@ from flask import jsonify, current_app
 from google.cloud import bigquery, datastore
 from google.cloud.datastore import Entity
 
+from commons.messages import get_message, MESSAGE_MISSING_FIELD, MESSAGE_UNAUTHORIZED
 from commons.rate_limit import limit_requests
 
 current_app.config["JSON_AS_ASCII"] = False
@@ -16,13 +16,6 @@ BEACON_DATE_FORMAT = "%Y%m%d%H"
 MAX_NR_OF_BEACON_IDS = 21 * 24  # 21 days x 24 hours
 GENERATE_BEACONS_THRESHOLD = 24  # if there is less beacons to generate than this value, don't generate
 BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
-
-MESSAGE_MISSING_FIELD = "missing_field"
-MESSAGE_UNAUTHORIZED = "unauthorized"
-
-with open("messages.json") as file:
-    MESSAGES = json.load(file)
-
 
 datastore_client = datastore.Client()
 
@@ -48,7 +41,7 @@ def get_status(request):
 
     for key in ["user_id", "platform", "os_version", "device_type", "app_version", "lang"]:
         if key not in request_data:
-            return jsonify({"status": "failed", "message": f"{_get_message(MESSAGE_MISSING_FIELD, lang)}: {key}"}), 422
+            return jsonify({"status": "failed", "message": f"{get_message(MESSAGE_MISSING_FIELD, lang)}: {key}"}), 422
 
     user_id = request_data["user_id"]
     platform = request_data["platform"]
@@ -59,7 +52,7 @@ def get_status(request):
 
     user_entity = _get_user_entity(user_id)
     if not user_entity:
-        return jsonify({"status": "failed", "message": _get_message(MESSAGE_UNAUTHORIZED, lang)}), 401
+        return jsonify({"status": "failed", "message": get_message(MESSAGE_UNAUTHORIZED, lang)}), 401
 
     beacons = _generate_beacons(last_beacon_date)
     if not _save_beacons_to_bigquery(user_id, beacons):
@@ -83,10 +76,6 @@ def _is_language_valid(request_data: dict) -> bool:
         logging.warning(f"Invalid lang: {lang}")
         return False
     return True
-
-
-def _get_message(message_code: str, lang: str) -> str:
-    return MESSAGES[message_code][lang]
 
 
 def _get_user_entity(user_id: str) -> Optional[Entity]:

@@ -13,6 +13,7 @@ from flask import jsonify, Request, Response, current_app
 from google.cloud import datastore
 from google.cloud import pubsub_v1
 
+from commons.messages import get_message, MESSAGE_INVALID_PHONE_NUMBER, MESSAGE_REGISTRATION_NOT_AVAILABLE
 from commons.rate_limit import limit_requests
 
 current_app.config["JSON_AS_ASCII"] = False
@@ -29,12 +30,6 @@ CODE_CHARACTERS = string.digits
 DATA_STORE_REGISTRATION_KIND = "Registrations"
 REGISTRATION_STATUS_PENDING = "pending"
 REGISTRATION_STATUS_INCORRECT = "incorrect"
-
-MESSAGE_INVALID_PHONE_NUMBER = "invalid_phone_number"
-MESSAGE_REGISTRATION_NOT_AVAILABLE = "registration_not_available"
-
-with open("messages.json") as file:
-    MESSAGES = json.load(file)
 
 datastore_client = datastore.Client()
 publisher = pubsub_v1.PublisherClient()
@@ -83,14 +78,14 @@ def _is_request_valid(request: Request) -> Tuple[bool, Optional[Tuple[Response, 
     lang = request_data["lang"]
 
     if "msisdn" not in request_data or not _check_phone_number(request_data["msisdn"]):
-        return False, (jsonify({"status": "failed", "message": _get_message(MESSAGE_INVALID_PHONE_NUMBER, lang)}), 422)
+        return False, (jsonify({"status": "failed", "message": get_message(MESSAGE_INVALID_PHONE_NUMBER, lang)}), 422)
 
     msisdn = request_data["msisdn"]
 
     if _is_too_many_requests_for("msisdn", msisdn, limit=INVALID_REGS_PER_MSISDN_LIMIT):
         return (
             False,
-            (jsonify({"status": "failed", "message": _get_message(MESSAGE_REGISTRATION_NOT_AVAILABLE, lang)}), 429),
+            (jsonify({"status": "failed", "message": get_message(MESSAGE_REGISTRATION_NOT_AVAILABLE, lang)}), 429),
         )
 
     return True, None
@@ -103,10 +98,6 @@ def _is_language_valid(request_data: dict) -> bool:
         logging.warning(f"Invalid lang: {lang}")
         return False
     return True
-
-
-def _get_message(message_code: str, lang: str) -> str:
-    return MESSAGES[message_code][lang]
 
 
 def _check_phone_number(msisdn: str):

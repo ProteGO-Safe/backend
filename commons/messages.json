@@ -1,0 +1,30 @@
+{
+  "invalid_data": {
+    "pl": "Niepoprawne dane. Odinstaluj i zainstaluj aplikację ponownie.",
+    "en": "Invalid data. Delete and install the application again."
+  },
+  "registration_expired": {
+    "pl": "Twoja sesja wygasła. Spróbuj ponownie.",
+    "en": "Your session expired. Try again."
+  },
+  "missing_field": {
+    "pl": "Brakujący parametr. Odinstaluj i zainstaluj aplikację ponownie.",
+    "en": "Missing field. Delete and install the application again."
+  },
+  "unauthorized": {
+    "pl": "Brak autoryzacji. Odinstaluj i zainstaluj aplikację ponownie.",
+    "en": "Unauthorized. Delete and install the application again."
+  },
+  "invalid_phone_number": {
+    "pl": "Niepoprawny numer telefonu. Wprowadź numer ponownie.",
+    "en": "Invalid phone number. Enter phone number again."
+  },
+  "registration_not_available": {
+    "pl": "Rejestracja chwilowo niedostępna. Spróbuj za godzinę.",
+    "en": "Registration temporarily unavailable. Try again in an hour."
+  },
+  "internal_server_error": {
+    "pl": "Wewnętrzny bład serwera",
+    "en": "Internal Server Error"
+  }
+}
