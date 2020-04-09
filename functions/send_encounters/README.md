@@ -1,4 +1,4 @@
-# Get status endpoint
+# Send Encounters endpoint
 
 ### Example calls to endpoint
 
@@ -10,21 +10,20 @@ Required variables to deploy function:
 * `PROJECT_ID` - GCP project ID
 * `REGION` - region of the GCP project
 * `FUNCTIONS_BUCKET` - bucket where functions are stored
-* `BQ_TABLE` - full path to BigQuery table in form `<PROJECT>.<DATASET>.<TABLE_NAME>`
+* `BQ_TABLE` - name of the BigQuery
 
 Example deploy function (you have to be authorized to gcloud):
 ```bash
 REGION=europe-west3 \
 PROJECT_ID=<project_id> \
 FUNCTIONS_BUCKET=${PROJECT_ID}-functions \
-BQ_DATASET=<dataset-name> \
 BQ_TABLE=<table-name> \
 ./deploy.sh
 ```
 
 or directly by `gcloud`:
 ```bash
-gcloud functions deploy get_status \
+gcloud functions deploy send_encounters \
     --region=${REGION} \
     --source=./ \
     --runtime=python37 \

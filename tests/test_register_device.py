@@ -16,8 +16,8 @@ INVALID_REGS_PER_MSISDN_LIMIT = 4
 DATA_STORE_REGISTRATION_KIND = "Registrations"
 NUMBER_PREFIX = "+48"
 
-if STAGE == 'PRODUCTION':
-    SEND_SMS_NUMBER = NUMBER_PREFIX + os.environ['SEND_SMS_NUMBER']
+if STAGE == "PRODUCTION":
+    SEND_SMS_NUMBER = NUMBER_PREFIX + os.environ["SEND_SMS_NUMBER"]
 else:
     SEND_SMS_NUMBER = NUMBER_PREFIX + "".join(random.choice(digits) for _ in range(9))
 
@@ -90,7 +90,6 @@ class TestRegisterDevice(TestCase):
 
             assert response.status_code == 200
 
-        codes = [entity['code'] for entity in datastore_client.get_multi(keys)]
+        codes = [entity["code"] for entity in datastore_client.get_multi(keys)]
 
         assert all(code == codes[0] for code in codes)
-
