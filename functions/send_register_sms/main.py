@@ -35,7 +35,7 @@ def send_register_sms(event, context):
     message = f"Twój kod dla ProteGO to: {code}"
 
     try:
-        send_results = client.sms.send(to=msisdn, message=message, encoding='utf-8')
+        send_results = client.sms.send(to=msisdn, message=message, encoding="utf-8")
     except SmsApiException as e:
         logging.exception(e.message, e.code, msisdn, code)
         return
@@ -47,14 +47,12 @@ def send_register_sms(event, context):
 
 
 def _update_entity(registration_id: str):
-    kind = 'Registrations'
-    key = datastore_client.key(kind, f'{registration_id}')
+    kind = "Registrations"
+    key = datastore_client.key(kind, f"{registration_id}")
 
     registration = datastore_client.get(key=key)
     registration.update(
-        {
-            'sms_send': True,
-        }
+        {"sms_send": True,}
     )
 
     datastore_client.put(registration)
