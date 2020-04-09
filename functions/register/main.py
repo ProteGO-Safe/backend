@@ -10,8 +10,9 @@ from typing import Optional, List, Tuple
 import pytz
 from flask import jsonify, Request, Response, current_app
 from google.cloud import datastore
-
 from google.cloud import pubsub_v1
+
+from rate_limit import limit_requests
 
 current_app.config["JSON_AS_ASCII"] = False
 PROJECT_ID = os.environ["GCP_PROJECT"]
@@ -38,6 +39,7 @@ datastore_client = datastore.Client()
 publisher = pubsub_v1.PublisherClient()
 
 
+@limit_requests()
 def register(request):
     is_request_valid, response = _is_request_valid(request)
     if not is_request_valid:
@@ -84,11 +86,7 @@ def _is_request_valid(request: Request) -> Tuple[bool, Optional[Tuple[Response, 
 
     msisdn = request_data["msisdn"]
 
-    ip = request.headers.get("X-Forwarded-For").split(",")[-1]
-
-    if _is_too_many_requests_for("ip", ip, limit=INVALID_REGS_PER_IP_LIMIT) or _is_too_many_requests_for(
-        "msisdn", msisdn, limit=INVALID_REGS_PER_MSISDN_LIMIT
-    ):
+    if _is_too_many_requests_for("msisdn", msisdn, limit=INVALID_REGS_PER_MSISDN_LIMIT):
         return (
             False,
             (jsonify({"status": "failed", "message": _get_message(MESSAGE_REGISTRATION_NOT_AVAILABLE, lang)}), 429),

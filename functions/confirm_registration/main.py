@@ -9,6 +9,8 @@ from flask import jsonify, current_app
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
+from rate_limit import limit_requests
+
 current_app.config["JSON_AS_ASCII"] = False
 CONFIRMATIONS_PER_MSISDN_LIMIT = 3
 REGISTRATION_STATUS_COMPLETED = "completed"
@@ -24,6 +26,7 @@ with open("messages.json") as file:
 datastore_client = datastore.Client()
 
 
+@limit_requests()
 def confirm_registration(request):
     if request.method != "POST":
         return jsonify({"status": "failed", "message": "Invalid method"}), 405

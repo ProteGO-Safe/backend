@@ -72,6 +72,10 @@ enable_project_api "${PROJECT}" pubsub.googleapis.com
 enable_project_api "${PROJECT}" storage-api.googleapis.com
 enable_project_api "${PROJECT}" storage-component.googleapis.com
 enable_project_api "${PROJECT}" storagetransfer.googleapis.com
+enable_project_api "${PROJECT}" compute.googleapis.com
+enable_project_api "${PROJECT}" servicenetworking.googleapis.com
+enable_project_api "${PROJECT}" vpcaccess.googleapis.com
+enable_project_api "${PROJECT}" redis.googleapis.com
 
 
 run_terraform

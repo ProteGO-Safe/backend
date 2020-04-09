@@ -2,10 +2,18 @@ locals {
   source_object_file_name_prefix = "${var.region}/${var.project_id}/"
 }
 
+data "local_file" "rate_limit" {
+  filename = "${path.module}/../rate_limit.py"
+}
+
 
 // START check_version
 data "local_file" "check_version" {
   filename = "${path.module}/../functions/check_version/main.py"
+}
+
+data "local_file" "check_version_requirements" {
+  filename = "${path.module}/../functions/check_version/requirements.txt"
 }
 
 data "archive_file" "check_version" {
@@ -15,6 +23,16 @@ data "archive_file" "check_version" {
   source {
     content  = "${file("${data.local_file.check_version.filename}")}"
     filename = "main.py"
+  }
+
+  source {
+    content  = "${file("${data.local_file.check_version_requirements.filename}")}"
+    filename = "requirements.txt"
+  }
+
+  source {
+    content  = "${file("${data.local_file.rate_limit.filename}")}"
+    filename = "rate_limit.py"
   }
 }
 
@@ -34,6 +52,10 @@ resource "google_cloudfunctions_function" "check_version" {
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.check_version.name
   depends_on            = [google_project_service.gcp_services]
+  vpc_connector = google_vpc_access_connector.connector.name
+  environment_variables = {
+    REDIS_HOST = google_redis_instance.rate_limiting_storage.host
+  }
 }
 
 resource "google_cloudfunctions_function_iam_member" "invoker-check_version" {
@@ -77,6 +99,10 @@ data "archive_file" "confirm_registration" {
     content  = "${file("${data.local_file.confirm_registration_messages.filename}")}"
     filename = "messages.json"
   }
+    source {
+    content  = "${file("${data.local_file.rate_limit.filename}")}"
+    filename = "rate_limit.py"
+  }
 }
 
 resource "google_storage_bucket_object" "confirm_registration" {
@@ -94,6 +120,10 @@ resource "google_cloudfunctions_function" "confirm_registration" {
   entry_point           = "confirm_registration"
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.confirm_registration.name
+  vpc_connector = google_vpc_access_connector.connector.name
+  environment_variables = {
+    REDIS_HOST = google_redis_instance.rate_limiting_storage.host
+  }
 }
 
 resource "google_cloudfunctions_function_iam_member" "invoker-confirm_registration" {
@@ -138,6 +168,10 @@ data "archive_file" "get_status" {
     filename = "messages.json"
   }
 
+  source {
+    content  = "${file("${data.local_file.rate_limit.filename}")}"
+    filename = "rate_limit.py"
+  }
 }
 
 resource "google_storage_bucket_object" "get_status" {
@@ -155,10 +189,13 @@ resource "google_cloudfunctions_function" "get_status" {
   entry_point           = "get_status"
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.get_status.name
+  vpc_connector = google_vpc_access_connector.connector.name
 
   environment_variables = {
     BQ_DATASET = google_bigquery_dataset.protego_main_dataset.dataset_id
     BQ_TABLE   = google_bigquery_table.beacons.table_id
+    REDIS_HOST = google_redis_instance.rate_limiting_storage.host
+
   }
 
 }
@@ -194,7 +231,10 @@ data "archive_file" "send_encounters" {
     content  = "${file("${data.local_file.send_encounters_requirements.filename}")}"
     filename = "requirements.txt"
   }
-
+  source {
+    content  = "${file("${data.local_file.rate_limit.filename}")}"
+    filename = "rate_limit.py"
+  }
 }
 
 resource "google_storage_bucket_object" "send_encounters" {
@@ -212,10 +252,13 @@ resource "google_cloudfunctions_function" "send_encounters" {
   entry_point           = "send_encounters"
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.send_encounters.name
+  vpc_connector = google_vpc_access_connector.connector.name
 
   environment_variables = {
     BQ_DATASET = google_bigquery_dataset.protego_main_dataset.dataset_id
     BQ_TABLE   = google_bigquery_table.encounters.table_id
+    REDIS_HOST = google_redis_instance.rate_limiting_storage.host
+
   }
 
 }
@@ -262,6 +305,10 @@ data "archive_file" "register" {
     content  = "${file("${data.local_file.register_messages.filename}")}"
     filename = "messages.json"
   }
+  source {
+    content  = "${file("${data.local_file.rate_limit.filename}")}"
+    filename = "rate_limit.py"
+  }
 }
 
 resource "google_storage_bucket_object" "register" {
@@ -279,10 +326,12 @@ resource "google_cloudfunctions_function" "register" {
   entry_point           = "register"
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.register.name
+  vpc_connector = google_vpc_access_connector.connector.name
 
   environment_variables = {
     PUBSUB_SEND_REGISTER_SMS_TOPIC = google_pubsub_topic.pubsub_send_register_sms_topic.name
     STAGE                          = var.stage
+    REDIS_HOST = google_redis_instance.rate_limiting_storage.host
   }
 
   depends_on = [google_pubsub_topic.pubsub_send_register_sms_topic]
