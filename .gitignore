@@ -2,3 +2,5 @@
 
 # terrafrom variables
 *.tfvars
+terrafrom/.terrafrom
+terrafrom/files

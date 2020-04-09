@@ -2,7 +2,10 @@ locals {
   source_object_file_name_prefix = "${var.region}/${var.project_id}/"
 }
 
-// START check_version
+// START commons
+data "local_file" "init" {
+  filename = "${path.module}/../commons/__init__.py"
+}
 data "local_file" "rate_limit" {
   filename = "${path.module}/../commons/rate_limit.py"
 }
@@ -15,7 +18,7 @@ data "local_file" "messages_json" {
 data "local_file" "datastore" {
   filename = "${path.module}/../commons/datastore.py"
 }
-// END check_version
+// END commons
 
 
 // START check_version
@@ -42,23 +45,28 @@ data "archive_file" "check_version" {
   }
 
   source {
+    content  = "${file("${data.local_file.init.filename}")}"
+    filename = "commons/__init__.py"
+  }
+
+  source {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
-    filename = "rate_limit.py"
+    filename = "commons/rate_limit.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages.filename}")}"
-    filename = "messages.py"
+    filename = "commons/messages.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages_json.filename}")}"
-    filename = "messages.json"
+    filename = "commons/messages.json"
   }
 
   source {
     content  = "${file("${data.local_file.datastore.filename}")}"
-    filename = "datastore.py"
+    filename = "commons/datastore.py"
   }
 }
 
@@ -103,10 +111,6 @@ data "local_file" "confirm_registration_requirements" {
   filename = "${path.module}/../functions/confirm_registration/requirements.txt"
 }
 
-data "local_file" "confirm_registration_messages" {
-  filename = "${path.module}/../functions/confirm_registration/messages.json"
-}
-
 data "archive_file" "confirm_registration" {
   type        = "zip"
   output_path = "${path.module}/files/confirm_registration.zip"
@@ -122,28 +126,28 @@ data "archive_file" "confirm_registration" {
   }
 
   source {
-    content  = "${file("${data.local_file.confirm_registration_messages.filename}")}"
-    filename = "messages.json"
+    content  = "${file("${data.local_file.init.filename}")}"
+    filename = "commons/__init__.py"
   }
 
   source {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
-    filename = "rate_limit.py"
+    filename = "commons/rate_limit.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages.filename}")}"
-    filename = "messages.py"
+    filename = "commons/messages.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages_json.filename}")}"
-    filename = "messages.json"
+    filename = "commons/messages.json"
   }
 
   source {
     content  = "${file("${data.local_file.datastore.filename}")}"
-    filename = "datastore.py"
+    filename = "commons/datastore.py"
   }
 }
 
@@ -187,10 +191,6 @@ data "local_file" "get_status_requirements" {
   filename = "${path.module}/../functions/get_status/requirements.txt"
 }
 
-data "local_file" "get_status_messages" {
-  filename = "${path.module}/../functions/get_status/messages.json"
-}
-
 data "archive_file" "get_status" {
   type        = "zip"
   output_path = "${path.module}/files/get_status.zip"
@@ -206,28 +206,28 @@ data "archive_file" "get_status" {
   }
 
   source {
-    content  = "${file("${data.local_file.get_status_messages.filename}")}"
-    filename = "messages.json"
+    content  = "${file("${data.local_file.init.filename}")}"
+    filename = "commons/__init__.py"
   }
 
   source {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
-    filename = "rate_limit.py"
+    filename = "commons/rate_limit.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages.filename}")}"
-    filename = "messages.py"
+    filename = "commons/messages.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages_json.filename}")}"
-    filename = "messages.json"
+    filename = "commons/messages.json"
   }
 
   source {
     content  = "${file("${data.local_file.datastore.filename}")}"
-    filename = "datastore.py"
+    filename = "commons/datastore.py"
   }
 }
 
@@ -288,24 +288,30 @@ data "archive_file" "send_encounters" {
     content  = "${file("${data.local_file.send_encounters_requirements.filename}")}"
     filename = "requirements.txt"
   }
+
+  source {
+    content  = "${file("${data.local_file.init.filename}")}"
+    filename = "commons/__init__.py"
+  }
+
   source {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
-    filename = "rate_limit.py"
+    filename = "commons/rate_limit.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages.filename}")}"
-    filename = "messages.py"
+    filename = "commons/messages.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages_json.filename}")}"
-    filename = "messages.json"
+    filename = "commons/messages.json"
   }
 
   source {
     content  = "${file("${data.local_file.datastore.filename}")}"
-    filename = "datastore.py"
+    filename = "commons/datastore.py"
   }
 }
 
@@ -354,11 +360,6 @@ data "local_file" "register_requirements" {
   filename = "${path.module}/../functions/register/requirements.txt"
 }
 
-
-data "local_file" "register_messages" {
-  filename = "${path.module}/../functions/register/messages.json"
-}
-
 data "archive_file" "register" {
   type        = "zip"
   output_path = "${path.module}/files/register.zip"
@@ -374,27 +375,28 @@ data "archive_file" "register" {
   }
 
   source {
-    content  = "${file("${data.local_file.register_messages.filename}")}"
-    filename = "messages.json"
+    content  = "${file("${data.local_file.init.filename}")}"
+    filename = "commons/__init__.py"
   }
+
   source {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
-    filename = "rate_limit.py"
+    filename = "commons/rate_limit.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages.filename}")}"
-    filename = "messages.py"
+    filename = "commons/messages.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages_json.filename}")}"
-    filename = "messages.json"
+    filename = "commons/messages.json"
   }
 
   source {
     content  = "${file("${data.local_file.datastore.filename}")}"
-    filename = "datastore.py"
+    filename = "commons/datastore.py"
   }
 }
 
@@ -457,23 +459,28 @@ data "archive_file" "register_no_msisdn" {
   }
 
   source {
+    content  = "${file("${data.local_file.init.filename}")}"
+    filename = "commons/__init__.py"
+  }
+
+  source {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
     filename = "rate_limit.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages.filename}")}"
-    filename = "messages.py"
+    filename = "commons/messages.py"
   }
 
   source {
     content  = "${file("${data.local_file.messages_json.filename}")}"
-    filename = "messages.json"
+    filename = "commons/messages.json"
   }
 
   source {
     content  = "${file("${data.local_file.datastore.filename}")}"
-    filename = "datastore.py"
+    filename = "commons/datastore.py"
   }
 }
 
@@ -532,8 +539,13 @@ data "archive_file" "send_register_sms" {
   }
 
   source {
+    content  = "${file("${data.local_file.init.filename}")}"
+    filename = "commons/__init__.py"
+  }
+
+  source {
     content  = "${file("${data.local_file.datastore.filename}")}"
-    filename = "datastore.py"
+    filename = "commons/datastore.py"
   }
 }
 
