@@ -87,11 +87,10 @@ def _is_request_valid(request: Request) -> Tuple[bool, Optional[Tuple[Response, 
 
 def _check_phone_number(msisdn: str):
     msisdn = re.sub("[^0-9,+]", "", msisdn)
-    if re.match("^\+48[0-9]{9}$", msisdn):
-        logging.warning(f"check_phone_number: invalid phone number: {msisdn}")
-        return False
-
-    return True
+    if re.match(r"^\+48[0-9]{9}$", msisdn):
+        return True
+    logging.warning(f"check_phone_number: invalid phone number: {msisdn}")
+    return False
 
 
 def _is_too_many_requests_for(field: str, value: str, limit: int) -> bool:
