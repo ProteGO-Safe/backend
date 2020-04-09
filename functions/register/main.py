@@ -4,6 +4,7 @@ import random
 import logging
 import secrets
 import string
+import re
 from datetime import datetime, timedelta
 from typing import Optional, List, Tuple
 
@@ -111,21 +112,11 @@ def _get_message(message_code: str, lang: str) -> str:
 
 
 def _check_phone_number(msisdn: str):
-    msisdn = msisdn.strip().replace(" ", "")
-    if not msisdn.startswith("+48"):
-        logging.warning(f"check_phone_number: invalid prefix: {msisdn}")
-        return False
-    if len(msisdn) != 12:
-        logging.warning(f"check_phone_number: invalid msisdn length: {msisdn}")
-        return False
-
-    try:
-        int(msisdn)
-    except ValueError:
-        logging.warning(f"check_phone_number: invalid value: {msisdn}")
-        return False
-
-    return True
+    msisdn = re.sub("[^0-9,+]", "", msisdn)
+    if re.match(r"^\+48[0-9]{9}$", msisdn):
+        return True
+    logging.warning(f"check_phone_number: invalid phone number: {msisdn}")
+    return False
 
 
 def _is_too_many_requests_for(field: str, value: str, limit: int) -> bool:
@@ -175,7 +166,10 @@ def _get_registration_entities(
     if status:
         query.add_filter("status", "=", status)
     start_date = datetime.now(tz=pytz.utc) - time_period
+
     query.add_filter("date", ">", start_date)
+    query.order = ["-date"]
+
     return list(query.fetch())
 
 
