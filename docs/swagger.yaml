@@ -302,7 +302,7 @@ paths:
                             example: "2020032810"
                           signal_strength:
                             type: float
-                            description: "Bluetooth signal strength"
+                            description: "Bluetooth signal strength (optional)"
                             example: "-82.00"
       responses:
         200:

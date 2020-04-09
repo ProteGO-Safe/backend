@@ -84,7 +84,7 @@ def _parse_request(request: Request) -> dict:
             raise InvalidRequestException(422, {"status": "failed", "message": f"empty field: {key}"})
 
     for encounter in request_data.get(KEY_ENCOUNTERS, []):
-        for key in [KEY_ENCOUNTER_DATE, KEY_BEACON_ID, KEY_SIGNAL_STRENGTH]:
+        for key in [KEY_ENCOUNTER_DATE, KEY_BEACON_ID]:
             if key not in encounter:
                 raise InvalidRequestException(
                     422, {"status": "failed", "message": f"missing field in {KEY_ENCOUNTERS}: {key}"}
@@ -123,7 +123,7 @@ def _save_encounters_to_bigquery(user_id: str, upload_id: str, encounters: list)
     for encounter in encounters:
         encounter_date = datetime.strptime(encounter[KEY_ENCOUNTER_DATE], "%Y%m%d%H").replace(tzinfo=pytz.utc)
         beacon_id = encounter[KEY_BEACON_ID]
-        signal_strength = encounter[KEY_SIGNAL_STRENGTH]
+        signal_strength = encounter.get(KEY_SIGNAL_STRENGTH)
         rows_to_insert.append((upload_id, user_id, encounter_date, beacon_id, signal_strength))
 
     errors = bq_client.insert_rows(table, rows_to_insert)

@@ -20,7 +20,7 @@
     "type": "STRING"
   },
   {
-    "mode": "REQUIRED",
+    "mode": "NULLABLE",
     "name": "signal_strength",
     "type": "FLOAT"
   }
