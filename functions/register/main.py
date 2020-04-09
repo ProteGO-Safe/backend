@@ -87,7 +87,7 @@ def _is_request_valid(request: Request) -> Tuple[bool, Optional[Tuple[Response, 
 
 def _check_phone_number(msisdn: str):
     msisdn = re.sub("[^0-9,+]", "", msisdn)
-    if (not msisdn.startswith("+48") and len(msisdn) != 12) or (not msisdn.startswith("48") and len(msisdn) != 11):
+    if re.match("^\+48[0-9]{9}$", msisdn):
         logging.warning(f"check_phone_number: invalid phone number: {msisdn}")
         return False
 
