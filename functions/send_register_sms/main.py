@@ -35,7 +35,7 @@ def send_register_sms(event, context):
     message = f"Twój kod dla ProteGO to: {code}"
 
     try:
-        send_results = client.sms.send(to=msisdn, message=message)
+        send_results = client.sms.send(to=msisdn, message=message, encoding="utf-8")
     except SmsApiException as e:
         logging.exception(e.message, e.code, msisdn, code)
         return
