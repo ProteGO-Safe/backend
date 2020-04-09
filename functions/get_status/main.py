@@ -15,7 +15,6 @@ MAX_NR_OF_BEACON_IDS = 21 * 24  # 21 days x 24 hours
 GENERATE_BEACONS_THRESHOLD = 24  # if there is less beacons to generate than this value, don't generate
 BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
 
-LANG = None
 MESSAGE_MISSING_FIELD = 'missing_field'
 MESSAGE_UNAUTHORIZED = 'unauthorized'
 
@@ -51,14 +50,14 @@ def get_status(request):
             }
         ), 422)
 
-    _set_language(request_data['lang'])
+    lang = request_data["lang"]
 
     for key in ["user_id", "platform", "os_version", "device_type", "app_version", "lang", "last_beacon_date"]:
         if key not in request_data:
             return jsonify(
                 {
                     'status': 'failed',
-                    'message': f'{_get_message(MESSAGE_MISSING_FIELD)}: {key}',
+                    'message': f'{_get_message(MESSAGE_MISSING_FIELD, lang)}: {key}',
                 }
             ), 422
 
@@ -67,7 +66,6 @@ def get_status(request):
     os_version = request_data["os_version"]
     device_type = request_data["device_type"]
     app_version = request_data["app_version"]
-    lang = request_data["lang"]
     last_beacon_date = request_data["last_beacon_date"]
 
     user_entity = _get_user_entity(user_id)
@@ -75,7 +73,7 @@ def get_status(request):
         return jsonify(
             {
                 'status': 'failed',
-                'message': _get_message(MESSAGE_UNAUTHORIZED),
+                'message': _get_message(MESSAGE_UNAUTHORIZED, lang),
             }
         ), 401
 
@@ -104,13 +102,8 @@ def _is_language_valid(request_data: dict) -> bool:
     return True
 
 
-def _set_language(lang: str) -> None:
-    global LANG
-    LANG = lang
-
-
-def _get_message(message_code: str) -> str:
-    return MESSAGES[message_code][LANG]
+def _get_message(message_code: str, lang: str) -> str:
+    return MESSAGES[message_code][lang]
 
 
 def _get_user_entity(user_id: str) -> Optional[Entity]:

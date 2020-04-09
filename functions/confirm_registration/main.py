@@ -16,7 +16,6 @@ REGISTRATION_STATUS_INCORRECT = "incorrect"
 DATA_STORE_REGISTRATION_KIND = "Registrations"
 DATA_STORE_USERS_KIND = "Users"
 
-LANG = None
 MESSAGE_INVALID_DATA = 'invalid_data'
 MESSAGE_REGISTRATION_EXPIRED = 'registration_expired'
 with open("messages.json") as file:
@@ -51,8 +50,7 @@ def confirm_registration(request):
             }
         ), 422)
 
-    _set_language(request_data['lang'])
-
+    lang = request_data['lang']
     code = request_data["code"]
     registration_id = request_data["registration_id"]
 
@@ -64,7 +62,7 @@ def confirm_registration(request):
         return jsonify(
             {
                 "status": "failed",
-                "message": _get_message(MESSAGE_INVALID_DATA)
+                "message": _get_message(MESSAGE_INVALID_DATA, lang)
             }
         ), 422
 
@@ -72,7 +70,7 @@ def confirm_registration(request):
         return jsonify(
             {
                 "status": "failed",
-                "message":  _get_message(MESSAGE_REGISTRATION_EXPIRED)
+                "message":  _get_message(MESSAGE_REGISTRATION_EXPIRED, lang)
             }
         ), 422
 
@@ -80,7 +78,7 @@ def confirm_registration(request):
         _update_registration(registration_entity, REGISTRATION_STATUS_INCORRECT)
         return jsonify(
             {"status": "failed",
-             "message": _get_message(MESSAGE_INVALID_DATA)
+             "message": _get_message(MESSAGE_INVALID_DATA, lang)
              }
         ), 422
 
@@ -110,13 +108,8 @@ def _is_language_valid(request_data: dict) -> bool:
     return True
 
 
-def _set_language(lang: str) -> None:
-    global LANG
-    LANG = lang
-
-
-def _get_message(message_code: str) -> str:
-    return MESSAGES[message_code][LANG]
+def _get_message(message_code: str, lang: str) -> str:
+    return MESSAGES[message_code][lang]
 
 
 def _get_registration_entity(registration_id: str) -> Optional[Entity]:
