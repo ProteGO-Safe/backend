@@ -1,14 +1,8 @@
-# Register device endpoint
+# Confirm registration endpoint
 
 ### Example calls to endpoint
 
-#### Prerequisites:
-```bash
-REGION=europe-west3
-PROJECT_ID=<project_id>
-URL=https://${REGION}-${PROJECT_ID}.cloudfunctions.net/confirm_registration
-```
-
+[Swagger](https://swagger.io/) file is available [here](../../docs/swagger.yaml). 
 
 ### Deployment
 

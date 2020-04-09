@@ -51,8 +51,6 @@ def _update_entity(registration_id: str):
     key = datastore_client.key(kind, f"{registration_id}")
 
     registration = datastore_client.get(key=key)
-    registration.update(
-        {"sms_send": True,}
-    )
+    registration.update({"sms_send": True})
 
     datastore_client.put(registration)

@@ -25,6 +25,9 @@ Przed przystąpieniem do instalacji należy wykonać następujące kroki:
 
 2. Zainstalować narzędzie `terraform` zgodnie z instrukcją na [learn.hashicorp.com/terraform/getting-started/install](https://learn.hashicorp.com/terraform/getting-started/install.html#installing-terraform)
 
+Dodatkowo możesz lokalnie [zainstalować pre-commit](https://pre-commit.com/#install) przez `pip install pre-commit && pre-commit install`.
+Pomoże on upewnić się o poprawności składniowej, formatowaniu kodu i tym podobnych przed zachowaniem zmian w repozytorium.
+
 ### Instalacja ProteGO na serwerze
 
 1. Używając narzędzia `gcloud` Należy zalogować się do **GCP** przy użyciu strony logowana lub Service Account z odpowiednimi uprawnieniami:
@@ -87,7 +90,7 @@ In order to run test you need to set environment variables:
 
 `STAGE` - DEVELOPMENT or PRODUCTION
 
-`SEND_SMS_NUMBER` - 9 digit - requiered only in case of PRODUCTION
+`SEND_SMS_NUMBER` - 9 digits. 
 
 `GOOGLE_APPLICATION_CREDENTIALS` - path to account credentials file
 

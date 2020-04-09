@@ -50,37 +50,21 @@ class TestConfirmRegistration(TestCase):
         assert response.status_code == 405
 
     def test_invalid_data_format(self):
-        invalid_data_sets = [
-            {
-                "mock": "mock"
-            },
-            {
-                "code": "code"
-            },
-            {
-                "registration_id": "mock"
-            }
-        ]
+        invalid_data_sets = [{"mock": "mock"}, {"code": "code"}, {"registration_id": "mock"}]
         for data in invalid_data_sets:
             response = requests.post(f"{BASE_URL}{CONFIRM_REGISTRATION_ENDPOINT}", data=data)
             assert response.status_code == 422
             assert response.json()["message"] == "Invalid data"
 
     def test_no_registration_entity(self):
-        request_data = {
-            "code": "code",
-            "registration_id": "mock"
-        }
+        request_data = {"code": "code", "registration_id": "mock"}
         response = requests.post(f"{BASE_URL}{CONFIRM_REGISTRATION_ENDPOINT}", json=request_data)
         assert response.status_code == 422
         assert response.json()["message"] == "Invalid data"
 
     def test_already_completed_registration(self):
         registration_id = "registration_id_mock"
-        request_data = {
-            "code": "code",
-            "registration_id": registration_id
-        }
+        request_data = {"code": "code", "registration_id": registration_id}
 
         key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
         registration = datastore.Entity(key=key)
@@ -92,7 +76,7 @@ class TestConfirmRegistration(TestCase):
                 "registration_id": registration_id,
                 "sms_send": False,
                 "ip": "ip",
-                "status": REGISTRATION_STATUS_COMPLETED
+                "status": REGISTRATION_STATUS_COMPLETED,
             }
         )
 
@@ -118,27 +102,21 @@ class TestConfirmRegistration(TestCase):
                     "registration_id": f"registration_id_{i}",
                     "sms_send": False,
                     "ip": "ip",
-                    "status": REGISTRATION_STATUS_PENDING
+                    "status": REGISTRATION_STATUS_PENDING,
                 }
             )
 
             registrations.append(registration)
 
         datastore_client.put_multi(registrations)
-        request_data = {
-            "code": "code",
-            "registration_id": self.registrations_entities_ids_to_delete[3]
-        }
+        request_data = {"code": "code", "registration_id": self.registrations_entities_ids_to_delete[3]}
         response = requests.post(f"{BASE_URL}{CONFIRM_REGISTRATION_ENDPOINT}", json=request_data)
         assert response.status_code == 422
         assert response.json()["message"] == "Invalid data"
 
     def test_registration_expired(self):
         registration_id = "registration_id_mock"
-        request_data = {
-            "code": "code",
-            "registration_id": registration_id
-        }
+        request_data = {"code": "code", "registration_id": registration_id}
 
         key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
         registration = datastore.Entity(key=key)
@@ -150,7 +128,7 @@ class TestConfirmRegistration(TestCase):
                 "registration_id": registration_id,
                 "sms_send": False,
                 "ip": "ip",
-                "status": REGISTRATION_STATUS_PENDING
+                "status": REGISTRATION_STATUS_PENDING,
             }
         )
 
@@ -163,10 +141,7 @@ class TestConfirmRegistration(TestCase):
 
     def test_invalid_code(self):
         registration_id = "registration_id_mock"
-        request_data = {
-            "code": "code",
-            "registration_id": registration_id
-        }
+        request_data = {"code": "code", "registration_id": registration_id}
 
         key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
         registration = datastore.Entity(key=key)
@@ -178,7 +153,7 @@ class TestConfirmRegistration(TestCase):
                 "registration_id": registration_id,
                 "sms_send": False,
                 "ip": "ip",
-                "status": REGISTRATION_STATUS_PENDING
+                "status": REGISTRATION_STATUS_PENDING,
             }
         )
 
@@ -191,10 +166,7 @@ class TestConfirmRegistration(TestCase):
 
     def test_user_already_exists(self):
         registration_id = "registration_id_mock"
-        request_data = {
-            "code": "code",
-            "registration_id": registration_id
-        }
+        request_data = {"code": "code", "registration_id": registration_id}
 
         key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
         registration = datastore.Entity(key=key)
@@ -206,11 +178,11 @@ class TestConfirmRegistration(TestCase):
                 "registration_id": registration_id,
                 "sms_send": False,
                 "ip": "ip",
-                "status": REGISTRATION_STATUS_PENDING
+                "status": REGISTRATION_STATUS_PENDING,
             }
         )
 
-        user_id = 'mock_user_id'
+        user_id = "mock_user_id"
         key = datastore_client.key(DATA_STORE_USERS_KIND, user_id)
         user = datastore.Entity(key=key)
         user.update(
@@ -229,14 +201,11 @@ class TestConfirmRegistration(TestCase):
 
         response = requests.post(f"{BASE_URL}{CONFIRM_REGISTRATION_ENDPOINT}", json=request_data)
         assert response.status_code == 200
-        assert response.json()['user_id'] == user_id
+        assert response.json()["user_id"] == user_id
 
     def test_confirm_registration_new_user(self):
         registration_id = "registration_id_mock"
-        request_data = {
-            "code": "code",
-            "registration_id": registration_id
-        }
+        request_data = {"code": "code", "registration_id": registration_id}
 
         key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
         registration = datastore.Entity(key=key)
@@ -248,7 +217,7 @@ class TestConfirmRegistration(TestCase):
                 "registration_id": registration_id,
                 "sms_send": False,
                 "ip": "ip",
-                "status": REGISTRATION_STATUS_PENDING
+                "status": REGISTRATION_STATUS_PENDING,
             }
         )
 
@@ -258,10 +227,10 @@ class TestConfirmRegistration(TestCase):
 
         response = requests.post(f"{BASE_URL}{CONFIRM_REGISTRATION_ENDPOINT}", json=request_data)
         assert response.status_code == 200
-        user_id = response.json()['user_id']
+        user_id = response.json()["user_id"]
 
         key = datastore_client.key(DATA_STORE_USERS_KIND, user_id)
         user = datastore_client.get(key=key)
-        assert user['msisdn'] == registration['msisdn']
+        assert user["msisdn"] == registration["msisdn"]
 
         self.users_entities_ids_to_delete.append(user_id)
