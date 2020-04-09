@@ -9,7 +9,7 @@ from flask import jsonify, current_app
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
-from rate_limit import limit_requests
+from commons.rate_limit import limit_requests
 
 current_app.config["JSON_AS_ASCII"] = False
 CONFIRMATIONS_PER_MSISDN_LIMIT = 3

@@ -1,5 +1,5 @@
 from flask import jsonify
-from rate_limit import limit_requests
+from commons.rate_limit import limit_requests
 
 
 @limit_requests()

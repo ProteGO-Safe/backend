@@ -5,7 +5,7 @@ import pytz
 from flask import jsonify
 from google.cloud import datastore
 
-from rate_limit import limit_requests
+from commons.rate_limit import limit_requests
 
 datastore_client = datastore.Client()
 

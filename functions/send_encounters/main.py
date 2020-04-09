@@ -8,7 +8,7 @@ import pytz
 from flask import jsonify, Request
 from google.cloud import bigquery, datastore
 from google.cloud.datastore import Entity
-from rate_limit import limit_requests
+from commons.rate_limit import limit_requests
 
 BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
 USERS_DATASTORE_KIND = "Users"

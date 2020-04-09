@@ -13,7 +13,7 @@ from flask import jsonify, Request, Response, current_app
 from google.cloud import datastore
 from google.cloud import pubsub_v1
 
-from rate_limit import limit_requests
+from commons.rate_limit import limit_requests
 
 current_app.config["JSON_AS_ASCII"] = False
 PROJECT_ID = os.environ["GCP_PROJECT"]

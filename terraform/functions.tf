@@ -3,7 +3,7 @@ locals {
 }
 
 data "local_file" "rate_limit" {
-  filename = "${path.module}/../rate_limit.py"
+  filename = "${path.module}/../commons/rate_limit.py"
 }
 
 
