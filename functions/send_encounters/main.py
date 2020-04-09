@@ -6,15 +6,14 @@ from typing import Optional
 
 import pytz
 from flask import jsonify, Request
-from google.cloud import bigquery, datastore
+from google.cloud import bigquery
 from google.cloud.datastore import Entity
 
+from commons.datastore import get_entity_by_key, USERS, create_entity, ENCOUNTER_UPLOADS, update_entity
 from commons.messages import get_message, MESSAGE_UNAUTHORIZED, MESSAGE_INTERNAL_SERVER_ERROR
 from commons.rate_limit import limit_requests
 
 BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
-USERS_DATASTORE_KIND = "Users"
-ENCOUNTER_UPLOADS_DATASTORE_KIND = "Encounter Uploads"
 KEY_USER_ID = "user_id"
 KEY_PLATFORM = "platform"
 KEY_OS_VERSION = "os_version"
@@ -26,8 +25,6 @@ KEY_ENCOUNTERS = "encounters"
 KEY_ENCOUNTER_DATE = "encounter_date"
 KEY_BEACON_ID = "beacon_id"
 KEY_SIGNAL_STRENGTH = "signal_strength"
-
-datastore_client = datastore.Client()
 
 
 class InvalidRequestException(Exception):
@@ -98,15 +95,13 @@ def _parse_request(request: Request) -> dict:
 
 
 def _get_user_entity(user_id: str) -> Optional[Entity]:
-    device_key = datastore_client.key(USERS_DATASTORE_KIND, f"{user_id}")
-    return datastore_client.get(key=device_key)
+    return get_entity_by_key(USERS, user_id)
 
 
 def _save_encounter_uploads_to_datastore(user_id: str, upload_id: str, proof: str) -> None:
-    uploads_key = datastore_client.key(ENCOUNTER_UPLOADS_DATASTORE_KIND, f"{upload_id}")
-    entity = datastore.Entity(key=uploads_key)
-
-    entity.update(
+    create_entity(
+        ENCOUNTER_UPLOADS,
+        upload_id,
         {
             "user_id": user_id,
             "upload_id": upload_id,
@@ -114,9 +109,8 @@ def _save_encounter_uploads_to_datastore(user_id: str, upload_id: str, proof: st
             "date": datetime.now(tz=pytz.utc),
             "processed_by_health_authority": False,
             "confirmed_by_health_authority": None,
-        }
+        },
     )
-    datastore_client.put(entity)
 
 
 def _save_encounters_to_bigquery(user_id: str, upload_id: str, encounters: list) -> bool:
@@ -141,7 +135,8 @@ def _save_encounters_to_bigquery(user_id: str, upload_id: str, encounters: list)
 
 
 def _update_user_entity(entity: Entity, platform: str, os_version: str, app_version: str, device_type: str, lang: str) -> None:
-    entity.update(
+    update_entity(
+        entity,
         {
             "platform": platform,
             "os_version": os_version,
@@ -149,6 +144,5 @@ def _update_user_entity(entity: Entity, platform: str, os_version: str, app_vers
             "device_type": device_type,
             "lang": lang,
             "last_status_requested": datetime.now(tz=pytz.utc),
-        }
+        },
     )
-    datastore_client.put(entity)

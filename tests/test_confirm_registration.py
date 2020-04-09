@@ -7,13 +7,12 @@ import requests
 
 from google.cloud import datastore
 
+from commons.datastore import REGISTRATIONS, USERS
 from tests.common import BASE_URL
 
 CONFIRM_REGISTRATION_ENDPOINT = "confirm_registration"
 INVALID_REGS_PER_IP_LIMIT = 10
 INVALID_REGS_PER_MSISDN_LIMIT = 4
-DATA_STORE_REGISTRATION_KIND = "Registrations"
-DATA_STORE_USERS_KIND = "Users"
 
 NUMBER_PREFIX = "+48"
 REGISTRATION_STATUS_COMPLETED = "completed"
@@ -41,10 +40,10 @@ class TestConfirmRegistration(TestCase):
     def tearDown(self) -> None:
         keys = []
         for id_ in self.registrations_entities_ids_to_delete:
-            key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, id_)
+            key = datastore_client.key(REGISTRATIONS, id_)
             keys.append(key)
         for id_ in self.users_entities_ids_to_delete:
-            key = datastore_client.key(DATA_STORE_USERS_KIND, id_)
+            key = datastore_client.key(USERS, id_)
             keys.append(key)
 
         datastore_client.delete_multi(keys=keys)
@@ -77,7 +76,7 @@ class TestConfirmRegistration(TestCase):
         registration_id = "registration_id_mock"
         request_data = {"code": "code", "registration_id": registration_id, "lang": LANG}
 
-        key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
+        key = datastore_client.key(REGISTRATIONS, registration_id)
         registration = datastore.Entity(key=key)
         registration.update(
             {
@@ -103,7 +102,7 @@ class TestConfirmRegistration(TestCase):
         for i in range(4):
             registration_id = f"registration_id_{i}"
             self.registrations_entities_ids_to_delete.append(registration_id)
-            key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
+            key = datastore_client.key(REGISTRATIONS, registration_id)
             registration = datastore.Entity(key=key)
             registration.update(
                 {
@@ -129,7 +128,7 @@ class TestConfirmRegistration(TestCase):
         registration_id = "registration_id_mock"
         request_data = {"code": "code", "registration_id": registration_id, "lang": LANG}
 
-        key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
+        key = datastore_client.key(REGISTRATIONS, registration_id)
         registration = datastore.Entity(key=key)
         registration.update(
             {
@@ -154,7 +153,7 @@ class TestConfirmRegistration(TestCase):
         registration_id = "registration_id_mock"
         request_data = {"code": "code", "registration_id": registration_id, "lang": LANG}
 
-        key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
+        key = datastore_client.key(REGISTRATIONS, registration_id)
         registration = datastore.Entity(key=key)
         registration.update(
             {
@@ -179,7 +178,7 @@ class TestConfirmRegistration(TestCase):
         registration_id = "registration_id_mock"
         request_data = {"code": "code", "registration_id": registration_id, "lang": LANG}
 
-        key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
+        key = datastore_client.key(REGISTRATIONS, registration_id)
         registration = datastore.Entity(key=key)
         registration.update(
             {
@@ -194,7 +193,7 @@ class TestConfirmRegistration(TestCase):
         )
 
         user_id = "mock_user_id"
-        key = datastore_client.key(DATA_STORE_USERS_KIND, user_id)
+        key = datastore_client.key(USERS, user_id)
         user = datastore.Entity(key=key)
         user.update(
             {
@@ -218,7 +217,7 @@ class TestConfirmRegistration(TestCase):
         registration_id = "registration_id_mock"
         request_data = {"code": "code", "registration_id": registration_id, "lang": LANG}
 
-        key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
+        key = datastore_client.key(REGISTRATIONS, registration_id)
         registration = datastore.Entity(key=key)
         registration.update(
             {
@@ -240,7 +239,7 @@ class TestConfirmRegistration(TestCase):
         assert response.status_code == 200
         user_id = response.json()["user_id"]
 
-        key = datastore_client.key(DATA_STORE_USERS_KIND, user_id)
+        key = datastore_client.key(USERS, user_id)
         user = datastore_client.get(key=key)
         assert user["msisdn"] == registration["msisdn"]
 

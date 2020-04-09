@@ -5,9 +5,10 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from flask import jsonify, current_app
-from google.cloud import bigquery, datastore
+from google.cloud import bigquery
 from google.cloud.datastore import Entity
 
+from commons.datastore import get_entity_by_key, USERS, update_entity
 from commons.messages import get_message, MESSAGE_MISSING_FIELD, MESSAGE_UNAUTHORIZED
 from commons.rate_limit import limit_requests
 
@@ -16,8 +17,6 @@ BEACON_DATE_FORMAT = "%Y%m%d%H"
 MAX_NR_OF_BEACON_IDS = 21 * 24  # 21 days x 24 hours
 GENERATE_BEACONS_THRESHOLD = 24  # if there is less beacons to generate than this value, don't generate
 BQ_TABLE_ID = f"{os.environ['GCP_PROJECT']}.{os.environ['BQ_DATASET']}.{os.environ['BQ_TABLE']}"
-
-datastore_client = datastore.Client()
 
 
 class SaveToBigQueryFailedException(Exception):
@@ -79,13 +78,12 @@ def _is_language_valid(request_data: dict) -> bool:
 
 
 def _get_user_entity(user_id: str) -> Optional[Entity]:
-    kind = "Users"
-    device_key = datastore_client.key(kind, f"{user_id}")
-    return datastore_client.get(key=device_key)
+    return get_entity_by_key(USERS, user_id)
 
 
 def _update_user_entity(entity: Entity, platform: str, os_version: str, app_version: str, device_type: str, lang: str) -> None:
-    entity.update(
+    update_entity(
+        entity,
         {
             "platform": platform,
             "os_version": os_version,
@@ -93,9 +91,8 @@ def _update_user_entity(entity: Entity, platform: str, os_version: str, app_vers
             "device_type": device_type,
             "lang": lang,
             "last_status_requested": datetime.utcnow(),
-        }
+        },
     )
-    datastore_client.put(entity)
 
 
 def _generate_beacons(last_beacon_date_str: str) -> list:

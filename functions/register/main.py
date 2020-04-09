@@ -10,9 +10,10 @@ from typing import Optional, List, Tuple
 
 import pytz
 from flask import jsonify, Request, Response, current_app
-from google.cloud import datastore
 from google.cloud import pubsub_v1
+from google.cloud.datastore import Entity
 
+from commons.datastore import create_entity, REGISTRATIONS, QueryFilter, find_entities_by_filter
 from commons.messages import get_message, MESSAGE_INVALID_PHONE_NUMBER, MESSAGE_REGISTRATION_NOT_AVAILABLE
 from commons.rate_limit import limit_requests
 
@@ -27,11 +28,9 @@ SEND_SMS_LIMIT_PER_MINUTE = 1
 SEND_SMS_LIMIT_PER_HOUR = 2
 SEND_SMS_LIMIT_PER_24_HOURS = 5
 CODE_CHARACTERS = string.digits
-DATA_STORE_REGISTRATION_KIND = "Registrations"
 REGISTRATION_STATUS_PENDING = "pending"
 REGISTRATION_STATUS_INCORRECT = "incorrect"
 
-datastore_client = datastore.Client()
 publisher = pubsub_v1.PublisherClient()
 
 
@@ -147,26 +146,20 @@ def _should_send_sms(msisdn: str) -> bool:
     return True
 
 
-def _get_registration_entities(
-    field: str, value: str, time_period: timedelta, status: Optional[str] = None
-) -> List[datastore.Entity]:
-    query = datastore_client.query(kind=DATA_STORE_REGISTRATION_KIND)
-    query.add_filter(field, "=", value)
-    if status:
-        query.add_filter("status", "=", status)
+def _get_registration_entities(field: str, value: str, time_period: timedelta, status: Optional[str] = None) -> List[Entity]:
     start_date = datetime.now(tz=pytz.utc) - time_period
 
-    query.add_filter("date", ">", start_date)
-    query.order = ["-date"]
-
-    return list(query.fetch())
+    filters = [QueryFilter(field, "=", value)]
+    if status:
+        filters.append(QueryFilter("status", "=", status))
+    filters.append(QueryFilter("date", ">", start_date))
+    return find_entities_by_filter(REGISTRATIONS, filters, ["-date"])
 
 
 def _save_to_datastore(code: str, msisdn: str, date: datetime, registration_id: str, ip: str):
-    key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, f"{registration_id}")
-
-    registration = datastore.Entity(key=key)
-    registration.update(
+    create_entity(
+        REGISTRATIONS,
+        registration_id,
         {
             "code": code,
             "msisdn": msisdn,
@@ -175,10 +168,8 @@ def _save_to_datastore(code: str, msisdn: str, date: datetime, registration_id: 
             "sms_send": False,
             "ip": ip,
             "status": REGISTRATION_STATUS_PENDING,
-        }
+        },
     )
-
-    datastore_client.put(registration)
 
 
 def _publish_to_send_register_sms_topic(msisdn: str, registration_id: str, code: str, lang: str):

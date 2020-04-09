@@ -5,9 +5,17 @@ from typing import Optional
 
 import pytz
 from flask import jsonify, current_app
-from google.cloud import datastore
 from google.cloud.datastore import Entity
 
+from commons.datastore import (
+    get_entity_by_key,
+    REGISTRATIONS,
+    update_entity,
+    USERS,
+    find_entities_by_filter,
+    QueryFilter,
+    create_entity,
+)
 from commons.messages import get_message, MESSAGE_INVALID_DATA, MESSAGE_REGISTRATION_EXPIRED
 from commons.rate_limit import limit_requests
 
@@ -15,10 +23,6 @@ current_app.config["JSON_AS_ASCII"] = False
 CONFIRMATIONS_PER_MSISDN_LIMIT = 3
 REGISTRATION_STATUS_COMPLETED = "completed"
 REGISTRATION_STATUS_INCORRECT = "incorrect"
-DATA_STORE_REGISTRATION_KIND = "Registrations"
-DATA_STORE_USERS_KIND = "Users"
-
-datastore_client = datastore.Client()
 
 
 @limit_requests()
@@ -75,20 +79,15 @@ def _is_language_valid(request_data: dict) -> bool:
 
 
 def _get_registration_entity(registration_id: str) -> Optional[Entity]:
-    kind = DATA_STORE_REGISTRATION_KIND
-    key = datastore_client.key(kind, f"{registration_id}")
-    return datastore_client.get(key=key)
+    return get_entity_by_key(REGISTRATIONS, registration_id)
 
 
 def _update_registration(entity: Entity, status: str):
-    entity.update({"status": status})
-    datastore_client.put(entity)
+    update_entity(entity, {"status": status})
 
 
 def _get_existing_user_id(msisdn: str) -> Optional[str]:
-    query = datastore_client.query(kind=DATA_STORE_USERS_KIND)
-    query.add_filter("msisdn", "=", msisdn)
-    entities = list(query.fetch())
+    entities = find_entities_by_filter(USERS, [QueryFilter("msisdn", "=", msisdn)])
     if len(entities) > 0:
         return entities[0]["user_id"]
 
@@ -96,22 +95,15 @@ def _get_existing_user_id(msisdn: str) -> Optional[str]:
 
 
 def _create_user(msisdn: str, user_id: str, date: datetime) -> None:
-    key = datastore_client.key(DATA_STORE_USERS_KIND, f"{user_id}")
-
-    user = datastore.Entity(key=key)
-    user.update({"user_id": user_id, "msisdn": msisdn, "created": date, "status": "orange"})
-
-    datastore_client.put(user)
+    create_entity(USERS, user_id, {"user_id": user_id, "msisdn": msisdn, "created": date, "status": "orange"})
 
 
 def _confirmation_limit_reached(msisdn: str) -> bool:
     start_date = datetime.now(tz=pytz.utc) - timedelta(hours=1)
 
-    query = datastore_client.query(kind=DATA_STORE_REGISTRATION_KIND)
-    query.add_filter("msisdn", "=", msisdn)
-    query.add_filter("date", ">", start_date)
-
-    registration_entities = list(query.fetch())
+    registration_entities = find_entities_by_filter(
+        REGISTRATIONS, [QueryFilter("msisdn", "=", msisdn), QueryFilter("date", ">", start_date)]
+    )
     if len(registration_entities) >= CONFIRMATIONS_PER_MSISDN_LIMIT:
         logging.warning(f"_confirmation_limit_reached: msisdn: {msisdn}")
         return True

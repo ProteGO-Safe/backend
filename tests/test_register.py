@@ -12,12 +12,12 @@ import requests
 from google.cloud import datastore
 from google.cloud.datastore import Entity
 
+from commons.datastore import REGISTRATIONS
 from tests.common import BASE_URL
 
 REGISTER_ENDPOINT = "register"
 INVALID_REGS_PER_IP_LIMIT = 10
 INVALID_REGS_PER_MSISDN_LIMIT = 4
-DATA_STORE_REGISTRATION_KIND = "Registrations"
 NUMBER_PREFIX = "+48"
 
 SEND_SMS_NUMBER = NUMBER_PREFIX + os.environ["SEND_SMS_NUMBER"]
@@ -42,7 +42,7 @@ class TestRegisterDevice(TestCase):
     def tearDown(self) -> None:
         keys = []
         for id_ in self.entities_ids_to_delete:
-            key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, id_)
+            key = datastore_client.key(REGISTRATIONS, id_)
             keys.append(key)
 
         datastore_client.delete_multi(keys=keys)
@@ -94,7 +94,7 @@ class TestRegisterDevice(TestCase):
             response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"msisdn": SEND_SMS_NUMBER, "lang": "pl"})
             registration_id = response.json()["registration_id"]
             self.entities_ids_to_delete.append(registration_id)
-            key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)
+            key = datastore_client.key(REGISTRATIONS, registration_id)
             keys.append(key)
 
             assert response.status_code == 200
@@ -104,7 +104,7 @@ class TestRegisterDevice(TestCase):
         assert all(code == codes[0] for code in codes)
 
     def get_registrations_entities(self, field: str, value: str, time_period: timedelta) -> List[Entity]:
-        query = datastore_client.query(kind=DATA_STORE_REGISTRATION_KIND)
+        query = datastore_client.query(kind=REGISTRATIONS)
         query.add_filter(field, "=", value)
         query.add_filter("date", ">", datetime.now(tz=pytz.utc) - time_period)
 

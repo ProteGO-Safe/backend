@@ -3,13 +3,9 @@ from datetime import datetime
 
 import pytz
 from flask import jsonify
-from google.cloud import datastore
 
+from commons.datastore import create_entity, USERS
 from commons.rate_limit import limit_requests
-
-datastore_client = datastore.Client()
-
-DATA_STORE_USERS_KIND = "Users"
 
 
 @limit_requests()
@@ -22,8 +18,4 @@ def register_no_msisdn(request):
 
 
 def _save_user_to_datastore(user_id: str, date: datetime) -> None:
-    key = datastore_client.key(DATA_STORE_USERS_KIND, f"{user_id}")
-    user = datastore.Entity(key=key)
-    user.update({"user_id": user_id, "created": date, "status": "orange"})
-
-    datastore_client.put(user)
+    create_entity(USERS, user_id, {"user_id": user_id, "created": date, "status": "orange"})
