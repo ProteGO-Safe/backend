@@ -8,6 +8,7 @@ from smsapi.client import SmsApiPlClient
 from smsapi.exception import SmsApiException
 
 token = os.environ["SMS_API_TOKEN"]
+DEFAULT_LANG = "pl"
 
 client = SmsApiPlClient(access_token=token)
 
@@ -32,7 +33,14 @@ def send_register_sms(event, context):
     msisdn = data["msisdn"]
     registration_id = data["registration_id"]
     code = data["code"]
-    message = f"Twój kod dla ProteGO to: {code}"
+    lang = data.get("lang")
+    if lang not in ("pl", "en"):
+        logging.warning(f"send_register_sms: invalid lang: {lang}")
+        lang = DEFAULT_LANG
+    if lang == "pl":
+        message = f"Twój kod dla ProteGO to: {code}"
+    else:
+        message = f"Your ProteGO code is: {code}"
 
     try:
         send_results = client.sms.send(to=msisdn, message=message, encoding="utf-8")
