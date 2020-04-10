@@ -52,7 +52,7 @@ resource "google_cloudfunctions_function" "check_version" {
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.check_version.name
   depends_on            = [google_project_service.gcp_services]
-  vpc_connector = google_vpc_access_connector.connector.name
+  vpc_connector         = google_vpc_access_connector.connector.name
   environment_variables = {
     REDIS_HOST = google_redis_instance.rate_limiting_storage.host
   }
@@ -99,7 +99,7 @@ data "archive_file" "confirm_registration" {
     content  = "${file("${data.local_file.confirm_registration_messages.filename}")}"
     filename = "messages.json"
   }
-    source {
+  source {
     content  = "${file("${data.local_file.rate_limit.filename}")}"
     filename = "rate_limit.py"
   }
@@ -120,7 +120,7 @@ resource "google_cloudfunctions_function" "confirm_registration" {
   entry_point           = "confirm_registration"
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.confirm_registration.name
-  vpc_connector = google_vpc_access_connector.connector.name
+  vpc_connector         = google_vpc_access_connector.connector.name
   environment_variables = {
     REDIS_HOST = google_redis_instance.rate_limiting_storage.host
   }
@@ -189,7 +189,7 @@ resource "google_cloudfunctions_function" "get_status" {
   entry_point           = "get_status"
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.get_status.name
-  vpc_connector = google_vpc_access_connector.connector.name
+  vpc_connector         = google_vpc_access_connector.connector.name
 
   environment_variables = {
     BQ_DATASET = google_bigquery_dataset.protego_main_dataset.dataset_id
@@ -252,7 +252,7 @@ resource "google_cloudfunctions_function" "send_encounters" {
   entry_point           = "send_encounters"
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.send_encounters.name
-  vpc_connector = google_vpc_access_connector.connector.name
+  vpc_connector         = google_vpc_access_connector.connector.name
 
   environment_variables = {
     BQ_DATASET = google_bigquery_dataset.protego_main_dataset.dataset_id
@@ -326,12 +326,12 @@ resource "google_cloudfunctions_function" "register" {
   entry_point           = "register"
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.register.name
-  vpc_connector = google_vpc_access_connector.connector.name
+  vpc_connector         = google_vpc_access_connector.connector.name
 
   environment_variables = {
     PUBSUB_SEND_REGISTER_SMS_TOPIC = google_pubsub_topic.pubsub_send_register_sms_topic.name
     STAGE                          = var.stage
-    REDIS_HOST = google_redis_instance.rate_limiting_storage.host
+    REDIS_HOST                     = google_redis_instance.rate_limiting_storage.host
   }
 
   depends_on = [google_pubsub_topic.pubsub_send_register_sms_topic]
@@ -368,6 +368,11 @@ data "archive_file" "register_no_msisdn" {
     content  = "${file("${data.local_file.register_no_msisdn_requirements.filename}")}"
     filename = "requirements.txt"
   }
+
+  source {
+    content  = "${file("${data.local_file.rate_limit.filename}")}"
+    filename = "rate_limit.py"
+  }
 }
 
 resource "google_storage_bucket_object" "register_no_msisdn" {
@@ -385,6 +390,10 @@ resource "google_cloudfunctions_function" "register_no_msisdn" {
   entry_point           = "register_no_msisdn"
   source_archive_bucket = google_storage_bucket.functions.name
   source_archive_object = google_storage_bucket_object.register_no_msisdn.name
+  vpc_connector         = google_vpc_access_connector.connector.name
+  environment_variables = {
+    REDIS_HOST = google_redis_instance.rate_limiting_storage.host
+  }
 }
 
 resource "google_cloudfunctions_function_iam_member" "invoker-register_no_msisdn" {

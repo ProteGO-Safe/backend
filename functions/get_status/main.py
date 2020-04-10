@@ -42,7 +42,7 @@ def get_status(request):
     request_data = request.get_json()
 
     if not _is_language_valid(request_data):
-        return False, (jsonify({"status": "failed", "message": "Set lang parameter to pl or en"}), 422)
+        return jsonify({"status": "failed", "message": "Set lang parameter to pl or en"}), 422
 
     lang = request_data["lang"]
 
