@@ -1,13 +1,12 @@
-import json
 from datetime import datetime, timedelta
 from unittest import TestCase
 
 import pytz
 import requests
-
 from google.cloud import datastore
 
 from commons.datastore import REGISTRATIONS, USERS
+from commons.messages import get_message, MESSAGE_INVALID_DATA, MESSAGE_REGISTRATION_EXPIRED
 from tests.common import BASE_URL
 
 CONFIRM_REGISTRATION_ENDPOINT = "confirm_registration"
@@ -19,17 +18,8 @@ REGISTRATION_STATUS_COMPLETED = "completed"
 REGISTRATION_STATUS_PENDING = "pending"
 
 LANG = "pl"
-MESSAGE_INVALID_DATA = "invalid_data"
-MESSAGE_REGISTRATION_EXPIRED = "registration_expired"
 
 datastore_client = datastore.Client()
-
-with open("functions/confirm_registration/messages.json") as file:
-    MESSAGES = json.load(file)
-
-
-def _get_message(message_code: str, lang: str) -> str:
-    return MESSAGES[message_code][lang]
 
 
 class TestConfirmRegistration(TestCase):
@@ -70,7 +60,7 @@ class TestConfirmRegistration(TestCase):
         request_data = {"code": "code", "registration_id": "mock", "lang": LANG}
         response = requests.post(f"{BASE_URL}{CONFIRM_REGISTRATION_ENDPOINT}", json=request_data)
         assert response.status_code == 422
-        assert response.json()["message"] == _get_message(MESSAGE_INVALID_DATA, LANG)
+        assert response.json()["message"] == get_message(MESSAGE_INVALID_DATA, LANG)
 
     def test_already_completed_registration(self):
         registration_id = "registration_id_mock"
@@ -95,7 +85,7 @@ class TestConfirmRegistration(TestCase):
         self.registrations_entities_ids_to_delete.append(registration_id)
         response = requests.post(f"{BASE_URL}{CONFIRM_REGISTRATION_ENDPOINT}", json=request_data)
         assert response.status_code == 422
-        assert response.json()["message"] == _get_message(MESSAGE_INVALID_DATA, LANG)
+        assert response.json()["message"] == get_message(MESSAGE_INVALID_DATA, LANG)
 
     def test_confirmation_per_msisdn_reached(self):
         registrations = []
@@ -122,7 +112,7 @@ class TestConfirmRegistration(TestCase):
         request_data = {"code": "code", "registration_id": self.registrations_entities_ids_to_delete[3], "lang": LANG}
         response = requests.post(f"{BASE_URL}{CONFIRM_REGISTRATION_ENDPOINT}", json=request_data)
         assert response.status_code == 422
-        assert response.json()["message"] == _get_message(MESSAGE_INVALID_DATA, LANG)
+        assert response.json()["message"] == get_message(MESSAGE_INVALID_DATA, LANG)
 
     def test_registration_expired(self):
         registration_id = "registration_id_mock"
@@ -147,7 +137,7 @@ class TestConfirmRegistration(TestCase):
         self.registrations_entities_ids_to_delete.append(registration_id)
         response = requests.post(f"{BASE_URL}{CONFIRM_REGISTRATION_ENDPOINT}", json=request_data)
         assert response.status_code == 422
-        assert response.json()["message"] == _get_message(MESSAGE_REGISTRATION_EXPIRED, LANG)
+        assert response.json()["message"] == get_message(MESSAGE_REGISTRATION_EXPIRED, LANG)
 
     def test_invalid_code(self):
         registration_id = "registration_id_mock"
@@ -172,7 +162,7 @@ class TestConfirmRegistration(TestCase):
         self.registrations_entities_ids_to_delete.append(registration_id)
         response = requests.post(f"{BASE_URL}{CONFIRM_REGISTRATION_ENDPOINT}", json=request_data)
         assert response.status_code == 422
-        assert response.json()["message"] == _get_message(MESSAGE_INVALID_DATA, LANG)
+        assert response.json()["message"] == get_message(MESSAGE_INVALID_DATA, LANG)
 
     def test_user_already_exists(self):
         registration_id = "registration_id_mock"
