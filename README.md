@@ -98,8 +98,8 @@ Install requirements from `tests/requirements.txt`
 
 Run:
 ```shell script
+gcloud auth login
+gcloud config set project <project id>
 python -m  unittest
 ```
-
-In case of PRODUCTION you should receive SMS on number given
 

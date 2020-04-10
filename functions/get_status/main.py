@@ -9,6 +9,8 @@ from flask import jsonify, current_app
 from google.cloud import bigquery, datastore
 from google.cloud.datastore import Entity
 
+from rate_limit import limit_requests
+
 current_app.config["JSON_AS_ASCII"] = False
 BEACON_DATE_FORMAT = "%Y%m%d%H"
 MAX_NR_OF_BEACON_IDS = 21 * 24  # 21 days x 24 hours
@@ -32,6 +34,7 @@ class SaveToBigQueryFailedException(Exception):
         self.bq_errors = bq_errors
 
 
+@limit_requests()
 def get_status(request):
     if not request.is_json:
         return jsonify({"status": "failed", "message": "Invalid data"}), 422
@@ -39,7 +42,7 @@ def get_status(request):
     request_data = request.get_json()
 
     if not _is_language_valid(request_data):
-        return False, (jsonify({"status": "failed", "message": "Set lang parameter to pl or en"}), 422)
+        return jsonify({"status": "failed", "message": "Set lang parameter to pl or en"}), 422
 
     lang = request_data["lang"]
 

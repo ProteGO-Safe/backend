@@ -1,3 +1,4 @@
+import json
 import os
 import random
 from datetime import datetime, timedelta
@@ -20,8 +21,18 @@ DATA_STORE_REGISTRATION_KIND = "Registrations"
 NUMBER_PREFIX = "+48"
 
 SEND_SMS_NUMBER = NUMBER_PREFIX + os.environ["SEND_SMS_NUMBER"]
+LANG = "pl"
+MESSAGE_INVALID_PHONE_NUMBER = "invalid_phone_number"
+MESSAGE_REGISTRATION_NOT_AVAILABLE = "registration_not_available"
 
 datastore_client = datastore.Client()
+
+with open("functions/register/messages.json") as file:
+    MESSAGES = json.load(file)
+
+
+def _get_message(message_code: str, lang: str) -> str:
+    return MESSAGES[message_code][lang]
 
 
 class TestRegisterDevice(TestCase):
@@ -45,52 +56,42 @@ class TestRegisterDevice(TestCase):
         assert response.status_code == 422
         assert response.json()["message"] == "Invalid data"
 
-    def test_no_msisdn(self):
+    def test_no_lang(self):
         response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={})
         assert response.status_code == 422
-        assert response.json()["message"] == "Invalid phone number"
+        assert response.json()["message"] == "Set lang parameter to pl or en"
+
+    def test_no_msisdn(self):
+        response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"lang": "pl"})
+        assert response.status_code == 422
+        assert response.json()["message"] == _get_message(MESSAGE_INVALID_PHONE_NUMBER, LANG)
 
     def test_invalid_msisdn(self):
         invalid_numbers = ["123123123", "1231231231", "+50123123123"]
         for number in invalid_numbers:
-            response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"msisdn": number})
+            response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"msisdn": number, "lang": "pl"})
             assert response.status_code == 422
-            assert response.json()["message"] == "Invalid phone number"
-
-    def test_too_many_requests_for_ip(self):
-        my_ip = requests.get("https://api.ipify.org").text
-
-        requests_from_ip = len(self.get_registrations_entities("ip", my_ip, timedelta(hours=1)))
-
-        for i in range(INVALID_REGS_PER_IP_LIMIT - requests_from_ip):
-            number = NUMBER_PREFIX + "".join(random.choice(digits) for _ in range(9))
-            response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"msisdn": number})
-            self.entities_ids_to_delete.append(response.json()["registration_id"])
-
-        response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"msisdn": "+48123123123"})
-
-        assert response.status_code == 429
-        assert response.json()["message"] == "Registration temporarily not available. Try again in an hour"
+            assert response.json()["message"] == _get_message(MESSAGE_INVALID_PHONE_NUMBER, LANG)
 
     def test_too_many_requests_for_msisdn(self):
         msisdn = NUMBER_PREFIX + "".join(random.choice(digits) for _ in range(9))
         requests_for_msisdn = len(self.get_registrations_entities("msisdn", msisdn, timedelta(hours=1)))
 
         for _ in range(INVALID_REGS_PER_MSISDN_LIMIT - requests_for_msisdn):
-            response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"msisdn": msisdn})
+            response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"msisdn": msisdn, "lang": "pl"})
             self.entities_ids_to_delete.append(response.json()["registration_id"])
 
-        response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"msisdn": msisdn})
+        response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"msisdn": msisdn, "lang": "pl"})
 
         assert response.status_code == 429
-        assert response.json()["message"] == "Registration temporarily not available. Try again in an hour"
+        assert response.json()["message"] == _get_message(MESSAGE_REGISTRATION_NOT_AVAILABLE, LANG)
 
     def test_get_pending_registration_code(self):
         requests_for_msisdn = self.get_registrations_entities("msisdn", SEND_SMS_NUMBER, timedelta(minutes=10))
 
         keys = []
         for _ in range(INVALID_REGS_PER_MSISDN_LIMIT - len(requests_for_msisdn)):
-            response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"msisdn": SEND_SMS_NUMBER})
+            response = requests.post(f"{BASE_URL}{REGISTER_ENDPOINT}", json={"msisdn": SEND_SMS_NUMBER, "lang": "pl"})
             registration_id = response.json()["registration_id"]
             self.entities_ids_to_delete.append(registration_id)
             key = datastore_client.key(DATA_STORE_REGISTRATION_KIND, registration_id)

@@ -5,11 +5,14 @@ import pytz
 from flask import jsonify
 from google.cloud import datastore
 
+from rate_limit import limit_requests
+
 datastore_client = datastore.Client()
 
 DATA_STORE_USERS_KIND = "Users"
 
 
+@limit_requests()
 def register_no_msisdn(request):
     user_id = secrets.token_hex(32)
     date = datetime.now(tz=pytz.utc)
