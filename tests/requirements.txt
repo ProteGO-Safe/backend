@@ -1,2 +1,0 @@
-google-cloud-datastore==1.11.0
-requests==2.23.0

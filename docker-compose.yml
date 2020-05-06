@@ -1,0 +1,75 @@
+---
+version: '3.6'
+
+secrets:
+  cert:
+    file: ./certs/cert.pem
+  key:
+    file: ./certs/key.pem
+  dhparam:
+    file: ./certs/dhparam.pem
+  nginx.conf:
+    file: nginx/nginx.conf
+  mime.types:
+    file: nginx/mime.types
+  upstreams.conf:
+    file: nginx/conf.d/upstreams.conf
+  api.safesafe.app.conf:
+    file: nginx/conf.d/api.safesafe.app.conf
+
+services:
+  proxy:
+    image: infermedica-nginx-proxy:stable-alpine
+    ports:
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+    secrets:
+      - source: cert
+        target: /etc/ssl/private/app.crt
+        uid: '82'
+        gid: '82'
+        mode: 0400
+      - source: key
+        target: /etc/ssl/private/app.key
+        uid: '82'
+        gid: '82'
+        mode: 0400
+      - source: dhparam
+        target: /etc/ssl/private/dhparam.pem
+        uid: '82'
+        gid: '82'
+        mode: 0400
+      - source: nginx.conf
+        target: /etc/nginx/nginx.conf
+        uid: '82'
+        gid: '82'
+        mode: 0400
+      - source: mime.types
+        target: /etc/nginx/mime.types
+        uid: '82'
+        gid: '82'
+        mode: 0400
+      - source: upstreams.conf
+        target: /etc/nginx/conf.d/upstreams.conf
+        uid: '82'
+        gid: '82'
+        mode: 0400
+      - source: api.safesafe.app.conf
+        target: /etc/nginx/conf.d/api.safesafe.app.conf
+        uid: '82'
+        gid: '82'
+        mode: 0400
+    deploy:
+      labels:
+        - "app.safesafe.environment=development"
+      mode: replicated
+      replicas: 1
+      restart_policy: 
+        condition: on-failure
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 5
+        window: 30s
