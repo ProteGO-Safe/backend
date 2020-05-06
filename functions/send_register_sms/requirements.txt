@@ -1,2 +1,0 @@
-smsapi-client==2.4.1
-google-cloud-datastore==1.11.0
