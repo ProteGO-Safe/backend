@@ -4,12 +4,16 @@ import CodeRepository from "./utils/CodeRepository";
 import SecretManager from "./utils/SecretManager";
 
 const config: Config = {
-    secretManagerApiTokenPath: "/path/to/your/secret/object/versions/latest",
+    secretManagerPath: "/path/to/your/secret/object/versions/latest",
+    bucket: 'gs://upload-bucket-test',
     regions: ["europe-west3"],
     code: {
         generator: new RandomCodeGenerator(6),
         lifetime: 30,
         repository: new CodeRepository()
+    },
+    jwt: {
+        lifetime: 30
     },
     secretManager: new SecretManager(),
     cache: {
