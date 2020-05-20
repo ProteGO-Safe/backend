@@ -20,7 +20,8 @@
     "js-sha256": "^0.9.0",
     "moment": "^2.25.3",
     "axios": "^0.19.2",
-    "jsdom": "^16.2.2"
+    "jsdom": "^16.2.2",
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "@types/node": "^13.13.5",

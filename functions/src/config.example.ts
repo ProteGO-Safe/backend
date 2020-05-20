@@ -11,7 +11,11 @@ const config: Config = {
         lifetime: 30,
         repository: new CodeRepository()
     },
-    secretManager: new SecretManager()
+    secretManager: new SecretManager(),
+    cache: {
+        maxAge: 1800,
+        sMaxAge: 1800
+    }
 }
 
 export default config;
