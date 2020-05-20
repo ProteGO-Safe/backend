@@ -1,24 +1,34 @@
 import {CallableContext} from "firebase-functions/lib/providers/https";
-import config from "../config";
-import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import moment = require("moment");
+import {verify} from "jsonwebtoken";
+import config from "../config";
+import {v4} from "uuid";
+import * as path from "path";
+import * as functions from "firebase-functions";
 
 export async function uploadDiagnosisKeys(data : any, context: CallableContext) {
-    const repository = config.code.repository;
-
-    const code = await repository.get(data.code);
-
-    if (!code.exists) {
-        throw new functions.https.HttpsError('not-found', 'Invalid code');
+    if (!await auth(data.verificationPayload)) {
+        throw new functions.https.HttpsError('unauthenticated', 'Invalid access token');
     }
 
-    await repository.remove(data.code);
+    const file = admin.storage().bucket(config.bucket).file(path.join('diagnosis-keys', v4()));
+    await file.save(JSON.stringify(data), {contentType: 'application/json'})
 
-    await admin.firestore().collection('diagnosisKeys').add({
-        time: moment().unix(),
-        diagnosisKeys: data.diagnosisKeys ? data.diagnosisKeys : []
-    });
+    return [];
+}
+
+async function auth(token: string | undefined): Promise<boolean> {
+    if (!token) {
+        return false;
+    }
+
+    try {
+        verify(token, await config.secretManager.getConfig('secret'), {algorithms: ["HS512"]});
+    } catch (e) {
+        return false;
+    }
+
+    return true;
 }
 
 export default uploadDiagnosisKeys;

@@ -7,7 +7,7 @@ class RandomCodeGenerator {
     }
 
     generate(): string {
-        return (Math.random()).toString(36).toLocaleUpperCase().substring(2, 8);
+        return (Math.random()).toString(36).toLocaleUpperCase().substring(2, this.length + 2);
     }
 }
 
