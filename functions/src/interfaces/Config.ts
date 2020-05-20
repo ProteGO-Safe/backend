@@ -12,7 +12,11 @@ interface Config {
         lifetime: number //in minutes
         repository: CodeRepository
     },
-    secretManager: SecretManager;
+    secretManager: SecretManager,
+    cache: {
+        maxAge: number, // in seconds
+        sMaxAge: number // in seconds
+    }
 }
 
 export default Config;

@@ -1,5 +1,7 @@
 import axios from 'axios';
 import moment = require("moment");
+import * as express from "express";
+import config from "../config";
 
 class Content {
     constructor(text: string, reply: string) {
@@ -52,7 +54,9 @@ const obtainHrefToReplace = (selector: HTMLParagraphElement) => {
     return { text, toReplace };
 };
 
-export const faqParser = async () => {
+export const faqParser = async (req: Request, res: express.Response) => {
+
+    console.log("staring faqParser")
 
     const source = 'https://www.gov.pl/web/koronawirus/pytania-i-odpowiedzi';
     const { JSDOM } = require('jsdom');
@@ -124,7 +128,12 @@ export const faqParser = async () => {
 
         const watermark = `${moment().format('YYYY-MM-D')} - ${source}`;
         const faq = new Faq(watermark, faqItems);
-        console.log(JSON.stringify(faq));
+
+        res.set('Cache-Control', `public, max-age=${config.cache.maxAge}, s-maxage=${config.cache.sMaxAge}`);
+        res.status(200)
+            .send(JSON.stringify(faq));
+
+        console.log("finished faqParser")
 
     } catch (exception) {
         throw new Error(exception);
