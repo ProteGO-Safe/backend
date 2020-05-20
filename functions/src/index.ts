@@ -6,6 +6,7 @@ import {clearUnusedCodes} from "./functions/clearUnusedCodes";
 import uploadDiagnosisKeys from "./functions/uploadDiagnosisKeys";
 import hospitalsParser from "./functions/hospitalsParser";
 import faqParser from "./functions/faqParser";
+import advicesParser from "./functions/advicesParser";
 
 admin.initializeApp();
 
@@ -14,3 +15,4 @@ exports.uploadDiagnosisKeys = cloudFunctions.https(uploadDiagnosisKeys);
 exports.clearUnusedCodes = cloudFunctions.scheduler(clearUnusedCodes, 'every 30 minutes');
 exports.faqParser = functions.https.onRequest(faqParser);
 exports.hospitalsParser = functions.https.onRequest(hospitalsParser);
+exports.advicesParser = functions.https.onRequest(advicesParser);

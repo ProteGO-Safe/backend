@@ -2,6 +2,7 @@ import axios from 'axios';
 import moment = require("moment");
 import * as express from "express";
 import config from "../config";
+import {obtainHrefToReplace} from "./hrefRepleacer";
 
 class Content {
     constructor(text: string, reply: string) {
@@ -39,19 +40,6 @@ const addItemToFaq = (text: string, reply: string, type: string) => {
     const content = new Content(text, reply);
     const faqItem = new FaqItem(type, content);
     faqItems.push(faqItem);
-};
-
-const obtainHrefToReplace = (selector: HTMLParagraphElement) => {
-    const { JSDOM } = require('jsdom');
-    const html = selector.innerHTML;
-    const aHref = new JSDOM(html).window.document.querySelector('a');
-    if (!aHref) {
-        return {};
-    }
-    const { text } = aHref;
-    const toReplace = `[url]${text}|${aHref.getAttribute('href')}[url]`;
-
-    return { text, toReplace };
 };
 
 export const faqParser = async (req: Request, res: express.Response) => {
