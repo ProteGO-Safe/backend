@@ -5,7 +5,10 @@ import SecretManager from "./utils/SecretManager";
 
 const config: Config = {
     secretManagerPath: "/path/to/your/secret/object/versions/latest",
-    bucket: 'gs://upload-bucket-test',
+    buckets: {
+        diagnosisKeys: 'gs://upload-bucket-test',
+        cdn: 'safesafe-test-cdn'
+    },
     regions: ["europe-west3"],
     code: {
         generator: new RandomCodeGenerator(6),

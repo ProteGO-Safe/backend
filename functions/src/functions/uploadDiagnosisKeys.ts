@@ -11,7 +11,7 @@ export async function uploadDiagnosisKeys(data : any, context: CallableContext) 
         throw new functions.https.HttpsError('unauthenticated', 'Invalid access token');
     }
 
-    const file = admin.storage().bucket(config.bucket).file(path.join('diagnosis-keys', v4()));
+    const file = admin.storage().bucket(config.buckets.diagnosisKeys).file(path.join('diagnosis-keys', v4()));
     await file.save(JSON.stringify(data), {contentType: 'application/json'})
 
     return [];

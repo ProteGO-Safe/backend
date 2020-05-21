@@ -1,6 +1,5 @@
 import axios from 'axios';
 import moment = require("moment");
-import * as express from "express";
 import config from "../config";
 
 class City {
@@ -35,7 +34,34 @@ class Hostitals {
 
 const voivodeships: Array<Voivodeship> = [];
 
-export const hospitalsParser = async (req: Request, res: express.Response) => {
+const verifyContent = () => {
+    if (voivodeships.length === 0) {
+        throw new Error("elements size can not be 0");
+    }
+
+    voivodeships.forEach(value => {
+        const items = value.items;
+        const name = value.name;
+        if (name === '') {
+            throw new Error("name can not be empty");
+        }
+        if (items.length === 0) {
+            throw new Error("items can not be empty");
+        }
+        items.forEach(value1 => {
+            const address = value1.address;
+            const city = value1.city;
+            if (address === '') {
+                throw new Error("address can not be empty");
+            }
+            if (city === '') {
+                throw new Error("city can not be empty");
+            }
+        })
+    })
+}
+
+export const hospitalsParser = async () => {
 
     console.log("staring hospitalsParser")
 
@@ -73,14 +99,16 @@ export const hospitalsParser = async (req: Request, res: express.Response) => {
                 voivodeships.push(voivodeship);
             });
 
+        verifyContent()
+
         const watermark = `${moment().format('YYYY-MM-D')} - ${source}`;
         const hostitals = new Hostitals(watermark, voivodeships);
 
-        res.set('Cache-Control', `public, max-age=${config.cache.maxAge}, s-maxage=${config.cache.sMaxAge}`);
-        res.status(200)
-            .send(JSON.stringify(hostitals));
+        const storage = new Storage();
+        const bucket = storage.bucket(config.buckets.cdn);
 
-        console.log("finished hospitalsParser")
+        const file = bucket.file('hospitals.json');
+        file.save(JSON.stringify(hostitals)).then(() => console.log("finished hospitalsParser"));
 
     } catch (exception) {
         throw new Error(exception);
