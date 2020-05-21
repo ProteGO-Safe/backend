@@ -1,8 +1,8 @@
 import axios from 'axios';
 import moment = require("moment");
-import * as express from "express";
-import config from "../config";
+const { Storage } = require('@google-cloud/storage');
 import {obtainHrefToReplace} from "./hrefRepleacer";
+import config from "../config";
 
 class Content {
     constructor(text: string, reply: string) {
@@ -42,7 +42,31 @@ const addItemToFaq = (text: string, reply: string, type: string) => {
     faqItems.push(faqItem);
 };
 
-export const faqParser = async (req: Request, res: express.Response) => {
+const verifyContent = () => {
+    if (faqItems.length === 0) {
+        throw new Error("elements size can not be 0");
+    }
+
+    faqItems.forEach(value => {
+        const type = value.type;
+        const text = value.content.text;
+        const reply = value.content.reply;
+        if (type === '') {
+            throw new Error("type can not be empty");
+        }
+        if (text === '') {
+            throw new Error("text can not be empty");
+        }
+        if (['intro', 'title', 'paragraph_strong'].includes(type) && reply !== '') {
+            throw new Error("reply must be empty");
+        }
+        if (type === 'details' && reply === '') {
+            throw new Error("reply can not be empty");
+        }
+    })
+}
+
+export const faqParser = async () => {
 
     console.log("staring faqParser")
 
@@ -114,14 +138,16 @@ export const faqParser = async (req: Request, res: express.Response) => {
                 });
             });
 
+        verifyContent()
+
         const watermark = `${moment().format('YYYY-MM-D')} - ${source}`;
         const faq = new Faq(watermark, faqItems);
 
-        res.set('Cache-Control', `public, max-age=${config.cache.maxAge}, s-maxage=${config.cache.sMaxAge}`);
-        res.status(200)
-            .send(JSON.stringify(faq));
+        const storage = new Storage();
+        const bucket = storage.bucket(config.buckets.cdn);
 
-        console.log("finished faqParser")
+        const file = bucket.file('faq.json');
+        file.save(JSON.stringify(faq)).then(() => console.log("finished faqParser"));
 
     } catch (exception) {
         throw new Error(exception);

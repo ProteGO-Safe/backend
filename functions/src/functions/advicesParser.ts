@@ -1,6 +1,5 @@
 import axios from 'axios';
 import moment = require("moment");
-import * as express from "express";
 import config from "../config";
 import {obtainHrefToReplace} from "./hrefRepleacer";
 
@@ -26,7 +25,24 @@ class Advice {
 
 const adviceItems: Array<AdviceItem> = [];
 
-export const advicesParser = async (req: Request, res: express.Response) => {
+const verifyContent = () => {
+    if (adviceItems.length === 0) {
+        throw new Error("elements size can not be 0");
+    }
+
+    adviceItems.forEach(value => {
+        const title = value.title;
+        const replies = value.replies;
+        if (title === '') {
+            throw new Error("title can not be empty");
+        }
+        if (replies.length === 0) {
+            throw new Error("replies can not be empty");
+        }
+    })
+}
+
+export const advicesParser = async () => {
 
     console.log("staring advicesParser")
 
@@ -56,7 +72,7 @@ export const advicesParser = async (req: Request, res: express.Response) => {
                     let answer = answerSelector.textContent!;
                     answer = answer.replace(text, toReplace!);
                     replies.push(answer);
-                } else if (detailsElement.querySelector('ul') != null) {
+                } else if (detailsElement.querySelector('ul') !== null) {
                     detailsElement
                         .querySelector('ul')!
                         .querySelectorAll(':scope > li')
@@ -64,18 +80,20 @@ export const advicesParser = async (req: Request, res: express.Response) => {
                             replies.push(liElement.textContent!);
                         });
                 }
-                const advice = new AdviceItem(title!, replies)
-                adviceItems.push(advice);
+                const adviceItem = new AdviceItem(title!, replies)
+                adviceItems.push(adviceItem);
             });
 
+        verifyContent()
+
         const watermark = `${moment().format('YYYY-MM-D')} - ${source}`;
-        const faq = new Advice(watermark, adviceItems);
+        const advice = new Advice(watermark, adviceItems);
 
-        res.set('Cache-Control', `public, max-age=${config.cache.maxAge}, s-maxage=${config.cache.sMaxAge}`);
-        res.status(200)
-            .send(JSON.stringify(faq));
+        const storage = new Storage();
+        const bucket = storage.bucket(config.buckets.cdn);
 
-        console.log("finished advicesParser")
+        const file = bucket.file('advices.json');
+        file.save(JSON.stringify(advice)).then(() => console.log("finished advicesParser"));
 
     } catch (exception) {
         throw new Error(exception);

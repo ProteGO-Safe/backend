@@ -1,6 +1,5 @@
 import * as admin from "firebase-admin";
 import * as cloudFunctions from "./cloudFunctions";
-const functions = require('firebase-functions');
 import generateCode from "./functions/generateCode";
 import {clearUnusedCodes} from "./functions/clearUnusedCodes";
 import uploadDiagnosisKeys from "./functions/uploadDiagnosisKeys";
@@ -15,6 +14,6 @@ exports.generateCode = cloudFunctions.https(generateCode);
 exports.uploadDiagnosisKeys = cloudFunctions.https(uploadDiagnosisKeys);
 exports.clearUnusedCodes = cloudFunctions.scheduler(clearUnusedCodes, 'every 30 minutes');
 exports.getAccessToken = cloudFunctions.https(getAccessToken);
-exports.faqParser = functions.https.onRequest(faqParser);
-exports.hospitalsParser = functions.https.onRequest(hospitalsParser);
-exports.advicesParser = functions.https.onRequest(advicesParser);
+exports.faqParser = cloudFunctions.scheduler(faqParser, 'every 30 minutes');
+exports.hospitalsParser = cloudFunctions.scheduler(hospitalsParser, 'every 30 minutes');
+exports.advicesParser = cloudFunctions.scheduler(advicesParser, 'every 30 minutes');

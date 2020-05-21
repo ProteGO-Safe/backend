@@ -6,7 +6,10 @@ declare type SUPPORTED_REGIONS = "us-central1" | "us-east1" | "us-east4" | "euro
 
 interface Config {
     secretManagerPath: string,
-    bucket: string,
+    buckets: {
+        diagnosisKeys: string,
+        cdn: string
+    }
     regions: SUPPORTED_REGIONS[],
     code: {
         generator: RandomCodeGenerator,
