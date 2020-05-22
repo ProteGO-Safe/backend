@@ -19,15 +19,15 @@
     "firebase-admin": "^8.12.1",
     "firebase-functions": "^3.3.0",
     "js-sha256": "^0.9.0",
+    "jsdom": "^16.2.2",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.26.0",
-    "uuid": "^8.0.0",
-    "axios": "^0.19.2",
-    "jsdom": "^16.2.2"
+    "uuid": "^8.1.0",
+    "axios": "^0.19.2"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^8.5.0",
-    "@types/node": "^13.13.8",
+    "@types/node": "^13.13.9",
     "@types/uuid": "^7.0.4",
     "firebase-functions-test": "^0.1.6",
     "tslint": "^5.12.0",
