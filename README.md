@@ -5,12 +5,22 @@ Copy the configuration class:
 cp functions/src/config.example.ts functions/src/config.ts
 ```
 
-Next configure the Secret Manager with a new object and put there your api key: 
+Next, configure the Google Secret Manager of your project with a new object and put there filled json: 
 
-https://cloud.google.com/secret-manager/docs/quickstart
+```json
+{
+  "apiToken": "",
+  "secret": "",
+  "allowedIPs": []
+}
+```
+- **apiToken** is the token which has to be included in the header of the generateCode requests
+- **secret** is the JWT secret
+- **allowedIps** is the array of ips which allow access to the generateCode requests
+ 
 
-Set the path to the Secret Manager Object with your api key in the property `secretManagerApiTokenPath`
-which is located in the config.ts file.
+
+Set the path to the Secret Manager Object in the property `secretManagerPath` (inside config.ts file)
 
 #### 2. Deploy cloud functions
 

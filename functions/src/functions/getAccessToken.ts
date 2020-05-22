@@ -1,5 +1,5 @@
 import {CallableContext} from "firebase-functions/lib/providers/https";
-import config from "../config";
+import config, {secretManager} from "../config";
 import * as functions from "firebase-functions";
 import {v4} from 'uuid';
 import {sign} from "jsonwebtoken";
@@ -22,7 +22,7 @@ export async function getAccessToken(data : any, context: CallableContext) {
 
     const accessToken = sign(
         {code: data.code},
-        await config.secretManager.getConfig('secret'),
+        await secretManager.getConfig('secret'),
         {
             algorithm: 'HS512',
             expiresIn: `${config.jwt.lifetime} minutes`,

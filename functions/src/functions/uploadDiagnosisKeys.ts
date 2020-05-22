@@ -1,7 +1,7 @@
 import {CallableContext} from "firebase-functions/lib/providers/https";
 import * as admin from "firebase-admin";
 import {verify} from "jsonwebtoken";
-import config from "../config";
+import config, {secretManager} from "../config";
 import {v4} from "uuid";
 import * as path from "path";
 import * as functions from "firebase-functions";
@@ -23,7 +23,7 @@ async function auth(token: string | undefined): Promise<boolean> {
     }
 
     try {
-        verify(token, await config.secretManager.getConfig('secret'), {algorithms: ["HS512"]});
+        verify(token, await secretManager.getConfig('secret'), {algorithms: ["HS512"]});
     } catch (e) {
         return false;
     }
