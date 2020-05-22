@@ -4,43 +4,48 @@ const { Storage } = require('@google-cloud/storage');
 import {obtainHrefToReplace} from "./hrefRepleacer";
 import config from "../config";
 
-class Content {
-    constructor(text: string, reply: string) {
+class Collapse {
+    constructor(text: string, description: string) {
         this.text = text;
-        this.reply = reply;
+        this.description = description;
     }
 
     text: string;
-    reply: string;
+    description: string;
+}
+
+class Paragraph {
+    constructor() {
+        this.paragraph = '';
+        this.collapses = [];
+    }
+
+    paragraph: string;
+    collapses: Collapse[];
 }
 
 class FaqItem {
-    constructor(type: string, content: Content) {
-        this.type = type;
-        this.content = content;
+    constructor(title: string) {
+        this.title = title;
+        this.paragraphs = [];
     }
-
-    type: string;
-    content: Content;
+    title: string;
+    paragraphs: Paragraph[];
 }
 
 class Faq {
-    constructor(watermark: string, elements: Array<FaqItem>) {
+    constructor(intro: string, watermark: string, elements: FaqItem[]) {
+        this.intro = intro;
         this.watermark = watermark;
         this.elements = elements;
     }
 
-    elements: Array<FaqItem>;
+    intro: string;
     watermark: string;
+    elements: FaqItem[];
 }
 
-const faqItems: Array<FaqItem> = [];
-
-const addItemToFaq = (text: string, reply: string, type: string) => {
-    const content = new Content(text, reply);
-    const faqItem = new FaqItem(type, content);
-    faqItems.push(faqItem);
-};
+const faqItems: FaqItem[] = [];
 
 const verifyContent = () => {
     if (faqItems.length === 0) {
@@ -48,23 +53,35 @@ const verifyContent = () => {
     }
 
     faqItems.forEach(value => {
-        const type = value.type;
-        const text = value.content.text;
-        const reply = value.content.reply;
-        if (type === '') {
-            throw new Error("type can not be empty");
+        const title = value.title;
+        const paragraphs = value.paragraphs
+        if (title === '') {
+            throw new Error("title can not be empty");
         }
-        if (text === '') {
-            throw new Error("text can not be empty");
-        }
-        if (['intro', 'title', 'paragraph_strong'].includes(type) && reply !== '') {
-            throw new Error("reply must be empty");
-        }
-        if (type === 'details' && reply === '') {
-            throw new Error("reply can not be empty");
-        }
+
+        paragraphs.forEach(value1 => {
+            value1.collapses.forEach(value2 => {
+                if (value2.text === '') {
+                    throw new Error("text can not be empty");
+                }
+                if (value2.description === '') {
+                    throw new Error("description can not be empty");
+                }
+            })
+
+        })
     })
 }
+
+const isNoEmptyParagraphElement = (element: Element) => {
+    if (element.tagName.toLocaleLowerCase() !== 'p') {
+        return false;
+    }
+
+    return element.textContent!.trim().replace('&nbsp;', '') !== '';
+}
+
+let faqItem: FaqItem;
 
 export const faqParser = async () => {
 
@@ -82,15 +99,10 @@ export const faqParser = async () => {
             throw new Error('Can not fetch html');
         }
 
-        const html = data.replace('&nbsp;', '')
-            .replace(', a interesujące nas sprawy można zlokalizować, korzystając z wyszukiwarki', '');
-
-        const dom = new JSDOM(html);
+        const dom = new JSDOM(data);
 
         const intro = dom.window.document.querySelector('#main-content p.intro')
             .textContent;
-
-        addItemToFaq(intro, '', 'intro' );
 
         dom.window.document
             .querySelectorAll('#main-content div.editor-content')
@@ -99,16 +111,21 @@ export const faqParser = async () => {
                     ':scope > *'
                 );
 
-                allEditorContentChildren.forEach((child: Element) => {
+
+                for (let i = 0; i < allEditorContentChildren.length; i ++) {
+                    const child = allEditorContentChildren[i];
                     if (child.tagName.toLocaleLowerCase() === 'h3') {
-                        addItemToFaq(child.textContent!, '', 'title' );
+                        faqItem = new FaqItem(child.textContent!);
                     }
                     if (child.tagName.toLocaleLowerCase() === 'div') {
+                        let paragraph: Paragraph = new Paragraph();
                         const allChildren = child.querySelectorAll(':scope > *');
-                        allChildren.forEach(_child => {
+                        for (let j = 0; j < allChildren.length; j ++) {
+                            const _child = allChildren[j]
                             if (_child.tagName.toLocaleLowerCase() === 'p') {
                                 if (_child.textContent!.trim()) {
-                                    addItemToFaq(_child.textContent!,'', 'paragraph_strong');
+                                    paragraph = new Paragraph()
+                                    paragraph.paragraph = _child.textContent!;
                                 }
                             }
                             if (_child.tagName.toLocaleLowerCase() === 'details') {
@@ -130,18 +147,25 @@ export const faqParser = async () => {
                                 );
 
                                 answer = answer.replace(text, toReplace!);
-
-                                addItemToFaq(question!, answer, 'details');
+                                const collapse = new Collapse(question!, answer)
+                                paragraph.collapses.push(collapse);
                             }
-                        });
+
+                            if (j === allChildren.length - 1 || isNoEmptyParagraphElement(allChildren[j + 1])) {
+                                faqItem.paragraphs.push(paragraph);
+                            }
+                        }
                     }
-                });
+                    if (i === allEditorContentChildren.length - 1 || allEditorContentChildren[i + 1].tagName.toLocaleLowerCase() === 'h3') {
+                        faqItems.push(faqItem);
+                    }
+                }
             });
 
         verifyContent()
 
         const watermark = `${moment().format('YYYY-MM-D')} - ${source}`;
-        const faq = new Faq(watermark, faqItems);
+        const faq = new Faq(intro, watermark, faqItems);
 
         const storage = new Storage();
         const bucket = storage.bucket(config.buckets.cdn);
