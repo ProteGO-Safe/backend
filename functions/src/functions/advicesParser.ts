@@ -1,6 +1,7 @@
 import axios from 'axios';
 import moment = require("moment");
 import config from "../config";
+const { Storage } = require('@google-cloud/storage');
 import {obtainHrefToReplace} from "./hrefRepleacer";
 
 class AdviceItem {

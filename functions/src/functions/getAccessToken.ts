@@ -6,8 +6,11 @@ import {sign} from "jsonwebtoken";
 import moment = require("moment");
 
 export async function getAccessToken(data : any, context: CallableContext) {
-    const repository = config.code.repository;
+    if (!data.code) {
+        throw new functions.https.HttpsError('not-found', 'Invalid code');
+    }
 
+    const repository = config.code.repository;
     const code = await repository.get(data.code);
 
     if (!code.exists) {

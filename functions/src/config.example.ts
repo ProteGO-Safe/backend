@@ -8,7 +8,7 @@ const config: Config = {
     secretManagerPath: "/path/to/your/secret/object/versions/latest",
     buckets: {
         diagnosisKeys: 'gs://upload-bucket-test',
-        cdn: 'safesafe-test-cdn'
+        cdn: 'gs://somegcs.appspot.com'
     },
     regions: ["europe-west3"],
     code: {
