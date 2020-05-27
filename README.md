@@ -5,43 +5,27 @@
 cp functions/src/config.example.ts functions/src/config.ts
 ```
 
-##### Configure The google Secret Manaer:
-Next, configure the Google Secret Manager of your project with a new object and put there filled json: 
+##### Configure The google Secret Manager:
+You have to configure the Google Secret Manager of your project with a new object and put there filled json: 
 
 ```json
 {
   "apiToken": "",
   "secret": "",
-  "allowedIPs": []
+  "allowedIPs": [],
+  "exposureServerConfig": {}
 }
 ```
 - **apiToken** is the token which has to be included in the header of the generateCode requests
 - **secret** is the JWT secret
 - **allowedIps** is the array of ips which allow access to the generateCode requests
+- **exposureServerConfig** Auth configuration to the Exposure Notification Reference Server
 
-##### Prepare storage buckets:
+##### Bucket preparation
 
-You have to create two buckets.
-
-First bucket will be used for temporary keeping uploaded diagnosis keys. 
-You can use below rules configuration to make sure that 
-only cloud functions will be able to write and read from it
-
-```json
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /{allPaths=**} {
-      allow read, write: if false;
-    }
-  }
-}
-```
-
-
-Second bucket is public CDN which is used to keep public ProteGO Safe assets
+The bucket is public CDN which is used to keep public ProteGO Safe assets.
 You can use below rules configuration to make sure that only 
-cloud functions will be able to write
+cloud functions will be able to write there:
 
 
 ```json
@@ -65,11 +49,15 @@ service firebase.storage {
 ##### Set values of your config.ts file:
 ```json
     secretManagerPath: "/path/to/your/secret/object/versions/latest",
+    exposureEndpoint: 'https://exposure-run.app',
     buckets: {
-        diagnosisKeys: 'gs://your-temporary-diagnosis-keys-bucket',
-        cdn: 'gs://your-cdn-bucket'
-    },
+        cdn: 'gs://somegcs.appspot.com'
+    }
 ```
+
+- secretManagerPath - path to the created secret manager object
+- exposureEndpoint - url to the "exposure" cloud run of the Exposure Notification Reference Server
+- buckets.cdn - url to your bucket 
 
 #### 2. Deploy cloud functions
 

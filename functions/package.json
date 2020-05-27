@@ -16,14 +16,14 @@
   "dependencies": {
     "@google-cloud/secret-manager": "^3.0.0",
     "@google-cloud/storage": "^5.0.1",
+    "axios": "^0.19.2",
     "firebase-admin": "^8.12.1",
     "firebase-functions": "^3.3.0",
     "js-sha256": "^0.9.0",
     "jsdom": "^16.2.2",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.26.0",
-    "uuid": "^8.1.0",
-    "axios": "^0.19.2"
+    "uuid": "^8.1.0"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^8.5.0",
