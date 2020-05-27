@@ -6,8 +6,8 @@ import IPChecker from "./utils/IPChecker";
 
 const config: Config = {
     secretManagerPath: "/path/to/your/secret/object/versions/latest",
+    exposureEndpoint: 'https://exposure.run.app/',
     buckets: {
-        diagnosisKeys: 'gs://upload-bucket-test',
         cdn: 'gs://somegcs.appspot.com'
     },
     regions: ["europe-west3"],

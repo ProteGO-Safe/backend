@@ -1,18 +1,19 @@
 import {CallableContext} from "firebase-functions/lib/providers/https";
-import * as admin from "firebase-admin";
-import {verify} from "jsonwebtoken";
+import {sign, verify} from "jsonwebtoken";
 import config, {secretManager} from "../config";
-import {v4} from "uuid";
-import * as path from "path";
 import * as functions from "firebase-functions";
+import Axios from "axios";
 
 export async function uploadDiagnosisKeys(data : any, context: CallableContext) {
     if (!await auth(data.verificationPayload)) {
         throw new functions.https.HttpsError('unauthenticated', 'Invalid access token');
     }
 
-    const file = admin.storage().bucket(config.buckets.diagnosisKeys).file(path.join('diagnosis-keys', v4()));
-    await file.save(JSON.stringify(data), {contentType: 'application/json'})
+    const idToken = await getIdToken();
+
+    await Axios.post(config.exposureEndpoint, data, {
+        headers: { Authorization: `Bearer ${idToken}` }
+    });
 
     return [];
 }
@@ -29,6 +30,30 @@ async function auth(token: string | undefined): Promise<boolean> {
     }
 
     return true;
+}
+
+async function getIdToken(): Promise<string> {
+    const serverConfig = await secretManager.getConfig('exposureServerConfig');
+
+    const jwt = sign(
+        {
+            target_audience: config.exposureEndpoint
+        },
+        <string> serverConfig.private_key,
+        {
+            algorithm: 'RS256',
+            expiresIn: '60 minutes',
+            audience: serverConfig.token_uri,
+            issuer: serverConfig.client_email
+        }
+    );
+
+    const response = await Axios.post(serverConfig.token_uri, {
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion: jwt
+    });
+
+    return <string>response.data.id_token;
 }
 
 export default uploadDiagnosisKeys;
