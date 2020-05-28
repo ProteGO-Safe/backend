@@ -1,4 +1,3 @@
-import {CallableContext} from "firebase-functions/lib/providers/https";
 import {sign, verify} from "jsonwebtoken";
 import config, {secretManager} from "../config";
 import * as functions from "firebase-functions";

@@ -1,8 +1,9 @@
 import axios from 'axios';
-import moment = require("moment");
 import config from "../config";
-const { Storage } = require('@google-cloud/storage');
 import {obtainHrefToReplace} from "./hrefRepleacer";
+import moment = require("moment");
+
+const { Storage } = require('@google-cloud/storage');
 
 class AdviceItem {
     constructor(title: string, replies: Array<string>) {

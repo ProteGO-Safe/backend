@@ -1,6 +1,7 @@
 import axios from 'axios';
-import moment = require("moment");
 import config from "../config";
+import moment = require("moment");
+
 const { Storage } = require('@google-cloud/storage');
 
 class City {
