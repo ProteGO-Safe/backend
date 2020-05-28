@@ -1,4 +1,3 @@
-import {CallableContext} from "firebase-functions/lib/providers/https";
 import config, {secretManager} from "../config";
 import * as functions from "firebase-functions";
 import {v4} from 'uuid';

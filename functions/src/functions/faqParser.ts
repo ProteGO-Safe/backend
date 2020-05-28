@@ -1,8 +1,9 @@
 import axios from 'axios';
-import moment = require("moment");
-const { Storage } = require('@google-cloud/storage');
 import {obtainHrefToReplace} from "./hrefRepleacer";
 import config from "../config";
+import moment = require("moment");
+
+const { Storage } = require('@google-cloud/storage');
 
 class Collapse {
     constructor(text: string, description: string) {
