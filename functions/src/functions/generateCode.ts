@@ -12,7 +12,12 @@ export async function generateCode(data : any, context: CallableContext) {
         throw new functions.https.HttpsError('permission-denied', 'Permission denied.');
     }
 
-    const code = config.code.generator.generate();
+    let code;
+
+    do {
+        code = config.code.generator.generate();
+    } while ((await config.code.repository.get(code)).exists);
+
     const expiryTime = config.code.lifetime * 60 + moment().unix();
 
     await config.code.repository.save(code, expiryTime);
