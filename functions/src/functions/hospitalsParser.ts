@@ -64,8 +64,6 @@ const verifyContent = () => {
 
 export const hospitalsParser = async () => {
 
-    console.log("staring hospitalsParser")
-
     const source = 'https://www.gov.pl/web/koronawirus/lista-szpitali';
     const { JSDOM } = require('jsdom');
 
@@ -109,7 +107,7 @@ export const hospitalsParser = async () => {
         const bucket = storage.bucket(config.buckets.cdn);
 
         const file = bucket.file('hospitals.json');
-        file.save(JSON.stringify(hostitals)).then(() => console.log("finished hospitalsParser"));
+        await file.save(JSON.stringify(hostitals));
 
     } catch (exception) {
         throw new Error(exception);
