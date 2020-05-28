@@ -5,7 +5,7 @@ import {v4} from 'uuid';
 import {sign} from "jsonwebtoken";
 import moment = require("moment");
 
-export async function getAccessToken(data : any, context: CallableContext) {
+export async function getAccessToken(data : any) {
     if (!data.code) {
         throw new functions.https.HttpsError('not-found', 'Invalid code');
     }

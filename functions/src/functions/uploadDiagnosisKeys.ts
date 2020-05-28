@@ -4,7 +4,7 @@ import config, {secretManager} from "../config";
 import * as functions from "firebase-functions";
 import Axios from "axios";
 
-export async function uploadDiagnosisKeys(data : any, context: CallableContext) {
+export async function uploadDiagnosisKeys(data : any) {
     if (!await auth(data.verificationPayload)) {
         throw new functions.https.HttpsError('unauthenticated', 'Invalid access token');
     }
