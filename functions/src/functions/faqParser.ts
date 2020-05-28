@@ -85,8 +85,6 @@ let faqItem: FaqItem;
 
 export const faqParser = async () => {
 
-    console.log("staring faqParser")
-
     const source = 'https://www.gov.pl/web/koronawirus/pytania-i-odpowiedzi';
     const { JSDOM } = require('jsdom');
 
@@ -171,7 +169,7 @@ export const faqParser = async () => {
         const bucket = storage.bucket(config.buckets.cdn);
 
         const file = bucket.file('faq.json');
-        file.save(JSON.stringify(faq)).then(() => console.log("finished faqParser"));
+        await file.save(JSON.stringify(faq));
 
     } catch (exception) {
         throw new Error(exception);
