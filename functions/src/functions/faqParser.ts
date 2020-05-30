@@ -38,7 +38,7 @@ class Faq {
 
     intro: string;
     watermark: string;
-    elements: FaqItem[];
+    elements: FaqItem[] = [];
 
     verifyContent = () => {
         if (this.elements.length === 0) {
