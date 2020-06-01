@@ -75,4 +75,4 @@ jobs:
         if: ( env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV' )
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only functions --project $SECRET_PROJECT
+          args: deploy --only functions:generateCode,functions:uploadDiagnosisKeys,functions:clearUnusedCodes,functions:getAccessToken,functions:faqParser,functions:hospitalsParser,functions:advicesParser --project $SECRET_PROJECT
