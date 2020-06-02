@@ -71,8 +71,11 @@ jobs:
 
       - run: npm --prefix functions install
 
+      - run: echo "::set-env name=FUNCTIONS::$(ls -p functions/src/functions/ | sed 's|^|functions:|' | sed 's|.ts||g' | grep -v / |tr '\n' ',')"
+        shell: bash
+
       - name: Deploy to Firebase
         if: ( env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV' )
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only functions:generateCode,functions:uploadDiagnosisKeys,functions:clearUnusedCodes,functions:getAccessToken,functions:faqParser,functions:hospitalsParser,functions:advicesParser --project $SECRET_PROJECT
+          args: deploy --only $FUNCTIONS --project $SECRET_PROJECT
