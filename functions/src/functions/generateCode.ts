@@ -1,10 +1,10 @@
-import config, {ipChecker, secretManager} from "../config";
+import config, {generateCodeIPChecker, secretManager} from "../config";
 import {CallableContext} from "firebase-functions/lib/providers/https";
 import * as functions from "firebase-functions";
 import moment = require("moment");
 
 export async function generateCode(data : any, context: CallableContext) {
-    if (!await ipChecker.allow(context.rawRequest.ip)) {
+    if (!await generateCodeIPChecker.allow(<string>context.rawRequest.header('Cf-Connecting-Ip'))) {
         throw new functions.https.HttpsError('permission-denied', 'Permission denied.');
     }
 
