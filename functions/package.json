@@ -23,12 +23,14 @@
     "jsdom": "^16.2.2",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.26.0",
+    "netmask": "^1.0.6",
     "uuid": "^8.1.0"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^13.13.9",
     "@types/uuid": "^7.0.4",
+    "@types/netmask": "^1.0.30",
     "firebase-functions-test": "^0.1.6",
     "tslint": "^5.12.0",
     "typescript": "^3.9.3"
