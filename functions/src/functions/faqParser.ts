@@ -46,11 +46,7 @@ class Faq {
         }
 
         this.elements.forEach(value => {
-            const title = value.title;
             const paragraphs = value.paragraphs
-            if (title === '') {
-                throw new Error("title can not be empty");
-            }
 
             paragraphs.forEach(value1 => {
                 value1.collapses.forEach(value2 => {
@@ -110,6 +106,8 @@ export const faqParser = async () => {
                     const child = allEditorContentChildren[i];
                     if (child.tagName.toLocaleLowerCase() === 'h3') {
                         faqItem = new FaqItem(child.textContent!);
+                    } else if (i === 0) {
+                        faqItem = new FaqItem('');
                     }
                     if (child.tagName.toLocaleLowerCase() === 'div') {
                         let paragraph: Paragraph = new Paragraph();
