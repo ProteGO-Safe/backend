@@ -1,6 +1,7 @@
 version: "3"
 services:
   node_dev_env:
+    build: ./dev.Dockerfile
     image: devillex/docker-firebase
     container_name: cloud-backend
     volumes:
