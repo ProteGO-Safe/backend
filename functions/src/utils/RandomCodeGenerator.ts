@@ -1,3 +1,5 @@
+import cryptoRandomString = require("crypto-random-string");
+
 class RandomCodeGenerator {
 
     length: number
@@ -7,7 +9,7 @@ class RandomCodeGenerator {
     }
 
     generate(): string {
-        return (Math.random()).toString(36).toLocaleUpperCase().substring(2, this.length + 2);
+        return cryptoRandomString({length: this.length}).toUpperCase();
     }
 }
 
