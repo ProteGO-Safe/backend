@@ -14,5 +14,6 @@ Jest mnóstwo sposobów w jaki możesz nam pomóc:
 * Dodawaj swoje `Pull Request`y.
 * Przeglądaj istniejące `Pull Request`y.
 * Pomagaj innym użytkownikom.
-Komunikuj się z nami przez GitHub i Stackoverflow.
-Więcej informacji w temacie komunikacji znajdziesz [tutaj](SUPPORT.md)
+
+Komunikuj się z nami przez GitHub i Stackoverflow.  
+Więcej informacji w temacie komunikacji znajdziesz [tutaj](SUPPORT.md).
