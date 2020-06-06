@@ -1,3 +1,5 @@
+![ProteGo Safe](./doc/img/baner.jpg "ProtegoSafe")
+
 ## General info
 
 Cloud Functions for the ProteGO Safe application.
@@ -33,7 +35,7 @@ You have to configure the Google Secret Manager of your project with a new objec
 ```
 - **apiToken** is the token which has to be included in the header of the generateCode requests
 - **secret** is the JWT secret
-- **allowedIps** is the array of ips which allow access to the generateCode requests
+- **allowedIps** is the array of (health authority) ips which allow access to the generateCode requests
 - **exposureServerConfig** Auth configuration to the Exposure Notification Reference Server
 
 ##### Bucket preparation
