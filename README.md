@@ -6,6 +6,9 @@ location:
 - https://api.safesafe.app
 ---
 
+# This softwre is depracated in apps version > 3.1.0
+
+
 # Use-case
 
 We use Nginx as a proxy for Infermedica API requests from our PWA to make it more secure and private for end users.
