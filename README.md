@@ -1,11 +1,28 @@
-#### 1. App configuration
+![ProteGo Safe](./doc/img/baner.jpg "ProtegoSafe")
+
+## General info
+
+Cloud Functions for the ProteGO Safe application.
+
+List of Cloud Functions:
+
+- **generateCode** - generating pin codes
+- **getAccessToken** - exchanging pin codes for access tokens
+- **uploadDiagnosisKeys** - uploading temporary exposure keys
+- **clearUnusedCodes** - clearing expired pin codes 
+- **faqParser** - parsing the government FAQ page
+- **advicesParser** - parsing the government advices page
+- **hospitalsParser** - parsing the government hospitals page
+
+
+## Configuration
 
 ##### Copy the configuration class:
 ```shell script
 cp functions/src/config.example.ts functions/src/config.ts
 ```
 
-##### Configure The google Secret Manager:
+##### Configure The Google Secret Manager:
 You have to configure the Google Secret Manager of your project with a new object and put there filled json: 
 
 ```json
@@ -18,7 +35,7 @@ You have to configure the Google Secret Manager of your project with a new objec
 ```
 - **apiToken** is the token which has to be included in the header of the generateCode requests
 - **secret** is the JWT secret
-- **allowedIps** is the array of ips which allow access to the generateCode requests
+- **allowedIps** is the array of (health authority) ips which allow access to the generateCode requests
 - **exposureServerConfig** Auth configuration to the Exposure Notification Reference Server
 
 ##### Bucket preparation
@@ -28,7 +45,7 @@ You can use below rules configuration to make sure that only
 cloud functions will be able to write there:
 
 
-```json
+```text
 rules_version = '2';
 service firebase.storage {
   // Anyone can read from the bucket.
@@ -47,7 +64,7 @@ service firebase.storage {
 ```
 
 ##### Set values of your config.ts file:
-```json
+```text
     secretManagerPath: "/path/to/your/secret/object/versions/latest",
     exposureEndpoint: 'https://exposure-run.app',
     buckets: {
@@ -59,8 +76,13 @@ service firebase.storage {
 - exposureEndpoint - url to the "exposure" cloud run of the Exposure Notification Reference Server
 - buckets.cdn - url to your bucket 
 
-#### 2. Deploy cloud functions
+## Cloud Functions deployment
+
+You have to configure the [Firebase CLI](https://firebase.google.com/docs/cli) and run this command:
 
 ```shell script
 firebase deploy
 ```
+## Versioning
+
+Please check the changelog: [CHANGELOG.md](CHANGELOG.md)

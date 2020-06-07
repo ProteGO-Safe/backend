@@ -1,24 +1,45 @@
 import {secretManager} from "../config";
+import {Netmask} from "netmask";
 
 class IPChecker {
+    private readonly configName: string;
+    private readonly allowedNetmasks: Array<Netmask>;
     private allowAll = false;
-    private allowedIps: Array<string>;
+    private initialized = false;
+
+    constructor(configName: string) {
+        this.configName = configName;
+        this.allowedNetmasks = new Array<Netmask>();
+    }
 
     async init(): Promise<void> {
-        this.allowedIps = await secretManager.getConfig('allowedIps');
-        this.allowAll = this.allowedIps.indexOf('*') !== -1;
+        const netmasks = await secretManager.getConfig(this.configName);
+        this.allowAll = netmasks.indexOf('*') !== -1;
+
+        if (!this.allowAll) {
+            for (const netmask of netmasks) {
+                this.allowedNetmasks.push(new Netmask(netmask));
+            }
+        }
     }
 
     async allow(ip: string): Promise<boolean> {
-        if (!this.allowedIps) {
+        if (!this.initialized) {
             await this.init();
+            this.initialized = true;
         }
 
         if (this.allowAll) {
             return true;
         }
 
-        return this.allowedIps.indexOf(ip) !== -1;
+        for (const netmask of this.allowedNetmasks) {
+            if (netmask.contains(ip)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

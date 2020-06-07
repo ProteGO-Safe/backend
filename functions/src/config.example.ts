@@ -26,6 +26,7 @@ const config: Config = {
 }
 
 export const secretManager = new SecretManager();
-export const ipChecker = new IPChecker();
+export const generateCodeIPChecker = new IPChecker('generateCodeNetmasks');
+export const applicationIPChecker = new IPChecker('applicationNetmasks');
 
 export default config;

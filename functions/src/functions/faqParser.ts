@@ -1,8 +1,9 @@
 import axios from 'axios';
-import moment = require("moment");
-const { Storage } = require('@google-cloud/storage');
 import {obtainHrefToReplace} from "./hrefRepleacer";
 import config from "../config";
+import moment = require("moment");
+
+const { Storage } = require('@google-cloud/storage');
 
 class Collapse {
     constructor(text: string, description: string) {
@@ -34,44 +35,34 @@ class FaqItem {
 }
 
 class Faq {
-    constructor(intro: string, watermark: string, elements: FaqItem[]) {
-        this.intro = intro;
-        this.watermark = watermark;
-        this.elements = elements;
-    }
 
     intro: string;
     watermark: string;
-    elements: FaqItem[];
-}
+    elements: FaqItem[] = [];
 
-const faqItems: FaqItem[] = [];
-
-const verifyContent = () => {
-    if (faqItems.length === 0) {
-        throw new Error("elements size can not be 0");
-    }
-
-    faqItems.forEach(value => {
-        const title = value.title;
-        const paragraphs = value.paragraphs
-        if (title === '') {
-            throw new Error("title can not be empty");
+    verifyContent = () => {
+        if (this.elements.length === 0) {
+            throw new Error("elements size can not be 0");
         }
 
-        paragraphs.forEach(value1 => {
-            value1.collapses.forEach(value2 => {
-                if (value2.text === '') {
-                    throw new Error("text can not be empty");
-                }
-                if (value2.description === '') {
-                    throw new Error("description can not be empty");
-                }
-            })
+        this.elements.forEach(value => {
+            const paragraphs = value.paragraphs
 
+            paragraphs.forEach(value1 => {
+                value1.collapses.forEach(value2 => {
+                    if (value2.text === '') {
+                        throw new Error("text can not be empty");
+                    }
+                    if (value2.description === '') {
+                        throw new Error("description can not be empty");
+                    }
+                })
+
+            })
         })
-    })
+    }
 }
+
 
 const isNoEmptyParagraphElement = (element: Element) => {
     if (element.tagName.toLocaleLowerCase() !== 'p') {
@@ -81,11 +72,7 @@ const isNoEmptyParagraphElement = (element: Element) => {
     return element.textContent!.trim().replace('&nbsp;', '') !== '';
 }
 
-let faqItem: FaqItem;
-
 export const faqParser = async () => {
-
-    console.log("staring faqParser")
 
     const source = 'https://www.gov.pl/web/koronawirus/pytania-i-odpowiedzi';
     const { JSDOM } = require('jsdom');
@@ -101,8 +88,12 @@ export const faqParser = async () => {
 
         const dom = new JSDOM(data);
 
-        const intro = dom.window.document.querySelector('#main-content p.intro')
+        const faq = new Faq();
+
+        faq.intro = dom.window.document.querySelector('#main-content p.intro')
             .textContent;
+
+        let faqItem: FaqItem;
 
         dom.window.document
             .querySelectorAll('#main-content div.editor-content')
@@ -111,11 +102,12 @@ export const faqParser = async () => {
                     ':scope > *'
                 );
 
-
                 for (let i = 0; i < allEditorContentChildren.length; i ++) {
                     const child = allEditorContentChildren[i];
                     if (child.tagName.toLocaleLowerCase() === 'h3') {
                         faqItem = new FaqItem(child.textContent!);
+                    } else if (i === 0) {
+                        faqItem = new FaqItem('');
                     }
                     if (child.tagName.toLocaleLowerCase() === 'div') {
                         let paragraph: Paragraph = new Paragraph();
@@ -157,21 +149,20 @@ export const faqParser = async () => {
                         }
                     }
                     if (i === allEditorContentChildren.length - 1 || allEditorContentChildren[i + 1].tagName.toLocaleLowerCase() === 'h3') {
-                        faqItems.push(faqItem);
+                        faq.elements.push(faqItem);
                     }
                 }
             });
 
-        verifyContent()
+        faq.verifyContent()
 
-        const watermark = `${moment().format('YYYY-MM-D')} - ${source}`;
-        const faq = new Faq(intro, watermark, faqItems);
+        faq.watermark = `${moment().format('YYYY-MM-D')} - ${source}`;
 
         const storage = new Storage();
         const bucket = storage.bucket(config.buckets.cdn);
 
         const file = bucket.file('faq.json');
-        file.save(JSON.stringify(faq)).then(() => console.log("finished faqParser"));
+        await file.save(JSON.stringify(faq));
 
     } catch (exception) {
         throw new Error(exception);

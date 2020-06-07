@@ -1,11 +1,10 @@
-import {CallableContext} from "firebase-functions/lib/providers/https";
 import config, {secretManager} from "../config";
 import * as functions from "firebase-functions";
 import {v4} from 'uuid';
 import {sign} from "jsonwebtoken";
 import moment = require("moment");
 
-export async function getAccessToken(data : any, context: CallableContext) {
+export async function getAccessToken(data : any) {
     if (!data.code) {
         throw new functions.https.HttpsError('not-found', 'Invalid code');
     }

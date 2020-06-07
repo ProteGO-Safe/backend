@@ -1,8 +1,9 @@
 import axios from 'axios';
-import moment = require("moment");
 import config from "../config";
-const { Storage } = require('@google-cloud/storage');
 import {obtainHrefToReplace} from "./hrefRepleacer";
+import moment = require("moment");
+
+const { Storage } = require('@google-cloud/storage');
 
 class AdviceItem {
     constructor(title: string, replies: Array<string>) {
@@ -44,8 +45,6 @@ const verifyContent = () => {
 }
 
 export const advicesParser = async () => {
-
-    console.log("staring advicesParser")
 
     const source = 'https://www.gov.pl/web/koronawirus/porady';
     const { JSDOM } = require('jsdom');
@@ -94,7 +93,7 @@ export const advicesParser = async () => {
         const bucket = storage.bucket(config.buckets.cdn);
 
         const file = bucket.file('advices.json');
-        file.save(JSON.stringify(advice)).then(() => console.log("finished advicesParser"));
+        await file.save(JSON.stringify(advice));
 
     } catch (exception) {
         throw new Error(exception);
