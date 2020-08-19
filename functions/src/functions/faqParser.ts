@@ -122,14 +122,14 @@ export const faqParser = async () => {
                             if (_child.tagName.toLocaleLowerCase() === 'details') {
                                 const question = _child.querySelector('summary')!.textContent;
                                 let answer = _child.outerHTML;
-                                answer = answer!.replace('<details>', '');
-                                answer = answer!.replace('</details>', '');
-                                answer = answer!.replace(`<summary>${question}</summary>`, '');
-                                answer = answer!.replace('COVID-19', '<a href="https://www.gov.pl/web/koronawirus" target="_blank">COVID-19</a>');
-                                answer = answer!.replace('<a href', '<a target=\"_blank\" href');
-                                answer = answer!.replace(/\n/g, '');
+                                answer = answer.replace('<details>', '');
+                                answer = answer.replace('</details>', '');
+                                answer = answer.replace(`<summary>${question}</summary>`, '');
+                                answer = answer.replace('COVID-19', '<a href="https://www.gov.pl/web/koronawirus" target="_blank">COVID-19</a>');
+                                answer = answer.replace('<a href', '<a target=\"_blank\" href');
+                                answer = answer.replace(/\n/g, '');
 
-                                const collapse = new Collapse(question!, answer)
+                                const collapse = new Collapse(question!, answer);
                                 paragraph.collapses.push(collapse);
                             }
 
