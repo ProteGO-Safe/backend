@@ -11,7 +11,7 @@ import advicesParser from "./functions/advicesParser";
 admin.initializeApp();
 
 exports.generateCode = cloudFunctions.https(generateCode);
-exports.uploadDiagnosisKeys = cloudFunctions.https(uploadDiagnosisKeys);
+exports.uploadDiagnosisKeys = cloudFunctions.httpsOnRequest(uploadDiagnosisKeys);
 exports.clearUnusedCodes = cloudFunctions.scheduler(clearUnusedCodes, 'every 30 minutes');
 exports.getAccessToken = cloudFunctions.https(getAccessToken);
 exports.faqParser = cloudFunctions.scheduler(faqParser, 'every 30 minutes');

@@ -21,6 +21,26 @@ export function https(
     });
 }
 
+export function httpsOnRequest(
+    handler : (data: any, response: ff.Response) => any | Promise<any>,
+    runtime: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 30}
+): ff.HttpsFunction {
+    return ff.runWith(runtime).region(...config.regions).https.onRequest(async (request, response) => {
+        const securityToken = await secretManager.getConfig('securityToken');
+        const securityHeaderName = await secretManager.getConfig('securityTokenHeaderName');
+
+        if (!await applicationIPChecker.allow(<string>request.header('X-Appengine-User-Ip'))) {
+            return response.status(403).send({error: {message: "", status: "PERMISSION_DENIED"}});
+        }
+
+        if (request.header(securityHeaderName) !== securityToken) {
+            return response.status(403).send({error: {message: "", status: "PERMISSION_DENIED"}});
+        }
+
+        return handler(request, response);
+    });
+}
+
 export function scheduler(
     handler : (data: any) => any | Promise<any>,
     schedule: string,
