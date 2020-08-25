@@ -1,6 +1,7 @@
 import axios from 'axios';
 import config from "../config";
 import moment = require("moment");
+import {replaceOuterHtml} from "./outerHTMLReplacer";
 
 const { Storage } = require('@google-cloud/storage');
 
@@ -121,14 +122,7 @@ export const faqParser = async () => {
                             }
                             if (_child.tagName.toLocaleLowerCase() === 'details') {
                                 const question = _child.querySelector('summary')!.textContent;
-                                let answer = _child.outerHTML;
-                                answer = answer.replace('<details>', '');
-                                answer = answer.replace('</details>', '');
-                                answer = answer.replace(`<summary>${question}</summary>`, '');
-                                answer = answer.replace('COVID-19', '<a href="https://www.gov.pl/web/koronawirus" target="_blank">COVID-19</a>');
-                                answer = answer.replace('<a href', '<a target=\"_blank\" href');
-                                answer = answer.replace(/\n/g, '');
-
+                                const answer = replaceOuterHtml(_child.outerHTML, question!);
                                 const collapse = new Collapse(question!, answer);
                                 paragraph.collapses.push(collapse);
                             }
