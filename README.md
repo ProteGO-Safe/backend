@@ -1,8 +1,8 @@
-![ProteGo Safe](./doc/img/baner.jpg "ProtegoSafe")
+![STOP COVID - ProteGO Safe](./doc/img/baner.jpg "STOP COVID - ProteGO Safe")
 
 ## General info
 
-Cloud Functions for the ProteGO Safe application.
+Cloud Functions for the STOP COVID - ProteGO Safe application.
 
 List of Cloud Functions:
 
@@ -40,7 +40,7 @@ You have to configure the Google Secret Manager of your project with a new objec
 
 ##### Bucket preparation
 
-The bucket is public CDN which is used to keep public ProteGO Safe assets.
+The bucket is public CDN which is used to keep public STOP COVID - ProteGO Safe assets.
 You can use below rules configuration to make sure that only 
 cloud functions will be able to write there:
 
