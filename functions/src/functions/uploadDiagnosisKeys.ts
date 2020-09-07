@@ -2,19 +2,29 @@ import {sign, verify} from "jsonwebtoken";
 import config, {secretManager} from "../config";
 import * as functions from "firebase-functions";
 import Axios from "axios";
+const superagent = require('superagent');
 
-export async function uploadDiagnosisKeys(data : any) {
-    if (!await auth(data.verificationPayload)) {
-        throw new functions.https.HttpsError('unauthenticated', 'Invalid access token');
+export async function uploadDiagnosisKeys(request : functions.Request, response : functions.Response) {
+    const body = request.body;
+
+    if (!await auth(body.data.verificationPayload)) {
+        return response.status(401).send({error: {message: "", status: "UNAUTHENTICATED"}});
     }
 
     const idToken = await getIdToken();
 
-    await Axios.post(config.exposureEndpoint, data, {
-        headers: { Authorization: `Bearer ${idToken}` }
-    });
+    try {
+        await superagent
+            .post(config.exposureEndpoint)
+            .send(body.data)
+            .set('Authorization', `Bearer ${idToken}`)
+    } catch (error) {
+        if (error.response && error.response.error) {
+            return response.status(error.response.error.status).send(JSON.parse(error.response.error.text));
+        }
+    }
 
-    return [];
+    return response.status(200).send({result:""});
 }
 
 async function auth(token: string | undefined): Promise<boolean> {

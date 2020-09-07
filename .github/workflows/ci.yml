@@ -12,6 +12,21 @@ on:
       - '**'
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 10
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
+      - run: npm install
+      - run: npm run lint
+      - run: npm test
+
   deploy:
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags') || startsWith(github.ref, 'refs/heads/release/') }}
@@ -67,7 +82,7 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: 13
+          node-version: 10
 
       - run: npm --prefix functions install
 

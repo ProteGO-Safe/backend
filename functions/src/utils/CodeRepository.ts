@@ -29,6 +29,7 @@ class CodeRepository {
     async removeExpired(): Promise<void> {
         await this.getCollection()
             .where('expiryTime', '<', moment().unix())
+            .limit(100)
             .get()
             .then(snapshot => snapshot.forEach(doc => doc.ref.delete()))
     }

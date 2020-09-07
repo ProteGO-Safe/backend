@@ -1,7 +1,7 @@
 import axios from 'axios';
-import {obtainHrefToReplace} from "./hrefRepleacer";
 import config from "../config";
 import moment = require("moment");
+import {replaceOuterHtml} from "./outerHTMLReplacer";
 
 const { Storage } = require('@google-cloud/storage');
 
@@ -70,7 +70,7 @@ const isNoEmptyParagraphElement = (element: Element) => {
     }
 
     return element.textContent!.trim().replace('&nbsp;', '') !== '';
-}
+};
 
 export const faqParser = async () => {
 
@@ -113,33 +113,17 @@ export const faqParser = async () => {
                         let paragraph: Paragraph = new Paragraph();
                         const allChildren = child.querySelectorAll(':scope > *');
                         for (let j = 0; j < allChildren.length; j ++) {
-                            const _child = allChildren[j]
+                            const _child = allChildren[j];
                             if (_child.tagName.toLocaleLowerCase() === 'p') {
                                 if (_child.textContent!.trim()) {
-                                    paragraph = new Paragraph()
+                                    paragraph = new Paragraph();
                                     paragraph.paragraph = _child.textContent!;
                                 }
                             }
                             if (_child.tagName.toLocaleLowerCase() === 'details') {
                                 const question = _child.querySelector('summary')!.textContent;
-                                const answerSelector = _child.querySelector('p')!;
-                                const { text, toReplace } = obtainHrefToReplace(answerSelector);
-                                let answer = answerSelector.textContent;
-                                const ul = _child.querySelector('ul');
-                                if (ul) {
-                                    const items = ul.querySelectorAll(':scope > li');
-                                    items.forEach(
-                                        (value: Element) => (answer = `${answer}\n${value.textContent}`)
-                                    );
-                                }
-
-                                answer = answer!.replace(
-                                    'COVID-19',
-                                    '[url]COVID-19|https://www.gov.pl/web/koronawirus[url]'
-                                );
-
-                                answer = answer.replace(text, toReplace!);
-                                const collapse = new Collapse(question!, answer)
+                                const answer = replaceOuterHtml(_child.outerHTML, question!);
+                                const collapse = new Collapse(question!, answer);
                                 paragraph.collapses.push(collapse);
                             }
 
@@ -154,7 +138,7 @@ export const faqParser = async () => {
                 }
             });
 
-        faq.verifyContent()
+        faq.verifyContent();
 
         faq.watermark = `${moment().format('YYYY-MM-D')} - ${source}`;
 

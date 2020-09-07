@@ -34,9 +34,9 @@ class Hostitals {
     watermark: string;
 }
 
-const voivodeships: Array<Voivodeship> = [];
 
-const verifyContent = () => {
+
+const verifyContent = (voivodeships: Array<Voivodeship>) => {
     if (voivodeships.length === 0) {
         throw new Error("elements size can not be 0");
     }
@@ -64,9 +64,9 @@ const verifyContent = () => {
 }
 
 export const hospitalsParser = async () => {
-
     const source = 'https://www.gov.pl/web/koronawirus/lista-szpitali';
     const { JSDOM } = require('jsdom');
+    const voivodeships: Array<Voivodeship> = [];
 
     try {
         const response = await axios.get(source);
@@ -99,7 +99,7 @@ export const hospitalsParser = async () => {
                 voivodeships.push(voivodeship);
             });
 
-        verifyContent()
+        verifyContent(voivodeships);
 
         const watermark = `${moment().format('YYYY-MM-D')} - ${source}`;
         const hostitals = new Hostitals(watermark, voivodeships);
