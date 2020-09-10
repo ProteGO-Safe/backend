@@ -13,6 +13,7 @@ List of Cloud Functions:
 - **faqParser** - parsing the government FAQ page
 - **advicesParser** - parsing the government advices page
 - **hospitalsParser** - parsing the government hospitals page
+- **backupTranslations** - backup translation's files
 
 
 ## Configuration
@@ -68,13 +69,15 @@ service firebase.storage {
     secretManagerPath: "/path/to/your/secret/object/versions/latest",
     exposureEndpoint: 'https://exposure-run.app',
     buckets: {
-        cdn: 'gs://somegcs.appspot.com'
+        cdn: 'gs://somegcs.appspot.com',
+        archive: 'gs://somegcs'
     }
 ```
 
 - secretManagerPath - path to the created secret manager object
 - exposureEndpoint - url to the "exposure" cloud run of the Exposure Notification Reference Server
 - buckets.cdn - url to your bucket 
+- buckets.archive - url to your archive bucket 
 
 ## Cloud Functions deployment
 
@@ -86,3 +89,19 @@ firebase deploy
 ## Versioning
 
 Please check the changelog: [CHANGELOG.md](CHANGELOG.md)
+
+## Running function locally
+- at the end on the function add execute them, for example:
+```shell script
+const someFunction = async () => {
+ // body
+}
+export default someFunction;
+
+someFunction()
+
+```
+- run docker container from ./docker/docker-compose.yml
+- exec with bash
+- to authorization first generate service account key at https://console.cloud.google.com/apis/credentials/serviceaccountkey, store it in root of project, next execute export GOOGLE_APPLICATION_CREDENTIALS="/app/path/to/file.json"
+- execute npx ts-node /app/functions/src/functions/someFunction.ts
