@@ -18,4 +18,4 @@ exports.getAccessToken = cloudFunctions.https(getAccessToken);
 exports.faqParser = cloudFunctions.scheduler(faqParser, 'every 30 minutes');
 exports.hospitalsParser = cloudFunctions.scheduler(hospitalsParser, 'every 30 minutes');
 exports.advicesParser = cloudFunctions.scheduler(advicesParser, 'every 30 minutes');
-exports.backupTranslations = cloudFunctions.scheduler(backupTranslations, 'every 1 hour');
+exports.backupTranslations = cloudFunctions.scheduler(backupTranslations, 'every 30 minutes');
