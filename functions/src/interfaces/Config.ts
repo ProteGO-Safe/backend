@@ -21,6 +21,9 @@ interface Config {
     cache: {
         maxAge: number, // in seconds
         sMaxAge: number // in seconds
+    },
+    efgs: {
+        serverUrl: string // protocol + domain + port
     }
 }
 

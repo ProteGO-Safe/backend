@@ -22,6 +22,9 @@ const config: Config = {
     cache: {
         maxAge: 1800,
         sMaxAge: 1800
+    },
+    efgs: {
+        serverUrl: 'http://localhost:8090'
     }
 }
 
