@@ -86,8 +86,12 @@ jobs:
 
       - run: npm --prefix functions install
 
-      - run: echo "::set-env name=FUNCTIONS::$(ls -p functions/src/functions/ | sed 's|^|functions:|' | sed 's|.ts||g' | grep -v / |tr '\n' ',')"
+      - run: echo "::set-env name=FUNCTIONS::$(ls -p functions/src/functions/ | sed 's|^|functions:|' | sed 's|.ts||g' | sed 's|/||g' |tr '\n' ',')"
         shell: bash
+
+      - run: echo FUNCTIONS=$FUNCTIONS
+        shell: bash
+        if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'DEV'
 
       - name: Deploy to Firebase
         if: ( env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV' )

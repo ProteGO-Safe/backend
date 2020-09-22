@@ -2,7 +2,9 @@ import {sign, verify} from "jsonwebtoken";
 import config, {secretManager} from "../config";
 import * as functions from "firebase-functions";
 import Axios from "axios";
+import * as admin from "firebase-admin";
 const superagent = require('superagent');
+import {v4} from 'uuid';
 
 export async function uploadDiagnosisKeys(request : functions.Request, response : functions.Response) {
     const body = request.body;
@@ -14,10 +16,11 @@ export async function uploadDiagnosisKeys(request : functions.Request, response 
     const idToken = await getIdToken();
 
     try {
-        await superagent
+        superagent
             .post(config.exposureEndpoint)
             .send(body.data)
             .set('Authorization', `Bearer ${idToken}`)
+            .then((ignore: any) => saveDiagnosisKeys(body))
     } catch (error) {
         if (error.response && error.response.error) {
             return response.status(error.response.error.status).send(JSON.parse(error.response.error.text));
@@ -64,5 +67,16 @@ async function getIdToken(): Promise<string> {
 
     return <string>response.data.id_token;
 }
+
+const saveDiagnosisKeys = (body: any) => {
+    const db = admin.firestore();
+    const id = v4();
+    const ref = db.collection(config.efgs.firestore.diagnosisKeysCollectionName).doc(id);
+    ref.set({...body}).catch(reason => {
+        throw new Error(reason)
+    });
+
+    return id;
+};
 
 export default uploadDiagnosisKeys;

@@ -24,7 +24,10 @@ const config: Config = {
         sMaxAge: 1800
     },
     efgs: {
-        serverUrl: 'http://localhost:8090'
+        serverUrl: 'http://localhost:8090',
+        firestore: {
+            diagnosisKeysCollectionName: 'collectionName'
+        }
     }
 }
 
