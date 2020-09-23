@@ -3,6 +3,10 @@ import {v4} from "uuid";
 import config from "../../../config";
 
 export const saveDiagnosisKeys = (body: any) => {
+    const {allowSentToEfgs} = body;
+    if (!allowSentToEfgs) {
+        return;
+    }
     const id = v4();
     const db = admin.firestore();
     const itemToSave = {id, ...body};

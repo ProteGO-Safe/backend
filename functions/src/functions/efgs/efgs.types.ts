@@ -1,9 +1,13 @@
 export class GensItem {
-    constructor(data: GensItemData) {
+    constructor(id: string, data: GensItemData, allowSentToEfgs: boolean) {
+        this.id = id;
         this.data = data;
+        this.allowSentToEfgs = allowSentToEfgs;
     }
 
+    id: string;
     data: GensItemData;
+    allowSentToEfgs: boolean;
 }
 
 export class TemporaryExposureKey {
