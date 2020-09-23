@@ -48,3 +48,13 @@ export function scheduler(
 ) {
     return ff.runWith(runtime).region(...config.regions).pubsub.schedule(schedule).onRun(handler)
 }
+
+export const firestoreEvent = (
+    handler : (event: any, context: any) => any | Promise<any>,
+    path: string
+) => {
+    return ff.runWith({memory: '256MB', timeoutSeconds: 30})
+        .region(...config.regions)
+        .firestore.document(path)
+        .onCreate(handler)
+};

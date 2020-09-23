@@ -86,7 +86,7 @@ jobs:
 
       - run: npm --prefix functions install
 
-      - run: echo "::set-env name=FUNCTIONS::$(ls -p functions/src/functions/ | sed 's|^|functions:|' | sed 's|.ts||g' | sed 's|/||g' |tr '\n' ',')"
+      - run: echo "::set-env name=FUNCTIONS::$(cat functions/src/index.ts | sed -n '/exports/,/cloudFunctions/p' | sed -e 's/exports\(.*\)cloudFunctions/\1/' | sed 's/ = ..*;//' | sed 's/\./functions:/g' |tr '\n' ',')"
         shell: bash
 
       - run: echo FUNCTIONS=$FUNCTIONS
