@@ -7,8 +7,6 @@ import {getAccessToken} from "./functions/getAccessToken";
 import hospitalsParser from "./functions/hospitalsParser";
 import faqParser from "./functions/faqParser";
 import advicesParser from "./functions/advicesParser";
-import {efgsUploadTrigger} from "./functions/efgs/efgsUploadTrigger";
-import config from "./config";
 
 admin.initializeApp();
 
@@ -19,4 +17,3 @@ exports.getAccessToken = cloudFunctions.https(getAccessToken);
 exports.faqParser = cloudFunctions.scheduler(faqParser, 'every 30 minutes');
 exports.hospitalsParser = cloudFunctions.scheduler(hospitalsParser, 'every 30 minutes');
 exports.advicesParser = cloudFunctions.scheduler(advicesParser, 'every 30 minutes');
-exports.efgsUploadTrigger = cloudFunctions.firestoreEvent(efgsUploadTrigger, `${config.efgs.firestore.diagnosisKeysCollectionName}/{id}`);

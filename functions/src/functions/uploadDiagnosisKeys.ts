@@ -1,21 +1,21 @@
 import {sign, verify} from "jsonwebtoken";
 import config, {secretManager} from "../config";
 import * as functions from "firebase-functions";
-import Axios from "axios";
+const { log } = require("firebase-functions/lib/logger");
 const superagent = require('superagent');
-import {saveDiagnosisKeys} from "./efgs/efgsStorageManager/efgsStorageManager";
+import Axios from "axios";
+import {v4} from "uuid";
+import * as admin from "firebase-admin";
 
 export async function uploadDiagnosisKeys(request : functions.Request, response : functions.Response) {
     const body = request.body;
-
     if (!await auth(body.data.verificationPayload)) {
         return response.status(401).send({error: {message: "", status: "UNAUTHENTICATED"}});
     }
-
     const idToken = await getIdToken();
 
     try {
-        superagent
+        await superagent
             .post(config.exposureEndpoint)
             .send(body.data)
             .set('Authorization', `Bearer ${idToken}`)
@@ -66,5 +66,21 @@ async function getIdToken(): Promise<string> {
 
     return <string>response.data.id_token;
 }
+
+export const saveDiagnosisKeys = (body: any) => {
+    const {allowSentToEfgs} = body;
+    if (!allowSentToEfgs) {
+        return;
+    }
+    const id = v4();
+    const db = admin.firestore();
+    const itemToSave = {id, ...body};
+    log(`saving diagnosis keys on firestore: `, itemToSave);
+    db.collection(config.efgs.firestore.diagnosisKeysCollectionName)
+        .doc(id)
+        .set(itemToSave)
+        .catch(reason => {throw new Error(reason)});
+};
+
 
 export default uploadDiagnosisKeys;

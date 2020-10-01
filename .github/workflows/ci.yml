@@ -12,6 +12,29 @@ on:
       - '**'
 
 jobs:
+  deployefgs:
+    name: Deploy efgs
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./efgs 
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: copy source
+        run: cp -r * ../
+        shell: bash
+
+      - name: Deploy to Firebase
+        uses: actions-hub/gcloud@master
+        env:
+          PROJECT_ID: ${{secrets.DEV_FIREBASE_PROJECT}}
+          APPLICATION_CREDENTIALS: ${{secrets.DEV_FIREBASE_HOSTING_SAFE}}
+        with:
+          args: functions deploy EfgsDiagnosisKeysUploader --entry-point pl.gov.mc.protegosafe.efgs.EfgsDiagnosisKeysUploader --runtime java11 --memory 512MB --allow-unauthenticated --region europe-west1 --trigger-event=providers/cloud.firestore/eventTypes/document.create '--trigger-resource=projects/${{secrets.DEV_FIREBASE_PROJECT}}/databases/(default)/documents/diagnosisKeys/{id}'
+
   build:
     runs-on: ubuntu-latest
     defaults:

@@ -23,7 +23,6 @@ interface Config {
         sMaxAge: number // in seconds
     },
     efgs: {
-        serverUrl: string, // protocol + domain + port
         firestore: {
             diagnosisKeysCollectionName: string
         }
