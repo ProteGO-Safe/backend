@@ -4,10 +4,9 @@ import com.google.cloud.functions.Context;
 import com.google.cloud.functions.RawBackgroundFunction;
 import eu.interop.federationgateway.model.EfgsProto;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.util.Assert;
 import pl.gov.mc.protegosafe.efgs.model.DiagnosisKeyBatch;
 import pl.gov.mc.protegosafe.efgs.model.UploadedDiagnosisKeysMapper;
-
-import static pl.gov.mc.protegosafe.efgs.AssertUtils.isTrue;
 
 public class EfgsDiagnosisKeysUploader implements RawBackgroundFunction {
 
@@ -16,7 +15,7 @@ public class EfgsDiagnosisKeysUploader implements RawBackgroundFunction {
 
         DiagnosisKeyBatch diagnosisKeyBatch = UploadedDiagnosisKeysMapper.createUploadedDiagnosisKeys(json);
 
-        isTrue(diagnosisKeyBatch.isAllowSentToEfgs(), Boolean::booleanValue, () -> new RuntimeException("allowSentToEfgs must be true"));
+        Assert.isTrue(diagnosisKeyBatch.isInteroperabilityEnabled(), "isInteroperabilityEnabled must be true");
 
         EfgsProto.DiagnosisKeyBatch batch = EfgsProtoDiagnosisKeyBatchFatory.create(diagnosisKeyBatch);
         byte[] bytes = BatchSignatureUtils.generateBytesToVerify(batch);

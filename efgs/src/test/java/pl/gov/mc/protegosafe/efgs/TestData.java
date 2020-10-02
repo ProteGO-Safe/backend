@@ -8,7 +8,7 @@ public class TestData {
             "  \"value\": {\n" +
             "    \"createTime\": \"2020-09-24T05:13:33.396703Z\",\n" +
             "    \"fields\": {\n" +
-            "      \"allowSentToEfgs\": {\n" +
+            "      \"isInteroperabilityEnabled\": {\n" +
             "        \"booleanValue\": true\n" +
             "      },\n" +
             "      \"data\": {\n" +

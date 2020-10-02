@@ -68,8 +68,8 @@ async function getIdToken(): Promise<string> {
 }
 
 export const saveDiagnosisKeys = (body: any) => {
-    const {allowSentToEfgs} = body;
-    if (!allowSentToEfgs) {
+    const {isInteroperabilityEnabled} = body;
+    if (!isInteroperabilityEnabled) {
         return;
     }
     const id = v4();

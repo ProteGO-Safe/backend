@@ -19,10 +19,10 @@ public class DiagnosisKeyBatch {
                 .getTemporaryExposureKeys();
     }
 
-    public boolean isAllowSentToEfgs() {
+    public boolean isInteroperabilityEnabled() {
         return value
                 .getFields()
-                .getAllowSentToEfgs()
+                .getIsInteroperabilityEnabled()
                 .isBooleanValue();
     }
 
@@ -39,10 +39,8 @@ public class DiagnosisKeyBatch {
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class Fields {
 
-        private BooleanValue allowSentToEfgs;
+        private BooleanValue isInteroperabilityEnabled;
         private DiagnosisKeysData data;
         private StringValue id;
     }
 }
-
-
