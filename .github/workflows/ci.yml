@@ -24,11 +24,11 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Inject NBBS for build
-        run: 'echo "${{ secrets.NBBS }}" | base64 --decode > efgs/src/nbbs'
+        run: 'echo "${{ secrets.NBBS }}" | base64 --decode > src/nbbs'
         shell: bash
         
       - name: Inject NBTLS for build
-        run: 'echo "${{ secrets.NBTLS }}" | base64 --decode > efgs/src/nbtls'
+        run: 'echo "${{ secrets.NBTLS }}" | base64 --decode > src/nbtls'
         shell: bash
         
       - name: copy source
