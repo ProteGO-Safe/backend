@@ -22,7 +22,15 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-
+        
+      - name: Inject NBBS for build
+        run: 'echo "${{ secrets.NBBS }}" | base64 --decode > efgs/src/nbbs'
+        shell: bash
+        
+      - name: Inject NBTLS for build
+        run: 'echo "${{ secrets.NBTLS }}" | base64 --decode > efgs/src/nbtls'
+        shell: bash
+        
       - name: copy source
         run: cp -r * ../
         shell: bash
