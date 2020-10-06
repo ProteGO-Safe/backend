@@ -22,7 +22,7 @@ public class EfgsDiagnosisKeysDownloader implements BackgroundFunction<PubsubMes
 
         log.info("handle request");
 
-        List<String> strings = HttpDownloader.downloadAllDiagnosisKeyBatchesForDate(LocalDate.now().minusDays(1), null);
+        List<String> strings = HttpDownloader.downloadAllDiagnosisKeyBatchesForDate(LocalDate.now(), null);
 
         log.info("downloaded diagnosis keys, {}", strings);
     }

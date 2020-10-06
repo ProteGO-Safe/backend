@@ -10,7 +10,6 @@ import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
@@ -73,7 +72,8 @@ public class CertUtils {
         return new PEMParser(new InputStreamReader(readFileFromResource(certificateFileName)));
     }
 
-    private static InputStream readFileFromResource(final String filePath) throws FileNotFoundException {
+    @SneakyThrows
+    private static InputStream readFileFromResource(final String filePath) {
         return new FileInputStream(filePath);
     }
 }
