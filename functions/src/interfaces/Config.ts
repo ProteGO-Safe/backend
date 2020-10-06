@@ -7,7 +7,8 @@ interface Config {
     secretManagerPath: string,
     exposureEndpoint: string,
     buckets: {
-        cdn: string
+        cdn: string,
+        archive: string
     },
     regions: SUPPORTED_REGIONS[],
     code: {
@@ -21,6 +22,10 @@ interface Config {
     cache: {
         maxAge: number, // in seconds
         sMaxAge: number // in seconds
+    }
+    backupTranslations: {
+        token: string,
+        projectId: number
     }
 }
 

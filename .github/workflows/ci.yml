@@ -29,7 +29,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags') || startsWith(github.ref, 'refs/heads/release/') }}
+    if: ${{ startsWith(github.ref, 'refs/tags') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/pre-prod/') }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -50,10 +50,7 @@ jobs:
           echo "::set-env name=ENVIRONMENT::STAGE"
 
       - name: Set env to PROD
-        if: startsWith(github.ref, 'refs/tags/')
-            && github.repository_owner == 'ProteGO-Safe'
-            && ( github.event.release.target_commitish == 'master' || startsWith( github.event.release.target_commitish, 'release/3' ))
-            && github.event_name == 'release'
+        if: (( startsWith(github.ref, 'refs/tags/') && github.repository_owner == 'ProteGO-Safe' && github.event.release.target_commitish == 'master' && github.event_name == 'release' ) || ( github.repository_owner != 'ProteGO-Safe' && startsWith(github.ref, 'refs/heads/pre-prod/' ) && github.event_name == 'push'))
         run: |
           echo "::set-env name=ENVIRONMENT::PROD"
 
@@ -86,8 +83,12 @@ jobs:
 
       - run: npm --prefix functions install
 
-      - run: echo "::set-env name=FUNCTIONS::$(ls -p functions/src/functions/ | sed 's|^|functions:|' | sed 's|.ts||g' | grep -v / |tr '\n' ',')"
+      - run: echo "::set-env name=FUNCTIONS::$(ls -p functions/src/functions/ | sed 's|^|functions:|' | sed 's|.ts||g' | sed 's|/||g' |tr '\n' ',')"
         shell: bash
+      
+      - run: echo FUNCTIONS=$FUNCTIONS
+        shell: bash
+        if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'DEV'
 
       - name: Deploy to Firebase
         if: ( env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV' )
