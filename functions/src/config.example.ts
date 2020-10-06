@@ -8,7 +8,8 @@ const config: Config = {
     secretManagerPath: "/path/to/your/secret/object/versions/latest",
     exposureEndpoint: 'https://exposure.run.app/',
     buckets: {
-        cdn: 'gs://somegcs.appspot.com'
+        cdn: 'gs://somegcs.appspot.com',
+        archive: 'gs://somegcs'
     },
     regions: ["europe-west3"],
     code: {
@@ -22,6 +23,10 @@ const config: Config = {
     cache: {
         maxAge: 1800,
         sMaxAge: 1800
+    },
+    backupTranslations: {
+        token: "1234",
+        projectId: 123
     }
 }
 
