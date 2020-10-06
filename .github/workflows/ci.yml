@@ -35,13 +35,21 @@ jobs:
         run: cp -r * ../
         shell: bash
 
-      - name: Deploy to Firebase
+      - name: Deploy EfgsDiagnosisKeysUploader to Firebase
         uses: actions-hub/gcloud@master
         env:
           PROJECT_ID: ${{secrets.DEV_FIREBASE_PROJECT}}
           APPLICATION_CREDENTIALS: ${{secrets.DEV_FIREBASE_HOSTING_SAFE}}
         with:
-          args: functions deploy EfgsDiagnosisKeysUploader --entry-point pl.gov.mc.protegosafe.efgs.EfgsDiagnosisKeysUploader --runtime java11 --memory 512MB --allow-unauthenticated --region europe-west1 --trigger-event=providers/cloud.firestore/eventTypes/document.create '--trigger-resource=projects/${{secrets.DEV_FIREBASE_PROJECT}}/databases/(default)/documents/diagnosisKeys/{id}'
+          args: functions deploy EfgsDiagnosisKeysUploader --entry-point pl.gov.mc.protegosafe.efgs.uploader.EfgsDiagnosisKeysUploader --runtime java11 --memory 512MB --allow-unauthenticated --region europe-west1 --trigger-event=providers/cloud.firestore/eventTypes/document.create '--trigger-resource=projects/${{secrets.DEV_FIREBASE_PROJECT}}/databases/(default)/documents/diagnosisKeys/{id}'
+
+      - name: Deploy EfgsDiagnosisKeysDownloader to Firebase
+        uses: actions-hub/gcloud@master
+        env:
+          PROJECT_ID: ${{secrets.DEV_FIREBASE_PROJECT}}
+          APPLICATION_CREDENTIALS: ${{secrets.DEV_FIREBASE_HOSTING_SAFE}}
+        with:
+          args: functions deploy EfgsDiagnosisKeysDownloader --entry-point pl.gov.mc.protegosafe.efgs.downloader.EfgsDiagnosisKeysDownloader --runtime java11 --memory 512MB --allow-unauthenticated --region europe-west1 --trigger-http
 
   build:
     runs-on: ubuntu-latest

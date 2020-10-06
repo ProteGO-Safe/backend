@@ -1,4 +1,4 @@
-package pl.gov.mc.protegosafe.efgs.model;
+package pl.gov.mc.protegosafe.efgs.uploader.model;
 
 public enum ReportType {
 

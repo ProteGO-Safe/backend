@@ -69,6 +69,16 @@
             <artifactId>reactor-netty</artifactId>
             <version>0.9.8.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-pubsub</artifactId>
+            <version>1.108.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.11.2</version>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -125,7 +135,7 @@
                 <artifactId>function-maven-plugin</artifactId>
                 <version>0.9.4</version>
                 <configuration>
-                    <functionTarget>pl.gov.mc.protegosafe.efgs.EfgsDiagnosisKeysUploader</functionTarget>
+                    <functionTarget>pl.gov.mc.protegosafe.efgs.uploader.EfgsDiagnosisKeysUploader</functionTarget>
                 </configuration>
             </plugin>
             <plugin>

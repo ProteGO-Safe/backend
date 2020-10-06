@@ -1,8 +1,9 @@
-package pl.gov.mc.protegosafe.efgs.model;
+package pl.gov.mc.protegosafe.efgs.uploader.model;
 
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
+
+import static pl.gov.mc.protegosafe.efgs.Constants.*;
 
 @Setter
 class Tek {
@@ -17,10 +18,10 @@ class Tek {
                 fields.getRollingStartNumber().getIntegerValue(),
                 fields.getRollingPeriod().getIntegerValue(),
                 fields.getTransmissionRisk().getIntegerValue(),
-                Lists.newArrayList("DE"),
-                "pl",
+                TEK_VISITED_COUNTRIES,
+                TEK_ORIGIN,
                 ReportType.CONFIRMED_CLINICAL_DIAGNOSIS,
-                42
+                TEK_DAYS_SINCE_ONSET_OF_SYMPTOMS
                 );
     }
 

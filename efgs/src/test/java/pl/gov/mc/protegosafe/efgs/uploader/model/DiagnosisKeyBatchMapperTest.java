@@ -1,20 +1,12 @@
-package pl.gov.mc.protegosafe.efgs.model;
+package pl.gov.mc.protegosafe.efgs.uploader.model;
 
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static pl.gov.mc.protegosafe.efgs.TestData.VALID_JSON_FROM_FIRESTORE;
 
 class DiagnosisKeyBatchMapperTest {
-
-    private UploadedDiagnosisKeysMapper uploadedDiagnosisKeysMapper;
-
-    @BeforeEach
-    public void beforeEach() {
-        uploadedDiagnosisKeysMapper = new UploadedDiagnosisKeysMapper();
-    }
 
     @Test
     public void shouldMapUploadedKeyToDiagnosisKeyBatch() {
@@ -23,7 +15,7 @@ class DiagnosisKeyBatchMapperTest {
 
 
     	// when
-        DiagnosisKeyBatch diagnosisKeyBatch = uploadedDiagnosisKeysMapper.createUploadedDiagnosisKeys(VALID_JSON_FROM_FIRESTORE);
+        DiagnosisKeyBatch diagnosisKeyBatch = UploadedDiagnosisKeysMapper.createUploadedDiagnosisKeys(VALID_JSON_FROM_FIRESTORE);
 
     	// then
         Assertions.assertThat(diagnosisKeyBatch.getKeysList()).hasSize(3);
@@ -39,9 +31,6 @@ class DiagnosisKeyBatchMapperTest {
         Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(2)).extracting(DiagnosisKey::getRollingPeriod).isEqualTo(144);
         Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(2)).extracting(DiagnosisKey::getRollingStartIntervalNumber).isEqualTo(2666008);
         Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(2)).extracting(DiagnosisKey::getTransmissionRiskLevel).isEqualTo(8);
-
-        System.out.println(1);
-
     }
 
 }

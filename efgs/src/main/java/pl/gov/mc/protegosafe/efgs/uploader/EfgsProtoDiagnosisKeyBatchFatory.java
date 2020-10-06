@@ -1,9 +1,9 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.uploader;
 
 import com.google.protobuf.ByteString;
 import eu.interop.federationgateway.model.EfgsProto;
-import pl.gov.mc.protegosafe.efgs.model.DiagnosisKey;
-import pl.gov.mc.protegosafe.efgs.model.DiagnosisKeyBatch;
+import pl.gov.mc.protegosafe.efgs.uploader.model.DiagnosisKey;
+import pl.gov.mc.protegosafe.efgs.uploader.model.DiagnosisKeyBatch;
 
 import java.util.List;
 import java.util.stream.Collectors;

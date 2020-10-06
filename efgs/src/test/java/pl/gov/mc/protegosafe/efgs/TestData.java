@@ -24,7 +24,7 @@ public class TestData {
             "              \"arrayValue\": {\n" +
             "                \"values\": [\n" +
             "                  {\n" +
-            "                    \"stringValue\": \"PL\"\n" +
+            "                    \"stringValue\": \"DE\"\n" +
             "                  }\n" +
             "                ]\n" +
             "              }\n" +
@@ -39,7 +39,7 @@ public class TestData {
             "                          \"stringValue\": \"5MI/219zoJdPqaXQDR0YTQ==\"\n" +
             "                        },\n" +
             "                        \"rollingPeriod\": {\n" +
-            "                          \"integerValue\": \"144\"\n" +
+            "                          \"integerValue\": \"147\"\n" +
             "                        },\n" +
             "                        \"rollingStartNumber\": {\n" +
             "                          \"integerValue\": \"2666440\"\n" +
@@ -57,7 +57,7 @@ public class TestData {
             "                          \"stringValue\": \"ESartjbxqW0z1qfZ3pwW2Q==\"\n" +
             "                        },\n" +
             "                        \"rollingPeriod\": {\n" +
-            "                          \"integerValue\": \"144\"\n" +
+            "                          \"integerValue\": \"147\"\n" +
             "                        },\n" +
             "                        \"rollingStartNumber\": {\n" +
             "                          \"integerValue\": \"2666296\"\n" +
@@ -75,7 +75,7 @@ public class TestData {
             "                          \"stringValue\": \"qrcyBtITrUeDxrS7PoiMyg==\"\n" +
             "                        },\n" +
             "                        \"rollingPeriod\": {\n" +
-            "                          \"integerValue\": \"144\"\n" +
+            "                          \"integerValue\": \"147\"\n" +
             "                        },\n" +
             "                        \"rollingStartNumber\": {\n" +
             "                          \"integerValue\": \"2666008\"\n" +

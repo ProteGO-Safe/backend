@@ -1,4 +1,4 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.utils;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.ProtocolStringList;
@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-class BatchSignatureUtils {
+public class BatchSignatureUtils {
 
-    static byte[] generateBytesToVerify(EfgsProto.DiagnosisKeyBatch batch) {
+    public static byte[] generateBytesToVerify(EfgsProto.DiagnosisKeyBatch batch) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         sortBatchByKeyData(batch)
@@ -81,5 +81,13 @@ class BatchSignatureUtils {
 
     private static String bytesToBase64(byte[] bytes) {
         return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    public static byte[] b64ToBytes(final String batchSignatureBase64) {
+        return b64ToBytes(batchSignatureBase64.getBytes());
+    }
+
+    private static byte[] b64ToBytes(final byte[] bytes) {
+        return Base64.getDecoder().decode(bytes);
     }
 }

@@ -1,4 +1,4 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.utils;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

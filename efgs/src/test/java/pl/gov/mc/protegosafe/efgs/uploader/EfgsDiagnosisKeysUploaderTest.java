@@ -1,10 +1,11 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.uploader;
 
 import com.google.cloud.functions.Context;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import pl.gov.mc.protegosafe.efgs.TestData;
 
 class EfgsDiagnosisKeysUploaderTest {
 

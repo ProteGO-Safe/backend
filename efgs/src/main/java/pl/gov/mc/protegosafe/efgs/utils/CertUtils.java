@@ -1,4 +1,4 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.utils;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +19,10 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
 @Slf4j
-class CertUtils {
+public class CertUtils {
 
     @SneakyThrows
-    static String getCertThumbprint(X509Certificate x509Certificate) {
+    public static String getCertThumbprint(X509Certificate x509Certificate) {
         return calculateHash(x509Certificate.getEncoded());
     }
 
@@ -39,7 +39,7 @@ class CertUtils {
     }
 
     @SneakyThrows
-    static X509Certificate loadCertificateFromFile(String certificateFileName) {
+    public static X509Certificate loadCertificateFromFile(String certificateFileName) {
         PEMParser parser = createPEMParser(certificateFileName);
         while (parser.ready()) {
             Object pemContent = parser.readObject();
@@ -53,7 +53,7 @@ class CertUtils {
     }
 
     @SneakyThrows
-    static PrivateKey loadPrivateKeyFromFile(String privateKeyfileName) {
+    public static PrivateKey loadPrivateKeyFromFile(String privateKeyfileName) {
         PEMParser parser = createPEMParser(privateKeyfileName);
         JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
         while (parser.ready()) {
