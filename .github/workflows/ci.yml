@@ -38,6 +38,14 @@ jobs:
         run: 'mvn package'
         shell: bash
 
+      - name: Inject NBBS for build
+        run: 'echo "${{ secrets.NBBS }}" | base64 --decode > src/nbbs'
+        shell: bash
+
+      - name: Inject NBTLS for build
+        run: 'echo "${{ secrets.NBTLS }}" | base64 --decode > src/nbtls'
+        shell: bash
+
       - name: copy source
         run: cp -r * ../
         shell: bash
