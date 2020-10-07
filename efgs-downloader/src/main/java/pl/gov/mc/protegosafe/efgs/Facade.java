@@ -27,7 +27,7 @@ class Facade {
     FirestoreProvider firestoreProvider;
     MessageSender messageSender;
 
-    void process(LocalDate date) {
+    String process(LocalDate date) {
         String lastProcessedBatchTag = fetchLastProcessedBatchTag(date);
         String batchTag = httpDownloader.fetchNextBatchTag(date, lastProcessedBatchTag);
 
@@ -39,6 +39,7 @@ class Facade {
                 .max(ProcessedDownloadedDiagnosisKeyBatches::compareTo)
                 .map(ProcessedDownloadedDiagnosisKeyBatches::getBatchTag)
                 .ifPresent(lastBatchTag -> processResponses(responses, date, lastBatchTag));
+        return "";
     }
 
     @SneakyThrows

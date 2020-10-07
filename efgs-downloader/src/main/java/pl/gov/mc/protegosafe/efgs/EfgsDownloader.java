@@ -5,12 +5,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.time.LocalDate;
 import java.util.function.Function;
 
 @SpringBootApplication
 public class EfgsDownloader {
 
-	@Autowired TestService testService;
+	@Autowired Facade facade;
 
 	public static void main(String[] args) {
 		SpringApplication.run(EfgsDownloader.class, args);
@@ -18,6 +19,6 @@ public class EfgsDownloader {
 
 	@Bean
 	public Function<String, String> uppercase() {
-		return value -> testService.toUpperCase(value);
+		return value -> facade.process(LocalDate.parse(value));
 	}
 }
