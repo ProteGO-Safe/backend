@@ -30,10 +30,8 @@ public class WebClientFactory {
 
         final boolean useHttps = false;
 
-        final String certFileName = System.getenv(ENV_NBTLS_LOCATION);
-
-        PrivateKey privateKey = CertUtils.loadPrivateKeyFromFile(certFileName);
-        X509Certificate certificate = CertUtils.loadCertificateFromFile(certFileName);
+        PrivateKey privateKey = CertUtils.loadPrivateKeyFromFile(ENV_NBTLS_LOCATION);
+        X509Certificate certificate = CertUtils.loadCertificateFromFile(ENV_NBTLS_LOCATION);
 
         HttpClient httpClient = HttpClient.create();
 

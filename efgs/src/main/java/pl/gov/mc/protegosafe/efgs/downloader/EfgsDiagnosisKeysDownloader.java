@@ -5,7 +5,6 @@ import com.google.pubsub.v1.PubsubMessage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
-import java.util.List;
 
 
 @Slf4j
@@ -22,8 +21,15 @@ public class EfgsDiagnosisKeysDownloader implements BackgroundFunction<PubsubMes
 
         log.info("handle request");
 
-        List<String> strings = HttpDownloader.downloadAllDiagnosisKeyBatchesForDate(LocalDate.now(), null);
+        LocalDate date = LocalDate.now().minusDays(1);
 
-        log.info("downloaded diagnosis keys, {}", strings);
+        DownloaderFacade.process(date);
+
+        log.info("finished processing request");
     }
+
+
+
+
+
 }

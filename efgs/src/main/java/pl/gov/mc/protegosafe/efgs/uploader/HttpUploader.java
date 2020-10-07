@@ -16,7 +16,7 @@ class HttpUploader {
 
     static void uploadDiagnosisKeyBatch(EfgsProto.DiagnosisKeyBatch batch, String uploaderBatchTag, String batchSignature) {
 
-        URI uri = UriComponentsBuilder.fromHttpUrl(System.getenv(ENV_EFGS_URL))
+        URI uri = UriComponentsBuilder.fromHttpUrl(ENV_EFGS_URL)
                 .pathSegment("upload")
                 .build()
                 .toUri();

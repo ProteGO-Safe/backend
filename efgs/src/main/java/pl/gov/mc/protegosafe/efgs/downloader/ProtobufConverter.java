@@ -9,7 +9,19 @@ import lombok.SneakyThrows;
 
 import java.util.Base64;
 
-public class ProtobufConverter extends JsonFormat {
+class ProtobufConverter extends JsonFormat {
+
+    private static ProtobufConverter instance;
+
+    synchronized static ProtobufConverter getInstance() {
+        if (instance == null) {
+            instance = new ProtobufConverter();
+        }
+        return instance;
+    }
+
+    private ProtobufConverter() {
+    }
 
     @SneakyThrows
     @Override
