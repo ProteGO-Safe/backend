@@ -13,19 +13,15 @@ on:
 
 jobs:
   deploytest:
-    name: Deploy test
+    name: Deploy efgs-downloader
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./test
+        working-directory: ./efgs-downloader
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-
-      - name: java version
-        run: 'java -version'
-        shell: bash
 
       - name: mvn package
         run: 'mvn package'

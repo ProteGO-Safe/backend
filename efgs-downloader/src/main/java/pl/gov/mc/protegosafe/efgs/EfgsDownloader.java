@@ -8,12 +8,12 @@ import org.springframework.context.annotation.Bean;
 import java.util.function.Function;
 
 @SpringBootApplication
-public class CloudFunctionMain {
+public class EfgsDownloader {
 
 	@Autowired TestService testService;
 
 	public static void main(String[] args) {
-		SpringApplication.run(CloudFunctionMain.class, args);
+		SpringApplication.run(EfgsDownloader.class, args);
 	}
 
 	@Bean
