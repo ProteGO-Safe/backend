@@ -12,6 +12,37 @@ on:
       - '**'
 
 jobs:
+  deploytest:
+    name: Deploy test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./test
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: java version
+        run: 'java -version'
+        shell: bash
+
+      - name: mvn package
+        run: 'mvn package'
+        shell: bash
+
+      - name: copy source
+        run: cp -r * ../
+        shell: bash
+
+      - name: Deploy Test to Firebase
+        uses: actions-hub/gcloud@master
+        env:
+          PROJECT_ID: ${{secrets.DEV_FIREBASE_PROJECT}}
+          APPLICATION_CREDENTIALS: ${{secrets.DEV_FIREBASE_HOSTING_SAFE}}
+        with:
+          args: --quiet alpha functions deploy function-sample-gcp-http --entry-point org.springframework.cloud.function.adapter.gcp.GcfJarLauncher --runtime java11 --trigger-http --source target/deploy --memory 512MB --allow-unauthenticated --region europe-west1
+
   deployefgs:
     name: Deploy efgs
     runs-on: ubuntu-latest
