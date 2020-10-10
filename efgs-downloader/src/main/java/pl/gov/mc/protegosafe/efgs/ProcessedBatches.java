@@ -8,13 +8,13 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class ProcessedDownloadedDiagnosisKeyBatches implements Comparable<ProcessedDownloadedDiagnosisKeyBatches> {
+public class ProcessedBatches implements Comparable<ProcessedBatches> {
 
     String batchTag;
     String responseBody;
 
     @Override
-    public int compareTo(ProcessedDownloadedDiagnosisKeyBatches other) {
+    public int compareTo(ProcessedBatches other) {
         int currentBatchTagAsNumber = batchTagToInt(this.getBatchTag());
         int otherBatchTagAsNumber = batchTagToInt(other.getBatchTag());
         return Integer.compare(currentBatchTagAsNumber, otherBatchTagAsNumber);

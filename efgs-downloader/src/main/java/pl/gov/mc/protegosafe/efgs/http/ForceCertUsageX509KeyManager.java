@@ -1,4 +1,4 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.http;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import java.security.cert.X509Certificate;
 
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class ForceCertUsageX509KeyManager implements X509KeyManager {
+class ForceCertUsageX509KeyManager implements X509KeyManager {
 
     String[] dummyStringArray = new String[0];
     PrivateKey privateKey;

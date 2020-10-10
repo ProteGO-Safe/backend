@@ -1,14 +1,16 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.repository;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreOptions;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@Service
+@Configuration
 class FirestoreProvider {
 
+    @Bean
     @SneakyThrows
     Firestore provideFirestore() {
         FirestoreOptions firestoreOptions =

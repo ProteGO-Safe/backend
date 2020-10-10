@@ -1,4 +1,4 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.validator;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.ProtocolStringList;
@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class BatchSignatureUtils {
+class BatchSignatureUtils {
 
-    public byte[] generateBytesToVerify(EfgsProto.DiagnosisKeyBatch batch) {
+    byte[] generateBytesToVerify(EfgsProto.DiagnosisKeyBatch batch) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         sortBatchByKeyData(batch)

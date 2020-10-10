@@ -24,7 +24,7 @@ public class TestData {
             "              \"arrayValue\": {\n" +
             "                \"values\": [\n" +
             "                  {\n" +
-            "                    \"stringValue\": \"DE\"\n" +
+            "                    \"stringValue\": \"PL\"\n" +
             "                  }\n" +
             "                ]\n" +
             "              }\n" +
@@ -36,13 +36,13 @@ public class TestData {
             "                    \"mapValue\": {\n" +
             "                      \"fields\": {\n" +
             "                        \"key\": {\n" +
-            "                          \"stringValue\": \"5MI/219zoJdPqaXQDR0YTQ==\"\n" +
+            "                          \"stringValue\": \"NYDjc+pDsgcyzy3fFuOjgw==\"\n" +
             "                        },\n" +
             "                        \"rollingPeriod\": {\n" +
-            "                          \"integerValue\": \"152\"\n" +
+            "                          \"integerValue\": \"144\"\n" +
             "                        },\n" +
             "                        \"rollingStartNumber\": {\n" +
-            "                          \"integerValue\": \"2666440\"\n" +
+            "                          \"integerValue\": \"2670289\"\n" +
             "                        },\n" +
             "                        \"transmissionRisk\": {\n" +
             "                          \"integerValue\": \"8\"\n" +
@@ -54,13 +54,13 @@ public class TestData {
             "                    \"mapValue\": {\n" +
             "                      \"fields\": {\n" +
             "                        \"key\": {\n" +
-            "                          \"stringValue\": \"ESartjbxqW0z1qfZ3pwW2Q==\"\n" +
+            "                          \"stringValue\": \"eil+iTUg4Yes57Xqt6LFIg==\"\n" +
             "                        },\n" +
             "                        \"rollingPeriod\": {\n" +
-            "                          \"integerValue\": \"152\"\n" +
+            "                          \"integerValue\": \"144\"\n" +
             "                        },\n" +
             "                        \"rollingStartNumber\": {\n" +
-            "                          \"integerValue\": \"2666296\"\n" +
+            "                          \"integerValue\": \"2670289\"\n" +
             "                        },\n" +
             "                        \"transmissionRisk\": {\n" +
             "                          \"integerValue\": \"8\"\n" +
@@ -72,13 +72,13 @@ public class TestData {
             "                    \"mapValue\": {\n" +
             "                      \"fields\": {\n" +
             "                        \"key\": {\n" +
-            "                          \"stringValue\": \"qrcyBtITrUeDxrS7PoiMyg==\"\n" +
+            "                          \"stringValue\": \"6KPHh/EWqw3pUb+aXX/QAg==\"\n" +
             "                        },\n" +
             "                        \"rollingPeriod\": {\n" +
-            "                          \"integerValue\": \"152\"\n" +
+            "                          \"integerValue\": \"144\"\n" +
             "                        },\n" +
             "                        \"rollingStartNumber\": {\n" +
-            "                          \"integerValue\": \"2666008\"\n" +
+            "                          \"integerValue\": \"2670289\"\n" +
             "                        },\n" +
             "                        \"transmissionRisk\": {\n" +
             "                          \"integerValue\": \"8\"\n" +

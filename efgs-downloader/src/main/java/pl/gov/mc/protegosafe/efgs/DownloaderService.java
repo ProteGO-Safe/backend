@@ -7,6 +7,10 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
+import pl.gov.mc.protegosafe.efgs.http.AuditResponse;
+import pl.gov.mc.protegosafe.efgs.http.BatchesResponse;
+import pl.gov.mc.protegosafe.efgs.http.HttpConnector;
+import pl.gov.mc.protegosafe.efgs.validator.Validator;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
@@ -19,15 +23,16 @@ import static org.springframework.util.Assert.isTrue;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 class DownloaderService {
 
-    HttpDownloader httpDownloader;
+    HttpConnector httpConnector;
     ProtobufConverter protobufConverter;
+    Validator validator;
 
     void process(
-            List<ProcessedDownloadedDiagnosisKeyBatches> responses,
+            List<ProcessedBatches> responses,
             LocalDate date,
             String batchTag) {
 
-        DownloadedDiagnosisKeyBatchesResponse response = httpDownloader.downloadDiagnosisKeyBatches(date, batchTag);
+        BatchesResponse response = httpConnector.fetchBatches(date, batchTag);
 
         isTrue(batchTag.equals(response.getBatchTag()), "received batchTag has to be the same");
 
@@ -43,13 +48,13 @@ class DownloaderService {
             return;
         }
 
-        List<AuditEntry> auditEntries = httpDownloader.callAuditDownload(batchTag, date);
+        List<AuditResponse> auditResponses = httpConnector.listAudits(batchTag, date);
 
         EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch = createDiagnosisKeyBatch(responseBody);
 
-        if (httpDownloader.validateDiagnosisKeyWithSignature(diagnosisKeyBatch, auditEntries)) {
+        if (validator.validateDiagnosisKeyWithSignature(diagnosisKeyBatch, auditResponses)) {
             String diagnosisKeyBatchAsString = protobufConverter.printToString(diagnosisKeyBatch);
-            responses.add(new ProcessedDownloadedDiagnosisKeyBatches(batchTag, diagnosisKeyBatchAsString));
+            responses.add(new ProcessedBatches(batchTag, diagnosisKeyBatchAsString));
         }
 
         if (nextBatchTag != null) {

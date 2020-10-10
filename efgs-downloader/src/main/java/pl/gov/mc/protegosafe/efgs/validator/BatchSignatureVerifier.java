@@ -1,5 +1,6 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.validator;
 
+import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,22 +15,35 @@ import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.Store;
 import org.springframework.stereotype.Service;
+import pl.gov.mc.protegosafe.efgs.http.AuditResponse;
 
 import java.security.Security;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 
 @Slf4j
 @Service
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-class BatchSignatureVerifier {
+class BatchSignatureVerifier implements Validator{
 
     BatchSignatureUtils batchSignatureUtils;
 
+    @Override
+    public boolean validateDiagnosisKeyWithSignature(EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch,
+                                                     List<AuditResponse> auditEntries) {
+        for (AuditResponse auditResponse : auditEntries) {
+            if (verify(diagnosisKeyBatch, auditResponse.getBatchSignature())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @SneakyThrows
-    boolean verify(final DiagnosisKeyBatch batch, final String base64BatchSignature) {
+    private boolean verify(final DiagnosisKeyBatch batch, final String base64BatchSignature) {
         Security.addProvider(new BouncyCastleProvider());
         final byte[] batchSignatureBytes = batchSignatureUtils.b64ToBytes(base64BatchSignature);
         if (batchSignatureBytes == null) {

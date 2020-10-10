@@ -1,11 +1,10 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.http;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.Lists;
-import eu.interop.federationgateway.model.EfgsProto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -19,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
+import pl.gov.mc.protegosafe.efgs.Properties;
 
 import javax.annotation.Nullable;
 import java.net.URI;
@@ -27,34 +27,60 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
-import static pl.gov.mc.protegosafe.efgs.WebClientFactory.ACCEPT_HEADER_PROTOBUF;
+import static pl.gov.mc.protegosafe.efgs.http.WebClientFactory.ACCEPT_HEADER_PROTOBUF;
 
 
 @Slf4j
 @Service
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-class HttpDownloader {
+class HttpDownloader implements HttpConnector {
 
     WebClientFactory webClientFactory;
-    BatchSignatureVerifier batchSignatureVerifier;
+    Properties properties;
 
     @SneakyThrows
-    DownloadedDiagnosisKeyBatchesResponse downloadDiagnosisKeyBatches(LocalDate date, final String batchTag) {
+    @Override
+    public BatchesResponse fetchBatches(LocalDate date, final String batchTag) {
 
         @Nullable ResponseEntity<ByteArrayResource> response = fetchDiagnosisKeysResponse(batchTag, date);
 
         @Nullable String nextBatchTag = obtainHeaderValue(response, "nextBatchTag");
-        return new DownloadedDiagnosisKeyBatchesResponse(
+        return new BatchesResponse(
                 resolveBatchTag(batchTag, response),
                 resolveNextBatchTag(nextBatchTag),
                 obtainBody(response)
         );
     }
 
-    String fetchNextBatchTag(LocalDate date, final String batchTag) {
+    @Override
+    public String fetchNextBatchTag(LocalDate date, final String batchTag) {
         @Nullable ResponseEntity<ByteArrayResource> response = fetchDiagnosisKeysResponse(batchTag, date);
         return obtainHeaderValue(response, "nextBatchTag");
+    }
+
+    @Override
+    public List<AuditResponse> listAudits(String batchTag, LocalDate date) {
+        URI uri = UriComponentsBuilder.fromHttpUrl(properties.getApi())
+                .pathSegment("audit")
+                .pathSegment("download")
+                .pathSegment(date.toString())
+                .pathSegment(batchTag).build()
+                .toUri();
+
+        ResponseEntity<String> response = webClientFactory.createWebClient().get()
+                .uri(uri)
+                .headers(headers -> {
+                    headers.set(HttpHeaders.ACCEPT, WebClientFactory.ACCEPT_HEADER_JSON);
+                })
+                .retrieve()
+                .toEntity(String.class)
+                .block();
+
+        return Optional.ofNullable(response)
+                .map(HttpEntity::getBody)
+                .map(this::readValue)
+                .orElseGet(Lists::newArrayList);
     }
 
     private String resolveNextBatchTag(String nextBatchTag) {
@@ -98,7 +124,7 @@ class HttpDownloader {
     }
 
     private URI prepareUri(LocalDate date) {
-        return UriComponentsBuilder.fromHttpUrl("https://efgs.koronazglowy.com/diagnosiskeys")
+        return UriComponentsBuilder.fromHttpUrl(properties.getApi())
                 .pathSegment("download")
                 .pathSegment(date.format(DateTimeFormatter.ISO_DATE))
                 .build()
@@ -122,36 +148,8 @@ class HttpDownloader {
     }
 
     @SneakyThrows
-    List<AuditEntry> callAuditDownload(String batchTag, LocalDate date) {
-
-        URI uri = UriComponentsBuilder.fromHttpUrl("https://efgs.koronazglowy.com/diagnosiskeys")
-                .pathSegment("audit")
-                .pathSegment("download")
-                .pathSegment(date.toString())
-                .pathSegment(batchTag).build()
-                .toUri();
-
-        log.info("Start calling audit-download for batchTag: {}", batchTag);
-        ResponseEntity<String> response = webClientFactory.createWebClient().get()
-                .uri(uri)
-                .headers(headers -> {
-                    headers.set(HttpHeaders.ACCEPT, WebClientFactory.ACCEPT_HEADER_JSON);
-                })
-                .retrieve()
-                .toEntity(String.class)
-                .block();
-
-        log.info("Stop calling audit-download for batchTag: {}", batchTag);
-
-        return Optional.ofNullable(response)
-                .map(HttpEntity::getBody)
-                .map(this::readValue)
-                .orElseGet(Lists::newArrayList);
-    }
-
-    @SneakyThrows
-    private List<AuditEntry> readValue(String content) {
-        return createObjectMapper().readValue(content, new TypeReference<List<AuditEntry>>() {
+    private List<AuditResponse> readValue(String content) {
+        return createObjectMapper().readValue(content, new TypeReference<>() {
         });
     }
 
@@ -159,15 +157,5 @@ class HttpDownloader {
         return new ObjectMapper()
                 .registerModule(new JavaTimeModule())
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
-
-    boolean validateDiagnosisKeyWithSignature(EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch,
-                                                     List<AuditEntry> auditEntries) {
-        for (AuditEntry auditEntry : auditEntries) {
-            if (batchSignatureVerifier.verify(diagnosisKeyBatch, auditEntry.getBatchSignature())) {
-                return true;
-            }
-        }
-        return false;
     }
 }

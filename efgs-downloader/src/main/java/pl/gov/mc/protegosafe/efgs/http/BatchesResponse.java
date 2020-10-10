@@ -1,4 +1,4 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.http;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.core.io.ByteArrayResource;
 @Getter
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-class DownloadedDiagnosisKeyBatchesResponse {
+public class BatchesResponse {
 
     String batchTag;
     String nextBatchTag;
