@@ -63,20 +63,20 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./efgs 
+        working-directory: ./efgs
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-        
+
       - name: Inject NBBS for build
         run: 'echo "${{ secrets.NBBS }}" | base64 --decode > src/nbbs'
         shell: bash
-        
+
       - name: Inject NBTLS for build
         run: 'echo "${{ secrets.NBTLS }}" | base64 --decode > src/nbtls'
         shell: bash
-        
+
       - name: copy source
         run: cp -r * ../
         shell: bash
@@ -106,7 +106,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags') || startsWith(github.ref, 'refs/heads/efgs') }}
+    if: ${{ startsWith(github.ref, 'refs/tags') || startsWith(github.ref, 'refs/heads/efgs') || startsWith(github.ref, 'refs/heads/pre-prod/') }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -127,10 +127,7 @@ jobs:
           echo "::set-env name=ENVIRONMENT::STAGE"
 
       - name: Set env to PROD
-        if: startsWith(github.ref, 'refs/tags/')
-            && github.repository_owner == 'ProteGO-Safe'
-            && ( github.event.release.target_commitish == 'master' || startsWith( github.event.release.target_commitish, 'release/3' ))
-            && github.event_name == 'release'
+        if: (( startsWith(github.ref, 'refs/tags/') && github.repository_owner == 'ProteGO-Safe' && github.event.release.target_commitish == 'master' && github.event_name == 'release' ) || ( github.repository_owner != 'ProteGO-Safe' && startsWith(github.ref, 'refs/heads/pre-prod/' ) && github.event_name == 'push'))
         run: |
           echo "::set-env name=ENVIRONMENT::PROD"
 
@@ -165,6 +162,10 @@ jobs:
 
       - run: echo "::set-env name=FUNCTIONS::$(cat functions/src/index.ts | sed -n '/exports/,/cloudFunctions/p' | sed -e 's/exports\(.*\)cloudFunctions/\1/' | sed 's/ = ..*;//' | sed 's/\./functions:/g' |tr '\n' ',')"
         shell: bash
+
+      - run: echo FUNCTIONS=$FUNCTIONS
+        shell: bash
+        if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'DEV'
 
       - run: echo FUNCTIONS=$FUNCTIONS
         shell: bash
