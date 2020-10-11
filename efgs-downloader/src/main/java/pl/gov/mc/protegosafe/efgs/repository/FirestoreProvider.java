@@ -1,21 +1,21 @@
-package pl.gov.mc.protegosafe.efgs.downloader;
+package pl.gov.mc.protegosafe.efgs.repository;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreOptions;
 import lombok.SneakyThrows;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import static pl.gov.mc.protegosafe.efgs.Constants.ENV_PROJECT_ID;
-
+@Configuration
 class FirestoreProvider {
 
-    static final Firestore FIRESTORE = provideFirestore();
-
+    @Bean
     @SneakyThrows
-    private static synchronized Firestore provideFirestore() {
+    Firestore provideFirestore() {
         FirestoreOptions firestoreOptions =
                 FirestoreOptions.getDefaultInstance().toBuilder()
-                        .setProjectId(ENV_PROJECT_ID)
+                        .setProjectId("protego-fb-dev")
                         .setCredentials(GoogleCredentials.getApplicationDefault())
                         .build();
         return firestoreOptions.getService();

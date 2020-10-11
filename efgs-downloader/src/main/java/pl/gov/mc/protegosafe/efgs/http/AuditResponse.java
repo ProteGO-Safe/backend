@@ -18,7 +18,7 @@
  * ---license-end
  */
 
-package pl.gov.mc.protegosafe.efgs.downloader;
+package pl.gov.mc.protegosafe.efgs.http;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +29,7 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class AuditEntry {
+public class AuditResponse {
 
   private String country;
   private ZonedDateTime uploadedTime;
