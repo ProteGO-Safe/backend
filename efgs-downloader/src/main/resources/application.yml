@@ -10,5 +10,5 @@ efgs:
   api: https://efgs.koronazglowy.com/diagnosiskeys
   message:
     project-id: protego-fb-dev
-    topic-id: firebase-test-europe-west1
+    topic-id: firebase-subscription-uploadDiagnosisKeysSubscriber-europe-west1
 

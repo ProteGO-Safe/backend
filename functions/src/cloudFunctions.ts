@@ -50,12 +50,11 @@ export function scheduler(
 }
 
 export function topicSubscriber (
-    handler : (data: any) => any | Promise<any>,
-    topic: string
+    handler : (data: any) => any | Promise<any>
 ) {
     return ff.runWith({memory: '256MB', timeoutSeconds: 30})
         .region(...config.regions)
-        .pubsub.topic(topic)
+        .pubsub.topic(`firebase-subscription-${handler.name}-${[...config.regions][0]}`)
         .onPublish(handler)
 }
 
