@@ -4,9 +4,8 @@ import Axios from "axios";
 
 const superagent = require('superagent');
 
-const uploadDiagnosisKeys = (data: any): Promise<any> => {
-    const idToken = getIdToken();
-    console.log(idToken);
+const uploadDiagnosisKeys = async (data: any): Promise<any> => {
+    const idToken = await getIdToken();
     return superagent
         .post(config.exposureEndpoint)
         .send(data)
