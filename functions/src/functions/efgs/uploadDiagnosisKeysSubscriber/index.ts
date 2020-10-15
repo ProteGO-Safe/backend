@@ -1,4 +1,4 @@
-const {log} = require("firebase-functions/lib/logger");
+const {log, error} = require("firebase-functions/lib/logger");
 import uploadDiagnosisKeys from "../../uploadDiagnosisKeys";
 import createGensPayloadMessage from "../gensPayloadFactory";
 
@@ -21,8 +21,11 @@ const uploadDiagnosisKeysSubscriber = async (message: any) => {
 
     try {
         await uploadDiagnosisKeys(data)
-    } catch (error) {
-        throw new Error(error);
+    } catch (e) {
+        if (e.response && e.response.error) {
+            error(e.response.error.text)
+        }
+        throw new Error(e);
     }
 
     log('Processed uploading keys to gens');
