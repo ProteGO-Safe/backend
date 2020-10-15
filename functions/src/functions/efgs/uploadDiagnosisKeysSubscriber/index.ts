@@ -1,18 +1,14 @@
 import uploadDiagnosisKeys from "../../uploadDiagnosisKeys";
+import createGensPayloadMessage from "../gensPayloadFactory";
 
 const convertMessage = (dataAsBase64: any) => {
-    console.log(dataAsBase64);
     const data = Buffer.from(dataAsBase64, 'base64')
         .toString()
         .replace(/"{/g, '{')
         .replace(/}"/g, '}')
         .replace(/\\"/g, '"');
-    console.log(data);
 
-    console.log("-----")
-    console.log(JSON.parse(data));
-    // todo PSAFE-2096
-    return {}
+    return createGensPayloadMessage(JSON.parse(data))
 };
 
 const uploadDiagnosisKeysSubscriber = async (message: any) => {
