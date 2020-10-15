@@ -46,46 +46,44 @@ describe('gensPayloadFactory', function () {
             }]
         };
         const expectedGensPayloadMessage = {
-            data: {
-                temporaryExposureKeys: [
-                    {
-                        rollingPeriod: 144,
-                        key: "LX+Pc81p8CI/1JFdeQ3W3w==",
-                        rollingStartNumber: 2666440,
-                        transmissionRisk: 2
-                    },
-                    {
-                        rollingPeriod: 144,
-                        key: "kwpn1QxFjTLCe9uKjH8OjA==",
-                        rollingStartNumber: 2666296,
-                        transmissionRisk: 7
-                    },
-                    {
-                        rollingPeriod: 144,
-                        key: "zyPz8fE4+nGU5LdRwlSzdg==",
-                        rollingStartNumber: 2665584,
-                        transmissionRisk: 1
-                    },
-                    {
-                        rollingPeriod: 144,
-                        key: "xGxS7WESCyQC9A44CbbjAQ==",
-                        rollingStartNumber: 2669472,
-                        transmissionRisk: 4
-                    },
-                    {
-                        rollingPeriod: 144,
-                        key: "4cMPURzsWITBZCMdh6WU/g==",
-                        rollingStartNumber: 2669328,
-                        transmissionRisk: 8
-                    },
-                    {
-                        rollingPeriod: 144,
-                        key: "lzJRC5P8EjbcYbQRUt8hEQ==",
-                        rollingStartNumber: 2669184,
-                        transmissionRisk: 8
-                    },
-                ]
-            }
+            temporaryExposureKeys: [
+                {
+                    rollingPeriod: 144,
+                    key: "LX+Pc81p8CI/1JFdeQ3W3w==",
+                    rollingStartNumber: 2666440,
+                    transmissionRisk: 2
+                },
+                {
+                    rollingPeriod: 144,
+                    key: "kwpn1QxFjTLCe9uKjH8OjA==",
+                    rollingStartNumber: 2666296,
+                    transmissionRisk: 7
+                },
+                {
+                    rollingPeriod: 144,
+                    key: "zyPz8fE4+nGU5LdRwlSzdg==",
+                    rollingStartNumber: 2665584,
+                    transmissionRisk: 1
+                },
+                {
+                    rollingPeriod: 144,
+                    key: "xGxS7WESCyQC9A44CbbjAQ==",
+                    rollingStartNumber: 2669472,
+                    transmissionRisk: 4
+                },
+                {
+                    rollingPeriod: 144,
+                    key: "4cMPURzsWITBZCMdh6WU/g==",
+                    rollingStartNumber: 2669328,
+                    transmissionRisk: 8
+                },
+                {
+                    rollingPeriod: 144,
+                    key: "lzJRC5P8EjbcYbQRUt8hEQ==",
+                    rollingStartNumber: 2669184,
+                    transmissionRisk: 8
+                },
+            ]
         };
         const gensPayloadMessage = createGensPayloadMessage(efgsData);
         expect(gensPayloadMessage).to.eql(expectedGensPayloadMessage)

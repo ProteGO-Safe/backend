@@ -3,7 +3,7 @@ const createGensPayloadMessage = (efgsData: any) => {
     const {batches} = efgsData;
 
     return batches.reduce((obj: any, item: any) => {
-        const {data: {temporaryExposureKeys}} = obj;
+        const {temporaryExposureKeys} = obj;
         const {keys} = item;
         const mappedKeys = keys.map((_item: any) => {
             const {keyData, rollingStartIntervalNumber, rollingPeriod, transmissionRiskLevel} = _item;
@@ -14,9 +14,9 @@ const createGensPayloadMessage = (efgsData: any) => {
                 transmissionRisk: transmissionRiskLevel
             }
         });
-        return {data: {temporaryExposureKeys: [...temporaryExposureKeys, ...mappedKeys]}}
+        return {temporaryExposureKeys: [...temporaryExposureKeys, ...mappedKeys]}
 
-    }, {data: {temporaryExposureKeys: []}})
+    }, {temporaryExposureKeys: []})
 };
 
 export default createGensPayloadMessage;
