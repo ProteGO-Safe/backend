@@ -2,11 +2,13 @@ import uploadDiagnosisKeys from "../../uploadDiagnosisKeys";
 import createGensPayloadMessage from "../gensPayloadFactory";
 
 const convertMessage = (dataAsBase64: any) => {
+    console.log(dataAsBase64);
     const data = Buffer.from(dataAsBase64, 'base64')
-        .toString()
-        .replace(/"{/g, '{')
-        .replace(/}"/g, '}')
-        .replace(/\\"/g, '"');
+        .toString();
+        // .replace(/"{/g, '{')
+        // .replace(/}"/g, '}')
+        // .replace(/\\"/g, '"');
+    console.log(data);
 
     return createGensPayloadMessage(JSON.parse(data))
 };
