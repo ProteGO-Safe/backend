@@ -6,7 +6,12 @@ const convertMessage = (dataAsBase64: any) => {
     const data = Buffer.from(dataAsBase64, 'base64')
         .toString();
     const efgsData = JSON.parse(data);
-    return createGensPayloadMessage(efgsData)
+    return {
+        ...createGensPayloadMessage(efgsData),
+        regions: ['PL'],
+        appPackageName: 'pl.gov.mc.protegosafe.devel',
+        platform: 'ios'
+    }
 };
 
 const uploadDiagnosisKeysSubscriber = async (message: any) => {
