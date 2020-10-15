@@ -1,6 +1,8 @@
 const createGensPayloadMessage = (efgsData: any) => {
 
-    return efgsData.reduce((obj: any, item: any) => {
+    const {batches} = efgsData;
+
+    return batches.reduce((obj: any, item: any) => {
         const {data: {temporaryExposureKeys}} = obj;
         const {responseBody: {keys}} = item;
         const mappedKeys = keys.map((_item: any) => {

@@ -39,6 +39,7 @@ class PubSubMessageSender implements MessageSender {
     @SneakyThrows
     private String buildMessage(List<ProcessedBatches> processedBatches) {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(processedBatches);
+        Message message = new Message(processedBatches);
+        return objectMapper.writeValueAsString(message);
     }
 }

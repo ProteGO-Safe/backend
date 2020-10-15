@@ -9,8 +9,9 @@ const convertMessage = (dataAsBase64: any) => {
         // .replace(/}"/g, '}')
         // .replace(/\\"/g, '"');
     console.log(data);
-
-    return createGensPayloadMessage(JSON.parse(data))
+    const efgsData = JSON.parse(data);
+    console.log(efgsData);
+    return createGensPayloadMessage(efgsData)
 };
 
 const uploadDiagnosisKeysSubscriber = async (message: any) => {
