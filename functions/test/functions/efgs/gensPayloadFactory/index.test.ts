@@ -6,49 +6,43 @@ describe('gensPayloadFactory', function () {
         const efgsData = {
             batches: [{
                 batchTag: "20201006-2",
-                responseBody: {
-                    keys: [{
-                        keyData: "TFgrUGM4MXA4Q0kvMUpGZGVRM1czdz09",
-                        rollingStartIntervalNumber: 2666440,
-                        rollingPeriod: 144,
-                        transmissionRiskLevel: 2,
-                    }, {
-                        keyData: "a3dwbjFReEZqVExDZTl1S2pIOE9qQT09",
-                        rollingStartIntervalNumber: 2666296,
-                        rollingPeriod: 144,
-                        transmissionRiskLevel: 7,
-                    }]
-                }
+                keys: [{
+                    keyData: "TFgrUGM4MXA4Q0kvMUpGZGVRM1czdz09",
+                    rollingStartIntervalNumber: 2666440,
+                    rollingPeriod: 144,
+                    transmissionRiskLevel: 2,
+                }, {
+                    keyData: "a3dwbjFReEZqVExDZTl1S2pIOE9qQT09",
+                    rollingStartIntervalNumber: 2666296,
+                    rollingPeriod: 144,
+                    transmissionRiskLevel: 7,
+                }]
             }, {
                 batchTag: "20201006-3",
-                responseBody: {
-                    keys: [{
-                        keyData: "enlQejhmRTQrbkdVNUxkUndsU3pkZz09",
-                        rollingStartIntervalNumber: 2665584,
-                        rollingPeriod: 144,
-                        transmissionRiskLevel: 1,
-                    }, {
-                        keyData: "eEd4UzdXRVNDeVFDOUE0NENiYmpBUT09",
-                        rollingStartIntervalNumber: 2669472,
-                        rollingPeriod: 144,
-                        transmissionRiskLevel: 4,
-                    }, {
-                        keyData: "NGNNUFVSenNXSVRCWkNNZGg2V1UvZz09",
-                        rollingStartIntervalNumber: 2669328,
-                        rollingPeriod: 144,
-                        transmissionRiskLevel: 8,
-                    }]
-                }
+                keys: [{
+                    keyData: "enlQejhmRTQrbkdVNUxkUndsU3pkZz09",
+                    rollingStartIntervalNumber: 2665584,
+                    rollingPeriod: 144,
+                    transmissionRiskLevel: 1,
+                }, {
+                    keyData: "eEd4UzdXRVNDeVFDOUE0NENiYmpBUT09",
+                    rollingStartIntervalNumber: 2669472,
+                    rollingPeriod: 144,
+                    transmissionRiskLevel: 4,
+                }, {
+                    keyData: "NGNNUFVSenNXSVRCWkNNZGg2V1UvZz09",
+                    rollingStartIntervalNumber: 2669328,
+                    rollingPeriod: 144,
+                    transmissionRiskLevel: 8,
+                }]
             }, {
                 batchTag: "20201006-4",
-                responseBody: {
-                    keys: [{
-                        keyData: "bHpKUkM1UDhFamJjWWJRUlV0OGhFUT09C",
-                        rollingStartIntervalNumber: 2669184,
-                        rollingPeriod: 144,
-                        transmissionRiskLevel: 8,
-                    }]
-                }
+                keys: [{
+                    keyData: "bHpKUkM1UDhFamJjWWJRUlV0OGhFUT09C",
+                    rollingStartIntervalNumber: 2669184,
+                    rollingPeriod: 144,
+                    transmissionRiskLevel: 8,
+                }]
             }]
         };
         const expectedGensPayloadMessage = {

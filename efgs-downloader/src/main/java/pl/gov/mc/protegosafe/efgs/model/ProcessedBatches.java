@@ -1,9 +1,11 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -11,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 public class ProcessedBatches implements Comparable<ProcessedBatches> {
 
     String batchTag;
-    String responseBody;
+    List<Key> keys;
 
     @Override
     public int compareTo(ProcessedBatches other) {

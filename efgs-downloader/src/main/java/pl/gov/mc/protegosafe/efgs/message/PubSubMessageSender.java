@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-import pl.gov.mc.protegosafe.efgs.ProcessedBatches;
+import pl.gov.mc.protegosafe.efgs.model.ProcessedBatches;
 import pl.gov.mc.protegosafe.efgs.Properties;
 
 import java.util.List;

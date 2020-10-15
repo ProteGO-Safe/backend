@@ -1,6 +1,6 @@
 package pl.gov.mc.protegosafe.efgs.message;
 
-import pl.gov.mc.protegosafe.efgs.ProcessedBatches;
+import pl.gov.mc.protegosafe.efgs.model.ProcessedBatches;
 
 import java.util.List;
 

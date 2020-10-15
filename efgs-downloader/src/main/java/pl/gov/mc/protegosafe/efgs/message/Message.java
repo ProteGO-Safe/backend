@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import pl.gov.mc.protegosafe.efgs.ProcessedBatches;
+import pl.gov.mc.protegosafe.efgs.model.ProcessedBatches;
 
 import java.util.List;
 

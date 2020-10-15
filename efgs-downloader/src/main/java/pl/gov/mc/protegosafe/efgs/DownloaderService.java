@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.http.AuditResponse;
 import pl.gov.mc.protegosafe.efgs.http.BatchesResponse;
 import pl.gov.mc.protegosafe.efgs.http.HttpConnector;
+import pl.gov.mc.protegosafe.efgs.model.ProcessedBatches;
+import pl.gov.mc.protegosafe.efgs.model.ProcessedBatchesFactory;
 import pl.gov.mc.protegosafe.efgs.validator.Validator;
 
 import javax.annotation.Nullable;
@@ -26,6 +28,7 @@ class DownloaderService {
     HttpConnector httpConnector;
     ProtobufConverter protobufConverter;
     Validator validator;
+    ProcessedBatchesFactory processedBatchesFactory;
 
     void process(
             List<ProcessedBatches> responses,
@@ -54,7 +57,8 @@ class DownloaderService {
 
         if (validator.validateDiagnosisKeyWithSignature(diagnosisKeyBatch, auditResponses)) {
             String diagnosisKeyBatchAsString = protobufConverter.printToString(diagnosisKeyBatch);
-            responses.add(new ProcessedBatches(batchTag, diagnosisKeyBatchAsString));
+            ProcessedBatches processedBatches = processedBatchesFactory.create(batchTag, diagnosisKeyBatchAsString);
+            responses.add(processedBatches);
         }
 
         if (nextBatchTag != null) {

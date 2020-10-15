@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.http.HttpConnector;
 import pl.gov.mc.protegosafe.efgs.message.MessageSender;
+import pl.gov.mc.protegosafe.efgs.model.ProcessedBatches;
 import pl.gov.mc.protegosafe.efgs.repository.BatchTagRepository;
 
 import java.time.LocalDate;
@@ -29,6 +30,7 @@ class Facade {
 
         List<ProcessedBatches> processedBatches = Lists.newArrayList();
 
+        downloaderService.process(processedBatches, date, batchTag);
         downloaderService.process(processedBatches, date, batchTag);
 
         processedBatches.stream()
