@@ -106,14 +106,14 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags') || startsWith(github.ref, 'refs/heads/PSAFE-2207') || startsWith(github.ref, 'refs/heads/pre-prod/') }}
+    if: ${{ startsWith(github.ref, 'refs/tags') || startsWith(github.ref, 'refs/heads/efgs') || startsWith(github.ref, 'refs/heads/pre-prod/') }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
       - name: Set env to DEV
         if: github.repository_owner != 'ProteGO-Safe'
-            && startsWith(github.ref, 'refs/heads/PSAFE-2207')
+            && startsWith(github.ref, 'refs/heads/efgs')
             && github.event_name == 'push'
         run: |
           echo "::set-env name=ENVIRONMENT::DEV"
