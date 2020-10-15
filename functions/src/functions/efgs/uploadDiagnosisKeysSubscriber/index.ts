@@ -8,9 +8,9 @@ const convertMessage = (dataAsBase64: any) => {
     const efgsData = JSON.parse(data);
     return {
         ...createGensPayloadMessage(efgsData),
-        regions: ['PL'],
-        appPackageName: 'pl.gov.mc.protegosafe.devel',
-        platform: 'ios'
+        regions: ['PL'], // todo PSAFE-2456
+        appPackageName: 'pl.gov.mc.protegosafe.devel', // todo PSAFE-2456
+        platform: 'ios' // todo PSAFE-2456
     }
 };
 
