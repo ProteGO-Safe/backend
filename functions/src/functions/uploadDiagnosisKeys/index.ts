@@ -6,6 +6,8 @@ const superagent = require('superagent');
 
 const uploadDiagnosisKeys = async (data: any): Promise<any> => {
     const idToken = await getIdToken();
+    console.log(111);
+    console.log(idToken);
     return superagent
         .post(config.exposureEndpoint)
         .send(data)
