@@ -4,20 +4,27 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pl.gov.mc.protegosafe</groupId>
-    <artifactId>efgs</artifactId>
+    <artifactId>efgs-downloader</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <properties>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.compiler.source>11</maven.compiler.source>
+        <java.version>11</java.version>
     </properties>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.3.2.RELEASE</version>
+    </parent>
+
     <dependencies>
-        <!-- Required for Function primitives -->
         <dependency>
-            <groupId>com.google.cloud.functions</groupId>
-            <artifactId>functions-framework-api</artifactId>
-            <version>1.0.2</version>
-            <scope>provided</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-function-adapter-gcp</artifactId>
+            <version>3.0.10.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -132,20 +139,27 @@
         </extensions>
         <plugins>
             <plugin>
-                <!--
-                  Google Cloud Functions Framework Maven plugin
-
-                  This plugin allows you to run Cloud Functions Java code
-                  locally. Use the following terminal command to run a
-                  given function locally:
-
-                  mvn function:run -Drun.functionTarget=your.package.yourFunction
-                -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.3.4.RELEASE</version>
+                <configuration>
+                    <outputDirectory>target/deploy</outputDirectory>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework.cloud</groupId>
+                        <artifactId>spring-cloud-function-adapter-gcp</artifactId>
+                        <version>3.0.10.RELEASE</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
                 <groupId>com.google.cloud.functions</groupId>
                 <artifactId>function-maven-plugin</artifactId>
-                <version>0.9.4</version>
+                <version>0.9.5</version>
                 <configuration>
-                    <functionTarget>pl.gov.mc.protegosafe.efgs.uploader.EfgsDiagnosisKeysUploader</functionTarget>
+                    <functionTarget>org.springframework.cloud.function.adapter.gcp.GcfJarLauncher</functionTarget>
+                    <port>8080</port>
                 </configuration>
             </plugin>
             <plugin>

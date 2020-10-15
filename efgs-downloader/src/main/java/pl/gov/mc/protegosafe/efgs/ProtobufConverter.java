@@ -1,4 +1,4 @@
-package pl.gov.mc.protegosafe.efgs.downloader;
+package pl.gov.mc.protegosafe.efgs;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
@@ -6,10 +6,12 @@ import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
 import com.googlecode.protobuf.format.JsonFormat;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
 
 import java.util.Base64;
 
-public class ProtobufConverter extends JsonFormat {
+@Service
+class ProtobufConverter extends JsonFormat {
 
     @SneakyThrows
     @Override

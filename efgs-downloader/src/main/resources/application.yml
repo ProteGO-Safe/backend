@@ -1,0 +1,14 @@
+efgs:
+  downloader:
+    certs:
+      nbbs-location: nbbs
+      nbtls-location: nbtls
+    db:
+      last-batch-tag-field: lastBatchTag
+      collections:
+        batch-tag: processedBatchTags
+  api: https://efgs.koronazglowy.com/diagnosiskeys
+  message:
+    project-id: protego-fb-dev
+    topic-id: firebase-test-europe-west1
+

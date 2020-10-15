@@ -12,7 +12,7 @@ class EfgsDiagnosisKeysDownloaderTest {
         EfgsDiagnosisKeysDownloader efgsDiagnosisKeysDownloader = new EfgsDiagnosisKeysDownloader();
 
         // when
-        efgsDiagnosisKeysDownloader.accept(null, null);
+        efgsDiagnosisKeysDownloader.service(null, null);
 
         // then
 

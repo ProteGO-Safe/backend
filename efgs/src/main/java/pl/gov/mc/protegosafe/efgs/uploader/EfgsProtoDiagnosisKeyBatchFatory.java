@@ -5,6 +5,7 @@ import eu.interop.federationgateway.model.EfgsProto;
 import pl.gov.mc.protegosafe.efgs.uploader.model.DiagnosisKey;
 import pl.gov.mc.protegosafe.efgs.uploader.model.DiagnosisKeyBatch;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ class EfgsProtoDiagnosisKeyBatchFatory {
                 .setTransmissionRiskLevel(diagnosisKey.getTransmissionRiskLevel())
                 .setOrigin(diagnosisKey.getOrigin())
                 .setReportType(EfgsProto.ReportType.CONFIRMED_CLINICAL_DIAGNOSIS)
-                .setKeyData(ByteString.copyFrom(diagnosisKey.getKeyData().getBytes()))
+                .setKeyData(ByteString.copyFrom(Base64.getDecoder().decode(diagnosisKey.getKeyData().getBytes())))
                 .setDaysSinceOnsetOfSymptoms(diagnosisKey.getDaysSinceOnsetOfSymptoms())
                 .addAllVisitedCountries(diagnosisKey.getVisitedCountries())
                 .build();

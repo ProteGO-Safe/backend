@@ -17,6 +17,7 @@ import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
 
 import static pl.gov.mc.protegosafe.efgs.Constants.ENV_NBTLS_LOCATION;
+import static pl.gov.mc.protegosafe.efgs.Constants.X_SSL_CLIENT_DN;
 
 @Slf4j
 public class WebClientFactory {
@@ -29,15 +30,13 @@ public class WebClientFactory {
 
         final boolean useHttps = false;
 
-        final String certFileName = System.getenv(ENV_NBTLS_LOCATION);
-
-        PrivateKey privateKey = CertUtils.loadPrivateKeyFromFile(certFileName);
-        X509Certificate certificate = CertUtils.loadCertificateFromFile(certFileName);
+        PrivateKey privateKey = CertUtils.loadPrivateKeyFromFile(ENV_NBTLS_LOCATION);
+        X509Certificate certificate = CertUtils.loadCertificateFromFile(ENV_NBTLS_LOCATION);
 
         HttpClient httpClient = HttpClient.create();
 
         httpClient = httpClient.headers(headers -> headers.set("X-SSL-Client-SHA256", CertUtils.getCertThumbprint(certificate)));
-        httpClient = httpClient.headers(headers -> headers.set("X-SSL-Client-DN", "C=de"));
+        httpClient = httpClient.headers(headers -> headers.set("X-SSL-Client-DN", String.format("C=%s", X_SSL_CLIENT_DN)));
 
         if (useHttps) {
             log.info("Simulator uses https with mutual authentication");

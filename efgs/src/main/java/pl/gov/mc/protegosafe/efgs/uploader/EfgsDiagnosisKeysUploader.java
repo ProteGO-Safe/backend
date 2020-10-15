@@ -22,7 +22,7 @@ public class EfgsDiagnosisKeysUploader implements RawBackgroundFunction {
 
         EfgsProto.DiagnosisKeyBatch batch = EfgsProtoDiagnosisKeyBatchFatory.create(diagnosisKeyBatch);
         byte[] bytes = BatchSignatureUtils.generateBytesToVerify(batch);
-        SignatureGenerator signatureGenerator = new SignatureGenerator(System.getenv(ENV_NBBS_LOCATION));
+        SignatureGenerator signatureGenerator = new SignatureGenerator(ENV_NBBS_LOCATION);
         String signatureForBytes = signatureGenerator.getSignatureForBytes(bytes);
         String randomBatchTag = getRandomBatchTag();
 
