@@ -15,7 +15,8 @@ import java.util.function.Consumer;
 @EnableConfigurationProperties(Properties.class)
 public class EfgsDownloader {
 
-	@Autowired Facade facade;
+	@Autowired
+	EfgsKeysProcessor efgsKeysProcessor;
 
 	public static void main(String[] args) {
 		SpringApplication.run(EfgsDownloader.class, args);
@@ -23,6 +24,6 @@ public class EfgsDownloader {
 
 	@Bean
 	public Consumer<TriggerEvent> uppercase() {
-		return value -> facade.process(LocalDate.parse(value.getDate()));
+		return value -> efgsKeysProcessor.process(LocalDate.parse(value.getDate()));
 	}
 }

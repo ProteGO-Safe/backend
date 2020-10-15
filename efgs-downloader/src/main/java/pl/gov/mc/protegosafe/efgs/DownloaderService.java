@@ -1,5 +1,7 @@
 package pl.gov.mc.protegosafe.efgs;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import eu.interop.federationgateway.model.EfgsProto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,9 +12,9 @@ import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.http.AuditResponse;
 import pl.gov.mc.protegosafe.efgs.http.BatchesResponse;
 import pl.gov.mc.protegosafe.efgs.http.HttpConnector;
+import pl.gov.mc.protegosafe.efgs.validator.BatchSignatureVerifier;
 import pl.gov.mc.protegosafe.efgs.model.ProcessedBatches;
 import pl.gov.mc.protegosafe.efgs.model.ProcessedBatchesFactory;
-import pl.gov.mc.protegosafe.efgs.validator.Validator;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
@@ -27,43 +29,46 @@ class DownloaderService {
 
     HttpConnector httpConnector;
     ProtobufConverter protobufConverter;
-    Validator validator;
+    BatchSignatureVerifier batchSignatureVerifier;
     ProcessedBatchesFactory processedBatchesFactory;
 
-    void process(
-            List<ProcessedBatches> responses,
-            LocalDate date,
+    List<ProcessedBatches> process(LocalDate date,
             String batchTag) {
+
+        return process(date, batchTag, null);
+    }
+
+    private List<ProcessedBatches> process(LocalDate date, String batchTag, @Nullable List<ProcessedBatches> responses) {
+
+        List<ProcessedBatches> mutableResponses = createOrCopyResponses(responses);
+
+        if (batchTag == null) {
+            return ImmutableList.copyOf(mutableResponses);
+        }
+
 
         BatchesResponse response = httpConnector.fetchBatches(date, batchTag);
 
         isTrue(batchTag.equals(response.getBatchTag()), "received batchTag has to be the same");
 
         @Nullable String nextBatchTag = response.getNextBatchTag();
-        @Nullable ByteArrayResource responseBody = response.getResponseBody();
-
-        if (responseBody == null && nextBatchTag == null) {
-            return;
-        }
-
-        if (responseBody == null) {
-            process(responses, date, nextBatchTag);
-            return;
-        }
+        ByteArrayResource responseBody = response.getResponseBody();
 
         List<AuditResponse> auditResponses = httpConnector.listAudits(batchTag, date);
 
         EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch = createDiagnosisKeyBatch(responseBody);
 
-        if (validator.validateDiagnosisKeyWithSignature(diagnosisKeyBatch, auditResponses)) {
+        if (batchSignatureVerifier.validateDiagnosisKeyWithSignature(diagnosisKeyBatch, auditResponses)) {
             String diagnosisKeyBatchAsString = protobufConverter.printToString(diagnosisKeyBatch);
             ProcessedBatches processedBatches = processedBatchesFactory.create(batchTag, diagnosisKeyBatchAsString);
-            responses.add(processedBatches);
+            mutableResponses.add(processedBatches);
         }
 
-        if (nextBatchTag != null) {
-            process(responses, date, nextBatchTag);
-        }
+        return process(date, nextBatchTag, ImmutableList.copyOf(mutableResponses));
+    }
+
+    private List<ProcessedBatches> createOrCopyResponses(List<ProcessedBatches> responses) {
+        return responses == null ? Lists.newArrayList() : Lists.newArrayList(responses);
     }
 
     @SneakyThrows

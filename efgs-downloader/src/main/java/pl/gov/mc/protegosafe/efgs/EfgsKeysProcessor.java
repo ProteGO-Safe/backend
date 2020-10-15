@@ -1,6 +1,5 @@
 package pl.gov.mc.protegosafe.efgs;
 
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -8,7 +7,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.http.HttpConnector;
 import pl.gov.mc.protegosafe.efgs.message.MessageSender;
-import pl.gov.mc.protegosafe.efgs.model.ProcessedBatches;
 import pl.gov.mc.protegosafe.efgs.repository.BatchTagRepository;
 
 import java.time.LocalDate;
@@ -17,7 +15,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-class Facade {
+class EfgsKeysProcessor {
 
     HttpConnector httpConnector;
     DownloaderService downloaderService;
@@ -26,12 +24,9 @@ class Facade {
 
     void process(LocalDate date) {
         String lastProcessedBatchTag = batchTagRepository.fetchLastProcessedBatchTag(date);
-        String batchTag = httpConnector.fetchNextBatchTag(date, lastProcessedBatchTag);
+        String nextBatchTag = httpConnector.fetchNextBatchTag(date, lastProcessedBatchTag);
 
-        List<ProcessedBatches> processedBatches = Lists.newArrayList();
-
-        downloaderService.process(processedBatches, date, batchTag);
-        downloaderService.process(processedBatches, date, batchTag);
+        List<ProcessedBatches> processedBatches = downloaderService.process(date, nextBatchTag);
 
         processedBatches.stream()
                 .max(ProcessedBatches::compareTo)

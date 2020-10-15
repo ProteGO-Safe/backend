@@ -11,4 +11,3 @@ efgs:
   message:
     project-id: protego-fb-dev
     topic-id: firebase-subscription-uploadDiagnosisKeysSubscriber-europe-west1
-

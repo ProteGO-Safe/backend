@@ -27,11 +27,10 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-class BatchSignatureVerifier implements Validator{
+public class BatchSignatureVerifier {
 
     BatchSignatureUtils batchSignatureUtils;
 
-    @Override
     public boolean validateDiagnosisKeyWithSignature(EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch,
                                                      List<AuditResponse> auditEntries) {
         for (AuditResponse auditResponse : auditEntries) {

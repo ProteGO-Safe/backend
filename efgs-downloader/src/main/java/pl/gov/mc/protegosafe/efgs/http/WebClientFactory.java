@@ -5,10 +5,10 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -23,19 +23,22 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 class WebClientFactory {
 
     static final String ACCEPT_HEADER_JSON = "application/json; version=1.0";
     static final String ACCEPT_HEADER_PROTOBUF = "application/protobuf; version=1.0";
 
-    Properties properties;
+    String nbtlsLocation;
+
+    @Autowired
+    WebClientFactory(Properties properties) {
+        this.nbtlsLocation = properties.getDownloader().getCerts().getNbtlsLocation();
+    }
 
     @SneakyThrows
     WebClient createWebClient() {
 
-        String nbtlsLocation = properties.getDownloader().getCerts().getNbtlsLocation();
         PrivateKey privateKey = CertUtils.loadPrivateKeyFromFile(nbtlsLocation);
         X509Certificate certificate = CertUtils.loadCertificateFromFile(nbtlsLocation);
 

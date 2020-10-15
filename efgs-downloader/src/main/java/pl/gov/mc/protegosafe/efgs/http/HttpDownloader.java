@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +31,16 @@ import static pl.gov.mc.protegosafe.efgs.http.WebClientFactory.ACCEPT_HEADER_PRO
 
 @Slf4j
 @Service
-@AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 class HttpDownloader implements HttpConnector {
 
     WebClientFactory webClientFactory;
-    Properties properties;
+    String api;
+
+    HttpDownloader(WebClientFactory webClientFactory, Properties properties) {
+        this.webClientFactory = webClientFactory;
+        this.api = properties.getApi();
+    }
 
     @SneakyThrows
     @Override
@@ -61,7 +64,7 @@ class HttpDownloader implements HttpConnector {
 
     @Override
     public List<AuditResponse> listAudits(String batchTag, LocalDate date) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(properties.getApi())
+        URI uri = UriComponentsBuilder.fromHttpUrl(api)
                 .pathSegment("audit")
                 .pathSegment("download")
                 .pathSegment(date.toString())
@@ -124,7 +127,7 @@ class HttpDownloader implements HttpConnector {
     }
 
     private URI prepareUri(LocalDate date) {
-        return UriComponentsBuilder.fromHttpUrl(properties.getApi())
+        return UriComponentsBuilder.fromHttpUrl(api)
                 .pathSegment("download")
                 .pathSegment(date.format(DateTimeFormatter.ISO_DATE))
                 .build()
