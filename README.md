@@ -105,3 +105,7 @@ someFunction()
 - exec with bash
 - to authorization first generate service account key at https://console.cloud.google.com/apis/credentials/serviceaccountkey, store it in root of project, next execute export GOOGLE_APPLICATION_CREDENTIALS="/app/path/to/file.json"
 - execute npx ts-node /app/functions/src/functions/someFunction.ts
+
+## Generating certification's files
+
+Please check the following: [CERTIFICATIONS.md](./doc/certifications.md)

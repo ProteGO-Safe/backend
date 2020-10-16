@@ -6,7 +6,7 @@ public class TestData {
             "  \"oldValue\": {},\n" +
             "  \"updateMask\": {},\n" +
             "  \"value\": {\n" +
-            "    \"createTime\": \"2020-09-24T05:13:33.396703Z\",\n" +
+            "    \"createTime\": \"2020-10-16T05:13:33.396703Z\",\n" +
             "    \"fields\": {\n" +
             "      \"isInteroperabilityEnabled\": {\n" +
             "        \"booleanValue\": true\n" +
@@ -42,7 +42,7 @@ public class TestData {
             "                          \"integerValue\": \"144\"\n" +
             "                        },\n" +
             "                        \"rollingStartNumber\": {\n" +
-            "                          \"integerValue\": \"2670289\"\n" +
+            "                          \"integerValue\": \"2671081\"\n" +
             "                        },\n" +
             "                        \"transmissionRisk\": {\n" +
             "                          \"integerValue\": \"8\"\n" +
@@ -60,7 +60,7 @@ public class TestData {
             "                          \"integerValue\": \"144\"\n" +
             "                        },\n" +
             "                        \"rollingStartNumber\": {\n" +
-            "                          \"integerValue\": \"2670289\"\n" +
+            "                          \"integerValue\": \"2671081\"\n" +
             "                        },\n" +
             "                        \"transmissionRisk\": {\n" +
             "                          \"integerValue\": \"8\"\n" +
@@ -78,7 +78,7 @@ public class TestData {
             "                          \"integerValue\": \"144\"\n" +
             "                        },\n" +
             "                        \"rollingStartNumber\": {\n" +
-            "                          \"integerValue\": \"2670289\"\n" +
+            "                          \"integerValue\": \"2671081\"\n" +
             "                        },\n" +
             "                        \"transmissionRisk\": {\n" +
             "                          \"integerValue\": \"8\"\n" +

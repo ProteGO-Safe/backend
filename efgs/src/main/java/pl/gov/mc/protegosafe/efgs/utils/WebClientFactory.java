@@ -17,7 +17,6 @@ import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
 
 import static pl.gov.mc.protegosafe.efgs.Constants.ENV_NBTLS_LOCATION;
-import static pl.gov.mc.protegosafe.efgs.Constants.X_SSL_CLIENT_DN;
 
 @Slf4j
 public class WebClientFactory {
@@ -28,33 +27,18 @@ public class WebClientFactory {
     @SneakyThrows
     public static WebClient createWebClient() {
 
-        final boolean useHttps = false;
-
         PrivateKey privateKey = CertUtils.loadPrivateKeyFromFile(ENV_NBTLS_LOCATION);
         X509Certificate certificate = CertUtils.loadCertificateFromFile(ENV_NBTLS_LOCATION);
 
         HttpClient httpClient = HttpClient.create();
 
-        httpClient = httpClient.headers(headers -> headers.set("X-SSL-Client-SHA256", CertUtils.getCertThumbprint(certificate)));
-        httpClient = httpClient.headers(headers -> headers.set("X-SSL-Client-DN", String.format("C=%s", X_SSL_CLIENT_DN)));
+        SslContextBuilder sslContextBuilder = SslContextBuilder
+                .forClient()
+                .enableOcsp(false)
+                .keyManager(new ForceCertUsageX509KeyManager(privateKey, certificate));
 
-        if (useHttps) {
-            log.info("Simulator uses https with mutual authentication");
-
-            SslContextBuilder sslContextBuilder = SslContextBuilder
-                    .forClient()
-                    .enableOcsp(false)
-                    .keyManager(new ForceCertUsageX509KeyManager(privateKey, certificate));
-
-//      if (simulatorProperties.getDisableMtlsCertVerification()) {
-//        sslContextBuilder.trustManager(getTrustAllTrustManager());
-//      } else {
-//        sslContextBuilder.trustManager(loadTrustedCertificates());
-//      }
-
-            SslContext sslContext = sslContextBuilder.build();
-            httpClient = httpClient.secure(sslContextSpec -> sslContextSpec.sslContext(sslContext));
-        }
+        SslContext sslContext = sslContextBuilder.build();
+        httpClient = httpClient.secure(sslContextSpec -> sslContextSpec.sslContext(sslContext));
 
         httpClient = httpClient.tcpConfiguration(tcpClient -> {
             // configure timeout for connection

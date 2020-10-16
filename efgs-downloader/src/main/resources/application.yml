@@ -1,8 +1,8 @@
 efgs:
   downloader:
     certs:
-      nbbs-location: nbbs
-      nbtls-location: nbtls
+      nbbs-location: nbbs # contains PRIVATE KEY and CERTIFICATE
+      nbtls-location: nbtls # contains PRIVATE KEY and CERTIFICATE
     db:
       last-batch-tag-field: lastBatchTag
       collections:
