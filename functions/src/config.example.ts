@@ -1,6 +1,7 @@
 import RandomCodeGenerator from "./utils/RandomCodeGenerator";
 import Config from "./interfaces/Config"
 import CodeRepository from "./utils/CodeRepository";
+import SubscriptionRepository from "./utils/SubscriptionRepository";
 import SecretManager from "./utils/SecretManager";
 import IPChecker from "./utils/IPChecker";
 
@@ -27,8 +28,17 @@ const config: Config = {
     backupTranslations: {
         token: "1234",
         projectId: 123
+    },
+    subscription: {
+        ios: {
+            url: 'https://api.development.devicecheck.apple.com/v1/query_two_bits'
+        },
+        android: {
+            url: 'https://www.googleapis.com/androidcheck/v1/attestations/verify'
+        },
+        repository: new SubscriptionRepository()
     }
-}
+};
 
 export const secretManager = new SecretManager();
 export const generateCodeIPChecker = new IPChecker('generateCodeNetmasks');

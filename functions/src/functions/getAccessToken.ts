@@ -1,36 +1,21 @@
 import config, {secretManager} from "../config";
 import * as functions from "firebase-functions";
-import {v4} from 'uuid';
-import {sign} from "jsonwebtoken";
-import moment = require("moment");
+import {generateJwt} from "./jwtGenerator";
+import {validateCode} from "./codeValidator";
 
-export async function getAccessToken(data : any) {
-    if (!data.code) {
+export const getAccessToken = async (data : any) => {
+
+    const isCodeValid = await validateCode(data.code);
+
+    if (!isCodeValid) {
         throw new functions.https.HttpsError('not-found', 'Invalid code');
     }
 
     const repository = config.code.repository;
-    const code = await repository.get(data.code);
-
-    if (!code.exists) {
-        throw new functions.https.HttpsError('not-found', 'Invalid code');
-    }
 
     await repository.remove(data.code);
-
-    if (code.get('expiryTime') < moment().unix()) {
-        throw new functions.https.HttpsError('not-found', 'Invalid code');
-    }
-
-    const accessToken = sign(
-        {code: data.code},
-        await secretManager.getConfig('secret'),
-        {
-            algorithm: 'HS512',
-            expiresIn: `${config.jwt.lifetime} minutes`,
-            jwtid: v4()
-        }
-    );
+    const secret = await secretManager.getConfig('secret');
+    const accessToken = await generateJwt({code: data.code}, secret, config.jwt.lifetime);
 
     return {accessToken: accessToken};
-}
+};
