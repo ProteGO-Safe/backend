@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 import {v4} from "uuid";
-import {validateApiTokenAndIp} from "./ipAndApiTokenValidator";
+import {validateApiTokenAndIp} from "../ipAndApiTokenValidator";
 
 const getSubscriptionCode = async (request: functions.Request, response: functions.Response) => {
     const isValid = await validateApiTokenAndIp(request);

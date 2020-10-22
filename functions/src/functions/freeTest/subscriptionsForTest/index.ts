@@ -3,9 +3,9 @@ import * as functions from "firebase-functions";
 const {log} = require("firebase-functions/lib/logger");
 import moment = require("moment");
 import checkSafetyToken from "../safetyTokenChecker";
-import config, {secretManager} from "../../config";
-import {generateJwt} from "../jwtGenerator";
-import {validateCode} from "../codeValidator";
+import config, {secretManager} from "../../../config";
+import {generateJwt} from "../../jwtGenerator";
+import {validateCode} from "../../code/codeValidator";
 
 const returnBadRequestResponse = (response: functions.Response) => {
     response.status(400).send();

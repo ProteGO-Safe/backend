@@ -1,4 +1,4 @@
-import config from "../../config";
+import config from "../../../config";
 import moment = require("moment");
 
 export const validateCode = async (code: string): Promise<boolean> => {

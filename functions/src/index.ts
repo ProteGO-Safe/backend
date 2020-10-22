@@ -4,14 +4,14 @@ import generateCodeWrapper from "./functions/generateCodeWrapper";
 import {clearUnusedCodes} from "./functions/clearUnusedCodes";
 import uploadDiagnosisKeys from "./functions/uploadDiagnosisKeys";
 import {getAccessToken} from "./functions/getAccessToken";
-import hospitalsParser from "./functions/hospitalsParser";
-import faqParser from "./functions/faqParser";
-import advicesParser from "./functions/advicesParser";
-import backupTranslations from "./functions/backupTranslations";
-import getSubscriptionCode from "./functions/getSubscriptionCode";
-import updateSubscription from "./functions/updateSubscription";
-import subscriptionsForTest from "./functions/subscriptionsForTest";
-import generateSubscriptionCode from "./functions/generateSubscriptionCode";
+import hospitalsParser from "./functions/jobs/hospitalsParser";
+import faqParser from "./functions/jobs/faqParser";
+import advicesParser from "./functions/jobs/advicesParser";
+import backupTranslations from "./functions/jobs/backupTranslations";
+import getSubscriptionCode from "./functions/freeTest/getSubscriptionCode";
+import updateSubscription from "./functions/freeTest/updateSubscription";
+import subscriptionsForTest from "./functions/freeTest/subscriptionsForTest";
+import generateSubscriptionCode from "./functions/freeTest/generateSubscriptionCode";
 
 admin.initializeApp();
 

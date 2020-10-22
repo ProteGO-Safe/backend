@@ -2,7 +2,7 @@ const {log} = require("firebase-functions/lib/logger");
 import axios from 'axios';
 import {v4} from 'uuid';
 import {sign} from "jsonwebtoken";
-import config, {secretManager} from "../../config";
+import config, {secretManager} from "../../../config";
 import moment = require("moment");
 
 const checkSafetyToken = async (safetyToken: string, platform: string): Promise<boolean> => {

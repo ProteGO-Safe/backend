@@ -1,7 +1,7 @@
 import config, {secretManager} from "../config";
 import * as functions from "firebase-functions";
 import {generateJwt} from "./jwtGenerator";
-import {validateCode} from "./codeValidator";
+import {validateCode} from "./code/codeValidator";
 
 export const getAccessToken = async (data : any) => {
 

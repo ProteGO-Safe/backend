@@ -1,7 +1,7 @@
 import {CallableContext} from "firebase-functions/lib/providers/https";
 import * as functions from "firebase-functions";
 import {validateApiTokenAndIp} from "./ipAndApiTokenValidator";
-import {generateCode} from "./codeGenerator";
+import {generateCode} from "./code/codeGenerator";
 
 const generateCodeWrapper = async (data : any, context: CallableContext) => {
     const isValid = await validateApiTokenAndIp(context.rawRequest);

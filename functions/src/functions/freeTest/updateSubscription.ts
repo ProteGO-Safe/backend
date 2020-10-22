@@ -1,5 +1,5 @@
 import * as functions from "firebase-functions";
-import {validateApiTokenAndIp} from "./ipAndApiTokenValidator";
+import {validateApiTokenAndIp} from "../ipAndApiTokenValidator";
 
 const updateSubscription = async (request: functions.Request, response: functions.Response) => {
 
