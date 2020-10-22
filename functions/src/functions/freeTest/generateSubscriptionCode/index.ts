@@ -2,10 +2,7 @@ import * as functions from "firebase-functions";
 const {log} = require("firebase-functions/lib/logger");
 import {validateApiTokenAndIp} from "../../ipAndApiTokenValidator";
 import {generateCode} from "../../code/codeGenerator";
-
-const returnBadRequestResponse = (response: functions.Response) => {
-    response.status(400).send();
-};
+import returnBadRequestResponse from "../../returnBadRequestResponse";
 
 const generateSubscriptionCode = async (request: functions.Request, response: functions.Response) => {
 

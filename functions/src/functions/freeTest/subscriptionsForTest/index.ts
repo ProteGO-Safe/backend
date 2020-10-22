@@ -6,10 +6,7 @@ import checkSafetyToken from "../safetyTokenChecker";
 import config, {secretManager} from "../../../config";
 import {generateJwt} from "../../jwtGenerator";
 import {validateCode} from "../../code/codeValidator";
-
-const returnBadRequestResponse = (response: functions.Response) => {
-    response.status(400).send();
-};
+import returnBadRequestResponse from "../../returnBadRequestResponse";
 
 const subscriptionsForTest = async (request: functions.Request, response: functions.Response) => {
 
@@ -33,6 +30,9 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
         }
 
         const codeRepository = config.code.repository;
+        const codeEntity = await codeRepository.get(code);
+        const codeSha256 = codeEntity.id;
+        const codeId = codeEntity.get('id');
         await codeRepository.remove(code);
 
         const subscription = await config.subscription.repository.get(guid);
@@ -42,10 +42,17 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
             returnBadRequestResponse(response);
         }
 
-        const {id: codeId} = await codeRepository.get(code);
+        const existingSubscription = await config.subscription.repository.getByCodeSha256(codeSha256);
+
+        if (existingSubscription) {
+            log(`subscription already exists`);
+            returnBadRequestResponse(response);
+        }
+
         config.subscription.repository.save(guid, {
             created: moment().unix(),
             codeId,
+            codeSha256,
             status: 1
         }).catch(reason => {
             log(reason);

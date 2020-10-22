@@ -3,10 +3,7 @@ const {log} = require("firebase-functions/lib/logger");
 import config, {secretManager} from "../../../config";
 import checkSafetyToken from "../safetyTokenChecker";
 import {decode, verify} from "jsonwebtoken";
-
-const returnBadRequestResponse = (response: functions.Response) => {
-    response.status(400).send();
-};
+import returnBadRequestResponse from "../../returnBadRequestResponse";
 
 const auth = async (token: string | undefined, guid: string | undefined): Promise<boolean> => {
     if (!token || !guid) {
