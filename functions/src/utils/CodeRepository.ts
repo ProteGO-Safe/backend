@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import {sha256} from "js-sha256";
+import {v4} from 'uuid';
 import moment = require("moment");
 
 class CodeRepository {
@@ -11,7 +12,7 @@ class CodeRepository {
     async save(code: string, expiryTime: number): Promise<FirebaseFirestore.WriteResult> {
         const hashedCode = sha256(code);
 
-        return await this.getCollection().doc(hashedCode).set({"expiryTime": expiryTime})
+        return await this.getCollection().doc(hashedCode).set({"id": v4(), "expiryTime": expiryTime})
     }
 
     async remove(code: string): Promise<FirebaseFirestore.WriteResult> {

@@ -32,6 +32,9 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
             returnBadRequestResponse(response);
         }
 
+        const codeRepository = config.code.repository;
+        await codeRepository.remove(code);
+
         const subscription = await config.subscription.repository.get(guid);
 
         if (subscription.exists) {
@@ -39,8 +42,10 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
             returnBadRequestResponse(response);
         }
 
+        const {id: codeId} = await codeRepository.get(code);
         config.subscription.repository.save(guid, {
             created: moment().unix(),
+            codeId,
             status: 1
         }).catch(reason => {
             log(reason);
@@ -49,9 +54,6 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
         const {secret, lifetime} = await secretManager.getConfig('subscription');
 
         const accessToken = await generateJwt({guid}, secret, lifetime);
-
-        const repository = config.code.repository;
-        await repository.remove(code);
 
         response.status(201).send({token: accessToken});
     } catch (e) {

@@ -1,13 +1,13 @@
-import config, {generateCodeIPChecker, secretManager} from "../config";
+import config from "../config";
 import * as functions from "firebase-functions";
 import {v4} from "uuid";
+import {validateApiTokenAndIp} from "./ipAndApiTokenValidator";
 
 const generateSubscriptionCode = async (request: functions.Request, response: functions.Response) => {
-    if (!await generateCodeIPChecker.allow(<string>request.header('Cf-Connecting-Ip'))) {
-        throw new functions.https.HttpsError('permission-denied', 'Permission denied.');
-    }
 
-    if (request.header('api-token') !== await secretManager.getConfig('apiToken')) {
+    const isValid = await validateApiTokenAndIp(request);
+
+    if (!isValid) {
         throw new functions.https.HttpsError('permission-denied', 'Permission denied.');
     }
 
