@@ -24,7 +24,7 @@ const checkForAndroid = async (safetyToken: string): Promise<boolean> => {
 
     return await axios.post(`${config.subscription.android.url}?key=${apiKey}`, {signedAttestation: safetyToken})
         .then(response => {
-            return response.status === 200
+            return response.status === 200 && response.data.isValidSignature
         }).catch(reason => {
             log(reason);
             return false;
