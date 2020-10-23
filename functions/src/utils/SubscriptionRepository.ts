@@ -14,6 +14,10 @@ class SubscriptionRepository {
         return await this.getCollection().doc(guid).get();
     }
 
+    async update(guid: string, fieldsToUpdate: any): Promise<FirebaseFirestore.WriteResult> {
+        return await this.getCollection().doc(guid).update(fieldsToUpdate);
+    }
+
     async getByCodeSha256(codeSha256: string): Promise<any> {
         return this.getByProperty('codeSha256', codeSha256);
     }
