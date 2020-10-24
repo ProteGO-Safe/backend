@@ -2,7 +2,7 @@ import config from "../../../config";
 import moment = require("moment");
 
 
-export const generateCode = async (): Promise<any> => {
+export const generateCode = async (deleteTime?: number): Promise<any> => {
     let code;
 
     do {
@@ -11,8 +11,8 @@ export const generateCode = async (): Promise<any> => {
 
     const expiryTime = config.code.lifetime * 60 + moment().unix();
 
-    await config.code.repository.save(code, expiryTime);
-    const {id} = await config.code.repository.get(code);
+    await config.code.repository.save(code, expiryTime, deleteTime || expiryTime);
+    const codeEntity = await config.code.repository.get(code);
 
-    return {id, code};
+    return {id: codeEntity.get('id'), code};
 };

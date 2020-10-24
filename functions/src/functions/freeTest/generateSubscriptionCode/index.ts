@@ -1,8 +1,11 @@
 import * as functions from "firebase-functions";
-const {log} = require("firebase-functions/lib/logger");
 import {validateApiTokenAndIp} from "../../ipAndApiTokenValidator";
 import {generateCode} from "../../code/codeGenerator";
 import returnBadRequestResponse from "../../returnBadRequestResponse";
+import moment = require("moment");
+
+const {log} = require("firebase-functions/lib/logger");
+const DELETE_LIFETIME = 48 * 60 * 60;
 
 const generateSubscriptionCode = async (request: functions.Request, response: functions.Response) => {
 
@@ -13,7 +16,7 @@ const generateSubscriptionCode = async (request: functions.Request, response: fu
             returnBadRequestResponse(response);
         }
 
-        const {code, id} = await generateCode();
+        const {code, id} = await generateCode(moment().unix() + DELETE_LIFETIME);
 
         response.status(201).send({id, code});
     } catch (e) {

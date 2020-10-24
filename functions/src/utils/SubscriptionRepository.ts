@@ -22,12 +22,24 @@ class SubscriptionRepository {
         return this.getByProperty('codeSha256', codeSha256);
     }
 
+    async getByCodeSha256AndStatus(codeSha256: string, status: number): Promise<any> {
+        const snapshot = await this.getCollection()
+            .where('codeSha256', '==', codeSha256)
+            .where('status', '==', status)
+            .get();
+        return this.processSnapshot(snapshot);
+    }
+
     async getByCodeId(codeId: string): Promise<any> {
         return this.getByProperty('codeId', codeId);
     }
 
     private async getByProperty(property: string, value: string): Promise<any> {
         const snapshot = await this.getCollection().where(property, '==', value).get();
+        return this.processSnapshot(snapshot);
+    }
+
+    private async processSnapshot(snapshot: FirebaseFirestore.QuerySnapshot): Promise<any> {
         if (snapshot.empty) {
             return undefined;
         }
@@ -42,6 +54,7 @@ class SubscriptionRepository {
 
         return subscription;
     }
+
 
 }
 

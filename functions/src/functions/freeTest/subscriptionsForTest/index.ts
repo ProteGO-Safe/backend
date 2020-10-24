@@ -33,7 +33,7 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
         const codeEntity = await codeRepository.get(code);
         const codeSha256 = codeEntity.id;
         const codeId = codeEntity.get('id');
-        await codeRepository.remove(code);
+        await codeRepository.update(code, {expiryTime: moment().unix()});
 
         const subscription = await config.subscription.repository.get(guid);
 

@@ -30,7 +30,9 @@ const updateSubscription = async (request: functions.Request, response: function
         returnBadRequestResponse(response);
     }
 
-    await config.subscription.repository.update(guid, {status});
+    await config.code.repository.removeByHashedCode(<string>subscription.get('codeSha256'));
+
+    await config.subscription.repository.update(guid, {status: status, codeSha256: null, codeId: null});
 
     response.status(200).send({
         guid,
