@@ -22,7 +22,7 @@ const getSubscriptionCode = async (request: functions.Request, response: functio
 
     if (!isValid) {
         log("not authorize request");
-        returnBadRequestResponse(response);
+        return returnBadRequestResponse(response);
     }
 
     const {id: codeId, code} = request.body;
@@ -31,12 +31,12 @@ const getSubscriptionCode = async (request: functions.Request, response: functio
 
     if (!subscription) {
         log("subscription doesn't exist");
-        returnBadRequestResponse(response);
+        return returnBadRequestResponse(response);
     }
 
     const {id, status} = subscription;
 
-    response.status(200).send({
+    return response.status(200).send({
         subscription: {id, status}
     });
 };

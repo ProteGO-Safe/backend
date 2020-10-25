@@ -11,7 +11,7 @@ const updateSubscription = async (request: functions.Request, response: function
 
     if (!isValid) {
         log("not authorize request");
-        returnBadRequestResponse(response);
+        return returnBadRequestResponse(response);
     }
 
     const {guid, status} = request.body;
@@ -20,21 +20,21 @@ const updateSubscription = async (request: functions.Request, response: function
 
     if (!subscription.exists) {
         log(`subscription doesn't exist`);
-        returnBadRequestResponse(response);
+        return returnBadRequestResponse(response);
     }
 
     const currentStatus = subscription.get("status");
 
     if (currentStatus > status) {
         log("illegal status value");
-        returnBadRequestResponse(response);
+        return returnBadRequestResponse(response);
     }
 
     await config.code.repository.removeByHashedCode(<string>subscription.get('codeSha256'));
 
     await config.subscription.repository.update(guid, {status: status, codeSha256: null, codeId: null});
 
-    response.status(200).send({
+    return response.status(200).send({
         guid,
         status
     });

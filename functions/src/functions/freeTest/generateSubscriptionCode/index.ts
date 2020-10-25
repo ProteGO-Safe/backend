@@ -13,15 +13,15 @@ const generateSubscriptionCode = async (request: functions.Request, response: fu
         const isValid = await validateApiTokenAndIp(request);
 
         if (!isValid) {
-            returnBadRequestResponse(response);
+            return returnBadRequestResponse(response);
         }
 
         const {code, id} = await generateCode(moment().unix() + DELETE_LIFETIME);
 
-        response.status(201).send({id, code});
+        return response.status(201).send({id, code});
     } catch (e) {
         log(e);
-        returnBadRequestResponse(response);
+        return returnBadRequestResponse(response);
     }
 };
 

@@ -19,14 +19,14 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
 
         if (!isValidSafetyToken) {
             log(`Safety token is invalid`);
-            returnBadRequestResponse(response);
+            return returnBadRequestResponse(response);
         }
 
         const isCodeValid = await validateCode(code);
 
         if (!isCodeValid) {
             log(`Code is invalid`);
-            returnBadRequestResponse(response);
+            return returnBadRequestResponse(response);
         }
 
         const codeRepository = config.code.repository;
@@ -39,14 +39,14 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
 
         if (subscription.exists) {
             log(`subscription already exists`);
-            returnBadRequestResponse(response);
+            return returnBadRequestResponse(response);
         }
 
         const existingSubscription = await config.subscription.repository.getByCodeSha256(codeSha256);
 
         if (existingSubscription) {
             log(`subscription already exists`);
-            returnBadRequestResponse(response);
+            return returnBadRequestResponse(response);
         }
 
         config.subscription.repository.save(guid, {
@@ -56,16 +56,16 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
             status: 1
         }).catch(reason => {
             log(reason);
-            returnBadRequestResponse(response);
+            return returnBadRequestResponse(response);
         });
         const {secret, lifetime} = await secretManager.getConfig('subscription');
 
         const accessToken = await generateJwt({guid}, secret, lifetime);
 
-        response.status(201).send({token: accessToken});
+        return response.status(201).send({token: accessToken});
     } catch (e) {
         log(e);
-        returnBadRequestResponse(response);
+        return returnBadRequestResponse(response);
     }
 };
 

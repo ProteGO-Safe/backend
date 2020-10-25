@@ -35,34 +35,34 @@ const getSubscription = async (request: functions.Request, response: functions.R
 
         if (!isAuth) {
             log(`Authorization token is invalid`);
-            returnBadRequestResponse(response);
+            return returnBadRequestResponse(response);
         }
 
         const isValidSafetyToken = await checkSafetyToken(safetyToken, platform);
 
         if (!isValidSafetyToken) {
             log(`Safety token is invalid`);
-            returnBadRequestResponse(response);
+            return returnBadRequestResponse(response);
         }
 
         const subscription = await config.subscription.repository.get(guid);
 
         if (!subscription.exists) {
             log(`subscription doesn't exist`);
-            returnBadRequestResponse(response);
+            return returnBadRequestResponse(response);
         }
 
         const status = subscription.get('status');
 
         if (!status) {
             log(`invalid status`);
-            returnBadRequestResponse(response);
+            return returnBadRequestResponse(response);
         }
 
-        response.status(200).send({guid, status});
+        return response.status(200).send({guid, status});
     } catch (e) {
         log(e);
-        returnBadRequestResponse(response);
+        return returnBadRequestResponse(response);
     }
 };
 
