@@ -31,7 +31,7 @@ const updateSubscription = async (request: functions.Request, response: function
     }
 
     const codeSha256 = <string>subscription.get('codeSha256');
-    if (codeSha256.length) {
+    if (codeSha256) {
         await config.code.repository.removeByHashedCode(codeSha256);
     }
 
