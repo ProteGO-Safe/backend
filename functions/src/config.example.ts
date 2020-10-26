@@ -36,7 +36,8 @@ const config: Config = {
         android: {
             url: 'https://www.googleapis.com/androidcheck/v1/attestations/verify'
         },
-        repository: new SubscriptionRepository()
+        repository: new SubscriptionRepository(),
+        disabledSafetyToken: false
     }
 };
 

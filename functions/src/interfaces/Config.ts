@@ -35,7 +35,8 @@ interface Config {
         android: {
             url: string
         },
-        repository : SubscriptionRepository
+        repository : SubscriptionRepository,
+        disabledSafetyToken: boolean
     }
 }
 

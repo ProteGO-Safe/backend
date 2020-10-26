@@ -7,6 +7,10 @@ import moment = require("moment");
 
 const checkSafetyToken = async (safetyToken: string, platform: string): Promise<boolean> => {
 
+    if (config.subscription.disabledSafetyToken) {
+        return true;
+    }
+
     if (platform === 'android') {
         return checkForAndroid(safetyToken);
     }
