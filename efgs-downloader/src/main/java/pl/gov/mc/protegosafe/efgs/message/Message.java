@@ -4,8 +4,10 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import pl.gov.mc.protegosafe.efgs.model.Key;
 import pl.gov.mc.protegosafe.efgs.model.ProcessedBatches;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -13,6 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Message {
-
-    List<ProcessedBatches> batches;
+    List<Key> keys;
+    String batchTag;
 }

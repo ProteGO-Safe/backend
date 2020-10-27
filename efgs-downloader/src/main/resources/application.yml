@@ -1,13 +1,15 @@
 efgs:
   downloader:
     certs:
-      nbbs-location: nbbs # contains PRIVATE KEY and CERTIFICATE
-      nbtls-location: nbtls # contains PRIVATE KEY and CERTIFICATE
+      nbbs-location: nbbs_eu # contains PRIVATE KEY and CERTIFICATE
+      nbtls-location: nbtls_eu # contains PRIVATE KEY and CERTIFICATE
     db:
       last-batch-tag-field: lastBatchTag
+      sent-keys-field: sentKeys
       collections:
         batch-tag: processedBatchTags
-  api: https://efgs.koronazglowy.com/diagnosiskeys
+  api: https://test-efgs-ws.tech.ec.europa.eu/diagnosiskeys
+#  api: https://efgs.koronazglowy.com/diagnosiskeys
   message:
     project-id: protego-fb-dev
     topic-id: firebase-subscription-uploadDiagnosisKeysSubscriber-europe-west1

@@ -12,8 +12,10 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.Properties;
+import pl.gov.mc.protegosafe.efgs.model.Key;
 import pl.gov.mc.protegosafe.efgs.model.ProcessedBatches;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,21 +33,22 @@ class PubSubMessageSender implements MessageSender {
 
     @SneakyThrows
     @Override
-    public void sendMessage(List<ProcessedBatches> processedBatches) {
+    public void sendMessage(List<Key> keys, String batchTag) {
         TopicName topicName = TopicName.of(projectId, topicId);
 
         Publisher publisher = Publisher.newBuilder(topicName)
                 .build();
-        ByteString data = ByteString.copyFromUtf8(buildMessage(processedBatches));
+        ByteString data = ByteString.copyFromUtf8(buildMessage(keys, batchTag));
         PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
         ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
         messageIdFuture.get();
+        publisher.shutdown();
     }
 
     @SneakyThrows
-    private String buildMessage(List<ProcessedBatches> processedBatches) {
+    private String buildMessage(List<Key> keys, String batchTag) {
         ObjectMapper objectMapper = new ObjectMapper();
-        Message message = new Message(processedBatches);
+        Message message = new Message(keys, batchTag);
         return objectMapper.writeValueAsString(message);
     }
 }
