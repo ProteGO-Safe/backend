@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import {replaceOuterHtml} from '../../src/functions/outerHTMLReplacer';
+import {replaceOuterHtml} from '../../../src/functions/jobs/outerHTMLReplacer';
 
 describe('outerHTMLReplacer', function () {
     it('should replace html', function () {
