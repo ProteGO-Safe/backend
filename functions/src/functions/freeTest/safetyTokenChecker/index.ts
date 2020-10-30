@@ -38,9 +38,13 @@ const checkForAndroid = async (safetyToken: string): Promise<boolean> => {
 const checkSha256ForAndroid = async (safetyToken: string): Promise<boolean> => {
     const payload: any = decode(safetyToken)!;
     const {apkCertificateDigestSha256 = []} = payload;
+    console.log(apkCertificateDigestSha256);
+    if (apkCertificateDigestSha256.length === 0) {
+        return false;
+    }
     const {androidSafetyTokenCertificateSha256List = []} = await secretManager.getConfig('subscription');
-    const checker = (arr: Array<string>, target: Array<string>) => target.every((v: string) => arr.includes(v));
-    return checker(androidSafetyTokenCertificateSha256List.sort(), apkCertificateDigestSha256.sort());
+    console.log(androidSafetyTokenCertificateSha256List);
+    return apkCertificateDigestSha256.every((value: string) => androidSafetyTokenCertificateSha256List.includes(value));
 };
 
 const generateJwtTokenForIos = async (): Promise<string> => {
