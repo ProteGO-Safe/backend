@@ -1,7 +1,7 @@
 const {log} = require("firebase-functions/lib/logger");
 import axios from 'axios';
 import {v4} from 'uuid';
-import {sign} from "jsonwebtoken";
+import {decode, sign} from "jsonwebtoken";
 import config, {secretManager} from "../../../config";
 import moment = require("moment");
 
@@ -12,7 +12,7 @@ const checkSafetyToken = async (safetyToken: string, platform: string): Promise<
     }
 
     if (platform === 'android') {
-        return checkForAndroid(safetyToken);
+        return checkForAndroid(safetyToken) && checkSha256ForAndroid(safetyToken);
     }
 
     if (platform === 'ios') {
@@ -33,6 +33,14 @@ const checkForAndroid = async (safetyToken: string): Promise<boolean> => {
             log(reason);
             return false;
         })
+};
+
+const checkSha256ForAndroid = async (safetyToken: string): Promise<boolean> => {
+    const payload: any = decode(safetyToken)!;
+    const {apkCertificateDigestSha256 = []} = payload;
+    const {androidSafetyTokenCertificateSha256List = []} = await secretManager.getConfig('subscription');
+    const checker = (arr: Array<string>, target: Array<string>) => target.every((v: string) => arr.includes(v));
+    return checker(androidSafetyTokenCertificateSha256List.sort(), apkCertificateDigestSha256.sort());
 };
 
 const generateJwtTokenForIos = async (): Promise<string> => {
