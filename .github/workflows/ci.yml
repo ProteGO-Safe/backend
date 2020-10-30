@@ -83,7 +83,7 @@ jobs:
           node-version: 10
 
       - run: npm --prefix functions install
-      - run: npm audit --audit-level moderate
+      - run: npm --prefix functions audit --audit-level moderate
 
       - run: echo "::set-env name=FUNCTIONS::$(cat functions/src/index.ts | sed -n '/exports/,/cloudFunctions/p' | sed -e 's/exports\(.*\)cloudFunctions/\1/' | sed 's/ = ..*;//' | sed 's/\./functions:/g' |tr '\n' ',')"
         shell: bash
