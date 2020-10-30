@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.3.1
+
+### Changed
+
+- additional validation for android safety-token
+
+## 4.3.0
+
+### Added
+- new cloud function for generating subscription codes
+- new cloud function for getting subscription codes
+- new cloud function for creating subscriptions
+- new cloud function for getting subscriptions
+- new cloud function for updating subscriptions
+
 ## 4.1.0
  
 Prepared first production Cloud Backend version
