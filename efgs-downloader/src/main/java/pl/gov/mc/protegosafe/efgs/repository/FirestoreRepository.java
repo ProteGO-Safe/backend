@@ -55,16 +55,10 @@ public class FirestoreRepository implements BatchTagRepository {
                 .get()
                 .get();
 
-        Long sentKeys = (Long)processedBatchTags.get(sentKeysField);
+        Long sentKeys = (Long) processedBatchTags.get(sentKeysField);
 
-        int offset = 0;
-        if (sentKeys != null) {
-            offset = sentKeys.intValue();
-        }
+        int offset = sentKeys != null ? sentKeys.intValue() : 0;
 
-        return new LastProcessedBatchTag(
-            (String)processedBatchTags.get(lastBatchTagField),
-            offset
-        );
+        return new LastProcessedBatchTag((String) processedBatchTags.get(lastBatchTagField), offset);
     }
 }
