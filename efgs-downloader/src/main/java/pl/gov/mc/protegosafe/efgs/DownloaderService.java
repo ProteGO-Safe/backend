@@ -21,14 +21,15 @@ import pl.gov.mc.protegosafe.efgs.validator.BatchSignatureVerifier;
 import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.util.List;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static org.springframework.util.Assert.isTrue;
+import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 class DownloaderService {
+
+    // 30 is max size accepted by gens
+    private static final int MAX_GENS_SIZE = 30;
 
     HttpConnector httpConnector;
     ProtobufConverter protobufConverter;
@@ -55,19 +56,14 @@ class DownloaderService {
 
         String diagnosisKeyBatchAsString = protobufConverter.printToString(diagnosisKeyBatch);
         ProcessedBatches processedBatches = processedBatchesFactory.create(batchTag, diagnosisKeyBatchAsString);
+        Partition<Key> partitions = Partition.ofSize(processedBatches.getKeys(), MAX_GENS_SIZE);
 
-        // 30 is max size accepted by gens
-        int chunkSize = 30;
-        Partition<Key> chunks = Partition.ofSize(processedBatches.getKeys(), chunkSize);
-        int index = 0;
-        for (List<Key> keys : chunks) {
-            index++;
-            if (index * 100 <= offset) {
-                continue;
-            }
-            messageSender.sendMessage(keys);
-            batchTagRepository.saveLastBatchTag(date, processedBatches.getBatchTag(), index * chunkSize);
-        }
+        IntStream.range(0, partitions.size())
+            .skip(offset / MAX_GENS_SIZE)
+            .forEach(index -> {
+                messageSender.sendMessage(partitions.get(index));
+                batchTagRepository.saveLastBatchTag(date, processedBatches.getBatchTag(), ++index * MAX_GENS_SIZE);
+            });
 
         if (nextBatchTag == null) {
             return;
