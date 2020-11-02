@@ -7,7 +7,7 @@ const convertMessage = (dataAsBase64: any) => {
         .toString();
     const efgsData = JSON.parse(data);
     return {
-        ...createGensPayloadMessage(efgsData),
+        ...createGensPayloadMessage(efgsData.keysData),
         regions: ['PL'], // todo PSAFE-2456
         appPackageName: 'pl.gov.mc.protegosafe.devel', // todo PSAFE-2456
         platform: 'ios' // todo PSAFE-2456
@@ -28,8 +28,6 @@ const uploadDiagnosisKeysSubscriber = async (message: any) => {
     }
 
     log('Processed uploading keys to gens');
-
-    message.ack();
 };
 
 export default uploadDiagnosisKeysSubscriber;

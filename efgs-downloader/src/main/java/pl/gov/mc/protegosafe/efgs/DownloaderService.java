@@ -56,15 +56,17 @@ class DownloaderService {
         String diagnosisKeyBatchAsString = protobufConverter.printToString(diagnosisKeyBatch);
         ProcessedBatches processedBatches = processedBatchesFactory.create(batchTag, diagnosisKeyBatchAsString);
 
-        Partition<Key> chunks = Partition.ofSize(processedBatches.getKeys(), 100);
+        // 30 is max size accepted by gens
+        int chunkSize = 30;
+        Partition<Key> chunks = Partition.ofSize(processedBatches.getKeys(), chunkSize);
         int index = 0;
         for (List<Key> keys : chunks) {
             index++;
             if (index * 100 <= offset) {
                 continue;
             }
-            messageSender.sendMessage(keys, processedBatches.getBatchTag());
-            batchTagRepository.saveLastBatchTag(date, processedBatches.getBatchTag(), index * 100);
+            messageSender.sendMessage(keys);
+            batchTagRepository.saveLastBatchTag(date, processedBatches.getBatchTag(), index * chunkSize);
         }
 
         if (nextBatchTag == null) {
