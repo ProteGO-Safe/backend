@@ -1,5 +1,5 @@
 import axios from "axios";
-import config from "../../config";
+import config from "../../../config";
 import {saveFileInStorage} from "../storageSaver";
 import resolveRepository from "./Repository";
 

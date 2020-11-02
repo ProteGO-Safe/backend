@@ -3,7 +3,7 @@ import {verifyContent} from "./advicesVerificator";
 import {saveFileInStorage} from "../storageSaver";
 import {fetchHtml} from "../htmlFetcher";
 import {URL} from "./advicesParser.constant";
-import config from "../../config";
+import config from "../../../config";
 
 
 export const advicesParser = async () => {

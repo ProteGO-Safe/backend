@@ -1,0 +1,46 @@
+import * as functions from "firebase-functions";
+
+const {log} = require("firebase-functions/lib/logger");
+import {validateApiTokenAndIp} from "../ipAndApiTokenValidator";
+import returnBadRequestResponse from "../returnBadRequestResponse";
+import config from "../../config";
+
+const updateSubscription = async (request: functions.Request, response: functions.Response) => {
+
+    const isValid = await validateApiTokenAndIp(request);
+
+    if (!isValid) {
+        log("not authorize request");
+        return returnBadRequestResponse(response);
+    }
+
+    const {guid, status} = request.body;
+
+    const subscription = await config.subscription.repository.get(guid);
+
+    if (!subscription.exists) {
+        log(`subscription doesn't exist`);
+        return returnBadRequestResponse(response);
+    }
+
+    const currentStatus = subscription.get("status");
+
+    if (currentStatus > status) {
+        log("illegal status value");
+        return returnBadRequestResponse(response);
+    }
+
+    const codeSha256 = <string>subscription.get('codeSha256');
+    if (codeSha256) {
+        await config.code.repository.removeByHashedCode(codeSha256);
+    }
+
+    await config.subscription.repository.update(guid, {status: status, codeSha256: null, codeId: null});
+
+    return response.status(200).send({
+        guid,
+        status
+    });
+};
+
+export default updateSubscription;

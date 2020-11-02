@@ -1,5 +1,5 @@
 import axios from 'axios';
-import config from "../config";
+import config from "../../config";
 import moment = require("moment");
 import {replaceOuterHtml} from "./outerHTMLReplacer";
 
