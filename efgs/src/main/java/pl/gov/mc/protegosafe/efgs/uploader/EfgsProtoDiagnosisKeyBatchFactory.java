@@ -9,19 +9,18 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class EfgsProtoDiagnosisKeyBatchFatory {
+class EfgsProtoDiagnosisKeyBatchFactory {
 
-    static EfgsProto.DiagnosisKeyBatch create(DiagnosisKeyBatch diagnosisKeyBatch) {
+    static EfgsProto.DiagnosisKeyBatch create(List<DiagnosisKey> diagnosisKeys) {
 
-        List<EfgsProto.DiagnosisKey> keys = diagnosisKeyBatch.getKeysList()
+        List<EfgsProto.DiagnosisKey> keys = diagnosisKeys
                 .stream()
-                .map(EfgsProtoDiagnosisKeyBatchFatory::createEfgsProtoDiagnosisKey)
+                .map(EfgsProtoDiagnosisKeyBatchFactory::createEfgsProtoDiagnosisKey)
                 .collect(Collectors.toUnmodifiableList());
 
         return EfgsProto.DiagnosisKeyBatch.newBuilder()
                 .addAllKeys(keys)
                 .build();
-
     }
 
     private static EfgsProto.DiagnosisKey createEfgsProtoDiagnosisKey(DiagnosisKey diagnosisKey) {
