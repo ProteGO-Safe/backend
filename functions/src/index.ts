@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import * as cloudFunctions from "./cloudFunctions";
 import generateCodeWrapper from "./functions/generateCodeWrapper";
 import {clearUnusedCodes} from "./functions/clearUnusedCodes";
-import uploadDiagnosisKeys from "./functions/uploadDiagnosisKeys";
+import uploadDiagnosisKeysHttpHandler from "./functions/uploadDiagnosisKeysHttpHandler";
 import {getAccessToken} from "./functions/getAccessToken";
 import hospitalsParser from "./functions/jobs/hospitalsParser";
 import faqParser from "./functions/jobs/faqParser";
@@ -13,6 +13,7 @@ import updateSubscription from "./functions/freeTest/updateSubscription";
 import subscriptionsForTest from "./functions/freeTest/subscriptionsForTest";
 import generateSubscriptionCode from "./functions/freeTest/generateSubscriptionCode";
 import getSubscription from "./functions/freeTest/getSubscription";
+import uploadDiagnosisKeysSubscriber from "./functions/efgs/uploadDiagnosisKeysSubscriber";
 
 admin.initializeApp();
 
@@ -28,4 +29,5 @@ exports.getSubscription = cloudFunctions.httpsOnRequest(getSubscription);
 exports.getSubscriptionCode = cloudFunctions.httpsOnRequest(getSubscriptionCode);
 exports.hospitalsParser = cloudFunctions.scheduler(hospitalsParser, 'every 30 minutes');
 exports.updateSubscription = cloudFunctions.httpsOnRequest(updateSubscription);
-exports.uploadDiagnosisKeys = cloudFunctions.httpsOnRequest(uploadDiagnosisKeys);
+exports.uploadDiagnosisKeys = cloudFunctions.httpsOnRequest(uploadDiagnosisKeysHttpHandler);
+exports.uploadDiagnosisKeysSubscriber = cloudFunctions.httpsOnRequest(uploadDiagnosisKeysSubscriber);

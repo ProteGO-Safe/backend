@@ -46,6 +46,7 @@ public class Properties {
     public static class Db {
       final Collections collections = new Collections();
       String lastBatchTagField;
+      String sentKeysField;
 
       @Getter
       @Setter
