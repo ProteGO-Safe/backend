@@ -30,4 +30,4 @@ exports.getSubscriptionCode = cloudFunctions.httpsOnRequest(getSubscriptionCode)
 exports.hospitalsParser = cloudFunctions.scheduler(hospitalsParser, 'every 30 minutes');
 exports.updateSubscription = cloudFunctions.httpsOnRequest(updateSubscription);
 exports.uploadDiagnosisKeys = cloudFunctions.httpsOnRequest(uploadDiagnosisKeysHttpHandler);
-exports.uploadDiagnosisKeysSubscriber = cloudFunctions.httpsOnRequest(uploadDiagnosisKeysSubscriber);
+exports.uploadDiagnosisKeysSubscriber = cloudFunctions.topicSubscriber(uploadDiagnosisKeysSubscriber);
