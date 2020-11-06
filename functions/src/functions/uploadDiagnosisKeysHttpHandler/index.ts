@@ -5,6 +5,7 @@ import * as functions from "firebase-functions";
 const {log} = require("firebase-functions/lib/logger");
 import {v4} from "uuid";
 import * as admin from "firebase-admin";
+import moment = require("moment");
 import uploadDiagnosisKeys from "../uploadDiagnosisKeys";
 
 export async function uploadDiagnosisKeysHttpHandler(request: functions.Request, response: functions.Response) {
@@ -12,7 +13,6 @@ export async function uploadDiagnosisKeysHttpHandler(request: functions.Request,
     if (!await auth(body.data.verificationPayload)) {
         return response.status(401).send({error: {message: "", status: "UNAUTHENTICATED"}});
     }
-
     try {
         await uploadDiagnosisKeys(body.data)
             .then((ignore: any) => saveDiagnosisKeys(body))
@@ -40,20 +40,24 @@ async function auth(token: string | undefined): Promise<boolean> {
 }
 
 export const saveDiagnosisKeys = (body: any) => {
-    const {isInteroperabilityEnabled} = body;
+    const { isInteroperabilityEnabled, temporaryExposureKeys } = body;
     if (!isInteroperabilityEnabled) {
         return;
     }
-    const id = v4();
+
     const db = admin.firestore();
-    const itemToSave = {id, ...body};
-    log(`saving diagnosis keys on firestore: `, itemToSave);
-    db.collection(config.efgs.firestore.diagnosisKeysCollectionName)
-        .doc(id)
-        .set(itemToSave)
-        .catch(reason => {
-            throw new Error(reason)
-        });
+    temporaryExposureKeys.forEach((exposureKey: any) => {
+        const id = v4();
+        const createdAt = moment().unix();
+        const itemToSave = {id, createdAt, ...exposureKey};
+        log(`saving diagnosis keys on firestore: `, itemToSave);
+        db.collection(config.efgs.firestore.diagnosisKeysCollectionName)
+            .doc(id)
+            .set(itemToSave)
+            .catch(reason => {
+                throw new Error(reason)
+            });
+    });
 };
 
 
