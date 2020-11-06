@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import java.time.LocalDate;
 import java.util.function.Consumer;
 
 @SpringBootApplication
@@ -24,6 +23,6 @@ public class EfgsDownloader {
 
 	@Bean
 	public Consumer<TriggerEvent> uppercase() {
-		return value -> efgsKeysProcessor.process(LocalDate.parse(value.getDate()));
+		return value -> efgsKeysProcessor.process();
 	}
 }

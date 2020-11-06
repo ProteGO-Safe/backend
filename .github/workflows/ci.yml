@@ -39,11 +39,11 @@ jobs:
         shell: bash
 
       - name: Inject NBBS for build
-        run: 'echo "${{ secrets.NBBS }}" | base64 --decode > src/nbbs'
+        run: 'echo "${{ secrets.NBBS }}" | base64 --decode > target/deploy/nbbs_eu'
         shell: bash
 
       - name: Inject NBTLS for build
-        run: 'echo "${{ secrets.NBTLS }}" | base64 --decode > src/nbtls'
+        run: 'echo "${{ secrets.NBTLS }}" | base64 --decode > target/deploy/nbtls_eu'
         shell: bash
 
       - name: copy source
@@ -56,7 +56,7 @@ jobs:
           PROJECT_ID: ${{secrets.DEV_FIREBASE_PROJECT}}
           APPLICATION_CREDENTIALS: ${{secrets.DEV_FIREBASE_HOSTING_SAFE}}
         with:
-          args: --quiet alpha functions deploy EfgsDiagnosisKeysDownloader --entry-point org.springframework.cloud.function.adapter.gcp.GcfJarLauncher --runtime java11 --trigger-http --source target/deploy --memory 512MB --allow-unauthenticated --region europe-west1
+          args: --quiet alpha functions deploy EfgsDiagnosisKeysDownloaderScheduler --entry-point org.springframework.cloud.function.adapter.gcp.GcfJarLauncher --runtime java11 --trigger-topic=firebase-schedule-sendKeysFromEfgsToGens-europe-west1 --source target/deploy --memory 2048MB --allow-unauthenticated --region europe-west1 --timeout=540s
 
   deployefgs:
     name: Deploy efgs

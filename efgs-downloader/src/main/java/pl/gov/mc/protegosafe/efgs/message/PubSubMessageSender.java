@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.Properties;
 import pl.gov.mc.protegosafe.efgs.model.Key;
-import pl.gov.mc.protegosafe.efgs.model.ProcessedBatches;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

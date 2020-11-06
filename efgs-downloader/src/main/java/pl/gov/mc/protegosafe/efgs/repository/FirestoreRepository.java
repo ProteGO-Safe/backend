@@ -1,10 +1,6 @@
 package pl.gov.mc.protegosafe.efgs.repository;
 
-import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.firestore.*;
 import lombok.AccessLevel;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
@@ -13,36 +9,39 @@ import pl.gov.mc.protegosafe.efgs.Properties;
 import pl.gov.mc.protegosafe.efgs.repository.model.LastProcessedBatchTag;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static pl.gov.mc.protegosafe.efgs.repository.model.LastProcessedBatchTag.EMPTY_LAST_PROCESSED_BATCH_TAG;
 
 @Repository
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class FirestoreRepository implements BatchTagRepository {
+public class FirestoreRepository implements BatchTagRepository, ProcessedDateRepository {
 
     Firestore firestore;
     String batchTagCollection;
-    String lastBatchTagField;
-    String sentKeysField;
 
     public FirestoreRepository(Firestore firestore, Properties properties) {
         this.firestore = firestore;
         this.batchTagCollection = properties.getDownloader().getDb().getCollections().getBatchTag();
-        this.lastBatchTagField = properties.getDownloader().getDb().getLastBatchTagField();
-        this.sentKeysField =  properties.getDownloader().getDb().getSentKeysField();
     }
 
     @SneakyThrows
     @Override
-    public void saveLastBatchTag(LocalDate date, String lastBatchTag, int sentKeys) {
+    public void saveBatchTag(LocalDate date, String batchTag, int sentKeys) {
         String documentId = date.toString();
 
-        DocumentReference docRef = firestore.collection(batchTagCollection).document(documentId);
-        Map<String, Object> data = new HashMap<>();
-        data.put(lastBatchTagField, lastBatchTag);
-        data.put(sentKeysField, sentKeys);
-        ApiFuture<WriteResult> result = docRef.set(data);
-        result.get();
+        DocumentReference docRef = firestore.collection(batchTagCollection)
+                .document(documentId);
+
+        FirestoreBatchTag firestoreBatchTag = new FirestoreBatchTag(
+                documentId,
+                batchTag,
+                sentKeys);
+
+        docRef.set(firestoreBatchTag)
+                .get();
     }
 
     @SneakyThrows
@@ -50,15 +49,66 @@ public class FirestoreRepository implements BatchTagRepository {
     public LastProcessedBatchTag fetchLastProcessedBatchTag(LocalDate date) {
         String documentId = date.toString();
 
+        return fetchById(documentId)
+                .map(this::createLastProcessedBatchTag)
+                .orElse(EMPTY_LAST_PROCESSED_BATCH_TAG);
+    }
+
+    private LastProcessedBatchTag createLastProcessedBatchTag(FirestoreBatchTag firestoreBatchTag) {
+        int sentKeys = firestoreBatchTag.getSentKeys();
+        String batchTag = firestoreBatchTag.getBatchTag();
+
+        return new LastProcessedBatchTag(batchTag, sentKeys);
+    }
+
+    @SneakyThrows
+    private Optional<FirestoreBatchTag> fetchById(String documentId) {
         DocumentSnapshot processedBatchTags = firestore.collection(batchTagCollection)
                 .document(documentId)
                 .get()
                 .get();
 
-        Long sentKeys = (Long) processedBatchTags.get(sentKeysField);
+        return createFirestoreBatchTag(processedBatchTags);
+    }
 
-        int offset = sentKeys != null ? sentKeys.intValue() : 0;
+    private Optional<FirestoreBatchTag> createFirestoreBatchTag(DocumentSnapshot documentSnapshot) {
+        return Optional.ofNullable(documentSnapshot.toObject(FirestoreBatchTag.class));
+    }
 
-        return new LastProcessedBatchTag((String) processedBatchTags.get(lastBatchTagField), offset);
+    @SneakyThrows
+    @Override
+    public List<ProcessedDate> listLastProcessedDate(int limit) {
+        return firestore.collection(batchTagCollection)
+                .orderBy("id", Query.Direction.DESCENDING)
+                .limit(limit)
+                .get()
+                .get()
+                .getDocuments()
+                .stream()
+                .map(this::createProcessedDate)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    @SneakyThrows
+    @Override
+    public void markDateAsProcessed(LocalDate date) {
+        String documentId = date.toString();
+        DocumentReference documentReference = firestore.collection(batchTagCollection)
+                .document(documentId);
+
+        FirestoreBatchTag firestoreBatchTag = new FirestoreBatchTag(documentId, true);
+        documentReference.set(firestoreBatchTag)
+                .get();
+    }
+
+    private ProcessedDate createProcessedDate(QueryDocumentSnapshot snapshot) {
+        FirestoreBatchTag firestoreBatchTag = createFirestoreBatchTag(snapshot)
+                .orElseThrow(IllegalArgumentException::new);
+
+        String id = firestoreBatchTag.getId();
+        LocalDate date = LocalDate.parse(id);
+        boolean processed = firestoreBatchTag.isProcessed();
+
+        return new ProcessedDate(date, processed);
     }
 }

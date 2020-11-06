@@ -6,6 +6,6 @@ import java.time.LocalDate;
 
 public interface BatchTagRepository {
 
-    void saveLastBatchTag(LocalDate date, String lastBatchTag, int sentKeys);
+    void saveBatchTag(LocalDate date, String batchTag, int sentKeys);
     LastProcessedBatchTag fetchLastProcessedBatchTag(LocalDate date);
 }

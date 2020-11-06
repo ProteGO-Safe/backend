@@ -17,9 +17,12 @@ class EfgsKeysProcessor {
 
     DownloaderService downloaderService;
     BatchTagRepository batchTagRepository;
+    ProcessedDateService processedDateService;
 
-    void process(LocalDate date) {
+    void process() {
+        LocalDate date = processedDateService.fetchDateToProcess();
         LastProcessedBatchTag lastProcessedBatchTag = batchTagRepository.fetchLastProcessedBatchTag(date);
         downloaderService.process(date, lastProcessedBatchTag.getBatchTag(), lastProcessedBatchTag.getOffset());
+        processedDateService.markDateAsProcessed(date);
     }
 }

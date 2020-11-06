@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LastProcessedBatchTag {
+
+    public static final LastProcessedBatchTag EMPTY_LAST_PROCESSED_BATCH_TAG = new LastProcessedBatchTag(null, 0);
     String batchTag;
     int offset;
 }

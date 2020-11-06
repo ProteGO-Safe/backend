@@ -26,11 +26,12 @@ public class Properties {
 
   @Getter
   @Setter
-  @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+  @FieldDefaults(level = AccessLevel.PRIVATE)
   public static class Downloader {
 
-    Certs certs = new Certs();
+    final Certs certs = new Certs();
     Db db = new Db();
+    int daysToCheckBeforeNow;
 
     @Getter
     @Setter
@@ -44,9 +45,7 @@ public class Properties {
     @Setter
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class Db {
-      final Collections collections = new Collections();
-      String lastBatchTagField;
-      String sentKeysField;
+      Collections collections = new Collections();
 
       @Getter
       @Setter

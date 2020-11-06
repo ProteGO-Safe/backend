@@ -7,6 +7,8 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -15,8 +17,8 @@ public class ProcessedBatchesFactory {
     ObjectMapper objectMapper;
 
     @SneakyThrows
-    public ProcessedBatches create(String batchTag, String diagnosisKeyBatchAsString) {
+    public List<Key> create(String diagnosisKeyBatchAsString) {
         KeysWrapper keysWrapper = objectMapper.readValue(diagnosisKeyBatchAsString, KeysWrapper.class);
-        return new ProcessedBatches(batchTag, keysWrapper.getKeys());
+        return keysWrapper.getKeys();
     }
 }

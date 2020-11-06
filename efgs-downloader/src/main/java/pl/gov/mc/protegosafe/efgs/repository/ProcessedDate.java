@@ -1,17 +1,17 @@
-package pl.gov.mc.protegosafe.efgs.message;
+package pl.gov.mc.protegosafe.efgs.repository;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import pl.gov.mc.protegosafe.efgs.model.Key;
 
-import java.util.List;
-
+import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class Message {
-    List<Key> keysData;
+public class ProcessedDate {
+
+    LocalDate date;
+    boolean isFullyProcessed;
 }

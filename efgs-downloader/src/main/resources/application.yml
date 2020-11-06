@@ -4,10 +4,10 @@ efgs:
       nbbs-location: nbbs_eu # contains PRIVATE KEY and CERTIFICATE
       nbtls-location: nbtls_eu # contains PRIVATE KEY and CERTIFICATE
     db:
-      last-batch-tag-field: lastBatchTag
-      sent-keys-field: sentKeys
+      processed-field: processed
       collections:
         batch-tag: processedBatchTags
+    days-to-check-before-now: 14
   api: https://test-efgs-ws.tech.ec.europa.eu/diagnosiskeys
 #  api: https://efgs.koronazglowy.com/diagnosiskeys
   message:

@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -26,6 +25,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+import static com.google.common.collect.ImmutableList.of;
+import static org.springframework.http.HttpStatus.GONE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static pl.gov.mc.protegosafe.efgs.http.WebClientFactory.ACCEPT_HEADER_PROTOBUF;
 
 
@@ -44,22 +46,18 @@ class HttpDownloader implements HttpConnector {
 
     @SneakyThrows
     @Override
-    public BatchesResponse fetchBatches(LocalDate date, final String batchTag) {
+    public Optional<BatchesResponse> fetchBatches(LocalDate date, final String batchTag) {
 
-        @Nullable ResponseEntity<ByteArrayResource> response = fetchDiagnosisKeysResponse(batchTag, date);
-
-        @Nullable String nextBatchTag = obtainHeaderValue(response, "nextBatchTag");
-        return new BatchesResponse(
-                resolveBatchTag(batchTag, response),
-                resolveNextBatchTag(nextBatchTag),
-                obtainBody(response)
-        );
+        return fetchDiagnosisKeysResponse(batchTag, date)
+                .map(this::createBatchesResponse);
     }
 
-    @Override
-    public String fetchNextBatchTag(LocalDate date, final String batchTag) {
-        @Nullable ResponseEntity<ByteArrayResource> response = fetchDiagnosisKeysResponse(batchTag, date);
-        return obtainHeaderValue(response, "nextBatchTag");
+    private BatchesResponse createBatchesResponse(ResponseEntity<ByteArrayResource> response) {
+        @Nullable String nextBatchTag = obtainHeaderValue(response, "nextBatchTag");
+        return new BatchesResponse(
+                resolveBatchTag(response),
+                resolveNextBatchTag(nextBatchTag),
+                obtainBody(response));
     }
 
     @Override
@@ -99,18 +97,18 @@ class HttpDownloader implements HttpConnector {
                 .orElse(null);
     }
 
-    private ResponseEntity<ByteArrayResource> fetchDiagnosisKeysResponse(String batchTag, LocalDate date) {
+    private Optional<ResponseEntity<ByteArrayResource>> fetchDiagnosisKeysResponse(String batchTag, LocalDate date) {
 
         URI uri = prepareUri(date);
 
         try {
-            return connect(batchTag, uri);
+            return Optional.of(connect(batchTag, uri));
         } catch (WebClientResponseException e) {
-            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                return null;
-            } else {
-                throw e;
+            if (of(NOT_FOUND, GONE).contains(e.getStatusCode())) {
+                return Optional.empty();
             }
+            log.error("Error during downloading keys", e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -134,19 +132,12 @@ class HttpDownloader implements HttpConnector {
                 .toUri();
     }
 
-    private String obtainHeaderValue(@Nullable ResponseEntity<ByteArrayResource> response, String header) {
-        return Optional.ofNullable(response)
-                .map(HttpEntity::getHeaders)
-                .map(httpHeaders -> httpHeaders.getFirst(header))
-                .orElse(null);
+    private String obtainHeaderValue(ResponseEntity<ByteArrayResource> response, String header) {
+        return response.getHeaders()
+                .getFirst(header);
     }
 
-    private String resolveBatchTag(String batchTag, ResponseEntity<ByteArrayResource> response) {
-
-        if (batchTag != null) {
-            return batchTag;
-        }
-
+    private String resolveBatchTag(ResponseEntity<ByteArrayResource> response) {
         return obtainHeaderValue(response, "batchTag");
     }
 
