@@ -3,7 +3,6 @@ package pl.gov.mc.protegosafe.efgs.validator;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +24,15 @@ import java.util.List;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BatchSignatureVerifier {
 
     BatchSignatureUtils batchSignatureUtils;
+
+    public BatchSignatureVerifier(BatchSignatureUtils batchSignatureUtils) {
+        this.batchSignatureUtils = batchSignatureUtils;
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     public boolean validateDiagnosisKeyWithSignature(EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch,
                                                      List<AuditResponse> auditEntries) {
@@ -43,39 +46,44 @@ public class BatchSignatureVerifier {
 
     @SneakyThrows
     private boolean verify(final DiagnosisKeyBatch batch, final String base64BatchSignature) {
-        Security.addProvider(new BouncyCastleProvider());
         final byte[] batchSignatureBytes = batchSignatureUtils.b64ToBytes(base64BatchSignature);
         if (batchSignatureBytes == null) {
             return false;
         }
-        final CMSSignedData signedData = new CMSSignedData(getBatchBytes(batch), batchSignatureBytes);
-        final SignerInformation signerInfo = getSignerInformation(signedData);
+        try {
+            final CMSSignedData signedData = new CMSSignedData(getBatchBytes(batch), batchSignatureBytes);
+            final SignerInformation signerInfo = getSignerInformation(signedData);
 
-        if (signerInfo == null) {
-            log.error("no signer information");
-            return false;
+            if (signerInfo == null) {
+                log.error("no signer information");
+                return false;
+            }
+
+            final X509CertificateHolder signerCert = getSignerCert(signedData.getCertificates(), signerInfo.getSID());
+
+            if (signerCert == null) {
+                log.error("no signer certificate");
+                return false;
+            }
+
+            if (!isCertNotExpired(signerCert)) {
+                log.error("signing certificate expired\", certNotBefore=\"{}\", certNotAfter=\"{}",
+                        signerCert.getNotBefore(), signerCert.getNotAfter());
+                return false;
+            }
+
+            if (!allOriginsMatchingCertCountry(batch, signerCert)) {
+                log.error("different origins\", certNotBefore=\"{}\", certNotAfter=\"{}",
+                        signerCert.getNotBefore(), signerCert.getNotAfter());
+                return false;
+            }
+
+            return verifySignerInfo(signerInfo, signerCert);
+        } catch (Exception e) {
+            log.error("error verifying batch signature", e);
         }
 
-        final X509CertificateHolder signerCert = getSignerCert(signedData.getCertificates(), signerInfo.getSID());
-
-        if (signerCert == null) {
-            log.error("no signer certificate");
-            return false;
-        }
-
-        if (!isCertNotExpired(signerCert)) {
-            log.error("signing certificate expired\", certNotBefore=\"{}\", certNotAfter=\"{}",
-                    signerCert.getNotBefore(), signerCert.getNotAfter());
-            return false;
-        }
-
-        if (!allOriginsMatchingCertCountry(batch, signerCert)) {
-            log.error("different origins\", certNotBefore=\"{}\", certNotAfter=\"{}",
-                    signerCert.getNotBefore(), signerCert.getNotAfter());
-            return false;
-        }
-
-        return verifySignerInfo(signerInfo, signerCert);
+        return false;
 
     }
 
@@ -121,7 +129,7 @@ public class BatchSignatureVerifier {
     }
 
     private X509CertificateHolder getSignerCert(final Store<X509CertificateHolder> certificatesStore,
-                                                       final SignerId signerId) {
+                                                final SignerId signerId) {
         final Collection certCollection = certificatesStore.getMatches(signerId);
 
         if (!certCollection.isEmpty()) {
