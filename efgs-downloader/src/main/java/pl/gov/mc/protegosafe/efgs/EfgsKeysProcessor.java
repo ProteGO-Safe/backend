@@ -4,8 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-import pl.gov.mc.protegosafe.efgs.repository.BatchTagRepository;
-import pl.gov.mc.protegosafe.efgs.repository.model.LastProcessedBatchTag;
 
 import java.time.LocalDate;
 
@@ -16,13 +14,17 @@ import java.time.LocalDate;
 class EfgsKeysProcessor {
 
     DownloaderService downloaderService;
-    BatchTagRepository batchTagRepository;
     ProcessedDateService processedDateService;
+    BatchTagService batchTagService;
+
 
     void process() {
         LocalDate date = processedDateService.fetchDateToProcess();
-        LastProcessedBatchTag lastProcessedBatchTag = batchTagRepository.fetchLastProcessedBatchTag(date);
-        downloaderService.process(date, lastProcessedBatchTag.getBatchTag(), lastProcessedBatchTag.getOffset());
+        BatchTag batchTag = batchTagService.fetchNextBatchTag(date);
+        if (batchTag.isEmpty()) {
+            return;
+        }
+        downloaderService.process(date, batchTag.getBatchTag(), batchTag.getOffset());
         processedDateService.markDateAsProcessed(date);
     }
 }

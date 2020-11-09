@@ -6,14 +6,13 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Repository;
 import pl.gov.mc.protegosafe.efgs.Properties;
-import pl.gov.mc.protegosafe.efgs.repository.model.LastProcessedBatchTag;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static pl.gov.mc.protegosafe.efgs.repository.model.LastProcessedBatchTag.EMPTY_LAST_PROCESSED_BATCH_TAG;
+import static pl.gov.mc.protegosafe.efgs.repository.FirestoreBatchTag.EMPTY_BATCH_TAG;
 
 @Repository
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -46,19 +45,11 @@ public class FirestoreRepository implements BatchTagRepository, ProcessedDateRep
 
     @SneakyThrows
     @Override
-    public LastProcessedBatchTag fetchLastProcessedBatchTag(LocalDate date) {
+    public FirestoreBatchTag fetchLastProcessedBatchTag(LocalDate date) {
         String documentId = date.toString();
 
         return fetchById(documentId)
-                .map(this::createLastProcessedBatchTag)
-                .orElse(EMPTY_LAST_PROCESSED_BATCH_TAG);
-    }
-
-    private LastProcessedBatchTag createLastProcessedBatchTag(FirestoreBatchTag firestoreBatchTag) {
-        int sentKeys = firestoreBatchTag.getSentKeys();
-        String batchTag = firestoreBatchTag.getBatchTag();
-
-        return new LastProcessedBatchTag(batchTag, sentKeys);
+                .orElse(EMPTY_BATCH_TAG);
     }
 
     @SneakyThrows
