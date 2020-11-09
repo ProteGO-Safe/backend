@@ -5,16 +5,13 @@ import com.google.common.collect.Lists;
 import pl.gov.mc.protegosafe.efgs.uploader.model.DiagnosisKey;
 import pl.gov.mc.protegosafe.efgs.uploader.model.ReportType;
 
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
-class EfgsFakeDiagnosisKeysFactory {
+public class EfgsFakeDiagnosisKeysFactory {
 
-    public List<DiagnosisKey> fillFakesDiagnosisKeys(List<DiagnosisKey> diagnosisKeys, int fillTo) {
+    public static List<DiagnosisKey> fillFakesDiagnosisKeys(List<DiagnosisKey> diagnosisKeys, int fillTo) {
         List<DiagnosisKey> fakeDiagnosisKeys = Lists.newArrayList(diagnosisKeys);
 
         IntStream.range(0, fillTo - diagnosisKeys.size())
@@ -28,22 +25,22 @@ class EfgsFakeDiagnosisKeysFactory {
         return ImmutableList.copyOf(fakeDiagnosisKeys);
     }
 
-    private DiagnosisKey generateFakeDiagnosisKey() {
+    private static DiagnosisKey generateFakeDiagnosisKey() {
         int currentTimestamp = (int) (System.currentTimeMillis() / 1000);
 
         return new DiagnosisKey(
-                this.generateRandomKey(),
+                generateRandomKey(),
                 ThreadLocalRandom.current().nextInt(currentTimestamp - 1296000000, currentTimestamp + 1),
                 ThreadLocalRandom.current().nextInt(1, 144 + 1),
                 ThreadLocalRandom.current().nextInt(1, 8 + 1),
                 Collections.emptyList(),
                 "origin",
-                this.randomReportType(),
-                ThreadLocalRandom.current().nextInt(-14, 14 + 1)
+                randomReportType(),
+                DiagnosisKey.DAYS_SINCE_ONSET_OF_SYMPTOMS
         );
     }
 
-    private ReportType randomReportType() {
+    private static ReportType randomReportType() {
         int type = ThreadLocalRandom.current().nextInt(1, 2 + 1);
 
         switch (type) {
@@ -56,7 +53,7 @@ class EfgsFakeDiagnosisKeysFactory {
         return ReportType.CONFIRMED_TEST;
     }
 
-    private String generateRandomKey() {
+    private static String generateRandomKey() {
         byte[] bytes = new byte[16];
         new Random().nextBytes(bytes);
         return Base64.getEncoder().encodeToString(bytes);

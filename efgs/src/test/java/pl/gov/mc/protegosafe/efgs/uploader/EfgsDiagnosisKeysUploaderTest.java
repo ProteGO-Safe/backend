@@ -21,7 +21,7 @@ class EfgsDiagnosisKeysUploaderTest {
     }
 
     @Test
-    public void should() {
+    public void shouldUploadDiagnosisKeys() {
 
     	// given
 

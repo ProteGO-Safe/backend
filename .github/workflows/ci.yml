@@ -87,7 +87,7 @@ jobs:
           PROJECT_ID: ${{secrets.DEV_FIREBASE_PROJECT}}
           APPLICATION_CREDENTIALS: ${{secrets.DEV_FIREBASE_HOSTING_SAFE}}
         with:
-          args: functions deploy EfgsDiagnosisKeysUploader --entry-point pl.gov.mc.protegosafe.efgs.uploader.EfgsDiagnosisKeysUploader --runtime java11 --memory 512MB --allow-unauthenticated --region europe-west1 --trigger-event=providers/cloud.firestore/eventTypes/document.create '--trigger-resource=projects/${{secrets.DEV_FIREBASE_PROJECT}}/databases/(default)/documents/diagnosisKeys/{id}' --set-env-vars NBBS_LOCATION=./src/nbbs,NBTLS_LOCATION=./src/nbtls,EFGS_URL=https://efgs.koronazglowy.com/diagnosiskeys
+          args: functions deploy EfgsDiagnosisKeysUploaderScheduler --entry-point pl.gov.mc.protegosafe.efgs.uploader.EfgsDiagnosisKeysUploader --runtime java11 --memory 512MB --allow-unauthenticated --region europe-west1 --trigger-topic=firebase-schedule-sendKeysFromGensToEfgs-europe-west1 --set-env-vars NBBS_LOCATION=./src/nbbs,NBTLS_LOCATION=./src/nbtls,EFGS_URL=https://test-efgs-ws.tech.ec.europa.eu/diagnosiskeys
 
   build:
     runs-on: ubuntu-latest

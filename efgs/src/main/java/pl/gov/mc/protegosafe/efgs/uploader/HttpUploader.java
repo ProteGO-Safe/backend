@@ -3,6 +3,7 @@ package pl.gov.mc.protegosafe.efgs.uploader;
 import eu.interop.federationgateway.model.EfgsProto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -13,9 +14,17 @@ import static pl.gov.mc.protegosafe.efgs.utils.WebClientFactory.*;
 
 @Slf4j
 class HttpUploader {
+    static boolean uploadDiagnosisKeyBatch(EfgsProto.DiagnosisKeyBatch batch, String uploaderBatchTag, String batchSignature) {
+        try {
+            makeCall(batch, uploaderBatchTag, batchSignature);
+        } catch (WebClientResponseException e) {
+            log.error("Error during uploading diagnosis keys", e);
+            return false;
+        }
+        return true;
+    }
 
-    static void uploadDiagnosisKeyBatch(EfgsProto.DiagnosisKeyBatch batch, String uploaderBatchTag, String batchSignature) {
-
+    private static void makeCall(EfgsProto.DiagnosisKeyBatch batch, String uploaderBatchTag, String batchSignature) {
         URI uri = UriComponentsBuilder.fromHttpUrl(ENV_EFGS_URL)
                 .pathSegment("upload")
                 .build()

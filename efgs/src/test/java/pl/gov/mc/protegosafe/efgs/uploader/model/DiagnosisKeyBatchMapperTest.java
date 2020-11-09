@@ -19,17 +19,17 @@ class DiagnosisKeyBatchMapperTest {
 
     	// then
         Assertions.assertThat(diagnosisKeyBatch.getKeysList()).hasSize(3);
-        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(0)).extracting(DiagnosisKey::getKeyData).isEqualTo("5MI/219zoJdPqaXQDR0YTQ==");
+        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(0)).extracting(DiagnosisKey::getKeyData).isEqualTo("NYDjc+pDsgcyzy3fFuOjgw==");
         Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(0)).extracting(DiagnosisKey::getRollingPeriod).isEqualTo(144);
-        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(0)).extracting(DiagnosisKey::getRollingStartIntervalNumber).isEqualTo(2666440);
+        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(0)).extracting(DiagnosisKey::getRollingStartIntervalNumber).isEqualTo(2671081);
         Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(0)).extracting(DiagnosisKey::getTransmissionRiskLevel).isEqualTo(8);
-        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(1)).extracting(DiagnosisKey::getKeyData).isEqualTo("ESartjbxqW0z1qfZ3pwW2Q==");
+        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(1)).extracting(DiagnosisKey::getKeyData).isEqualTo("eil+iTUg4Yes57Xqt6LFIg==");
         Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(1)).extracting(DiagnosisKey::getRollingPeriod).isEqualTo(144);
-        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(1)).extracting(DiagnosisKey::getRollingStartIntervalNumber).isEqualTo(2666296);
+        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(1)).extracting(DiagnosisKey::getRollingStartIntervalNumber).isEqualTo(2671081);
         Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(1)).extracting(DiagnosisKey::getTransmissionRiskLevel).isEqualTo(8);
-        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(2)).extracting(DiagnosisKey::getKeyData).isEqualTo("qrcyBtITrUeDxrS7PoiMyg==");
+        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(2)).extracting(DiagnosisKey::getKeyData).isEqualTo("6KPHh/EWqw3pUb+aXX/QAg==");
         Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(2)).extracting(DiagnosisKey::getRollingPeriod).isEqualTo(144);
-        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(2)).extracting(DiagnosisKey::getRollingStartIntervalNumber).isEqualTo(2666008);
+        Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(2)).extracting(DiagnosisKey::getRollingStartIntervalNumber).isEqualTo(2671081);
         Assertions.assertThat(diagnosisKeyBatch.getKeysList().get(2)).extracting(DiagnosisKey::getTransmissionRiskLevel).isEqualTo(8);
     }
 

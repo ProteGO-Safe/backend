@@ -1,5 +1,10 @@
 package pl.gov.mc.protegosafe.efgs.uploader.model;
 
+import lombok.AllArgsConstructor;
+
+import java.util.Arrays;
+
+@AllArgsConstructor
 public enum ReportType {
 
     UNKNOWN(0),
@@ -11,8 +16,11 @@ public enum ReportType {
 
     private final int value;
 
-    ReportType(int value) {
-        this.value = value;
+    public static ReportType fromInt(Integer value) {
+        return Arrays.stream(ReportType.values())
+                .filter(reportType -> reportType.getValue() == value)
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     public int getValue() {

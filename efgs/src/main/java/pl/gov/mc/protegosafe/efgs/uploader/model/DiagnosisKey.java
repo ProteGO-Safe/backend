@@ -8,15 +8,16 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class DiagnosisKey {
+    public static final Integer DAYS_SINCE_ONSET_OF_SYMPTOMS = 4000;
 
     private final String keyData;
-    private final int rollingStartIntervalNumber;
-    private final int rollingPeriod;
-    private final int transmissionRiskLevel;
+    private final Integer rollingStartIntervalNumber;
+    private final Integer rollingPeriod;
+    private final Integer transmissionRiskLevel;
     private final List<String> visitedCountries;
     private final String origin;
     private final ReportType reportType;
-    private final int daysSinceOnsetOfSymptoms;
+    private final Integer daysSinceOnsetOfSymptoms;
 
     public int getReportTypeValue() {
         return reportType.getValue();

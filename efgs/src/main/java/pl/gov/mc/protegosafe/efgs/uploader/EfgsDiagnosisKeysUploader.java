@@ -4,14 +4,15 @@ import com.google.cloud.functions.Context;
 import com.google.cloud.functions.RawBackgroundFunction;
 import eu.interop.federationgateway.model.EfgsProto;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.util.Assert;
 import pl.gov.mc.protegosafe.efgs.uploader.model.DiagnosisKey;
-import pl.gov.mc.protegosafe.efgs.uploader.model.DiagnosisKeyBatch;
-import pl.gov.mc.protegosafe.efgs.uploader.model.UploadedDiagnosisKeysMapper;
+import pl.gov.mc.protegosafe.efgs.uploader.repository.DiagnosisKeysRepository;
 import pl.gov.mc.protegosafe.efgs.utils.BatchSignatureUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static pl.gov.mc.protegosafe.efgs.Constants.ENV_NBBS_LOCATION;
 
 public class EfgsDiagnosisKeysUploader implements RawBackgroundFunction {
@@ -21,21 +22,43 @@ public class EfgsDiagnosisKeysUploader implements RawBackgroundFunction {
     @Override
     public void accept(String json, Context context) {
 
-        DiagnosisKeyBatch diagnosisKeyBatch = UploadedDiagnosisKeysMapper.createUploadedDiagnosisKeys(json);
-        Assert.isTrue(diagnosisKeyBatch.isInteroperabilityEnabled(), "isInteroperabilityEnabled must be true");
+        Map<String ,DiagnosisKey> idsWithDiagnosisKeys = getDocuments();
+        List<DiagnosisKey> diagnosisKeyBatch = createDiagnosisKeyList(idsWithDiagnosisKeys);
 
-        EfgsFakeDiagnosisKeysFactory factory = new EfgsFakeDiagnosisKeysFactory();
-        List<DiagnosisKey> filledCollection = factory.fillFakesDiagnosisKeys(diagnosisKeyBatch.getKeysList(), MAX_DIAGNOSIS_KEY_BATCH);
+        List<DiagnosisKey> filledCollection = EfgsFakeDiagnosisKeysFactory.fillFakesDiagnosisKeys(diagnosisKeyBatch, MAX_DIAGNOSIS_KEY_BATCH);
         EfgsProto.DiagnosisKeyBatch batch = EfgsProtoDiagnosisKeyBatchFactory.create(filledCollection);
+
         byte[] bytes = BatchSignatureUtils.generateBytesToVerify(batch);
         SignatureGenerator signatureGenerator = new SignatureGenerator(ENV_NBBS_LOCATION);
         String signatureForBytes = signatureGenerator.getSignatureForBytes(bytes);
+
         String randomBatchTag = getRandomBatchTag();
 
-        HttpUploader.uploadDiagnosisKeyBatch(batch, randomBatchTag, signatureForBytes);
+        boolean isSuccessResponse = HttpUploader.uploadDiagnosisKeyBatch(batch, randomBatchTag, signatureForBytes);
+
+        if (isSuccessResponse) {
+            idsWithDiagnosisKeys.keySet()
+                    .forEach(this::removeDocuments);
+        }
+    }
+
+    private void removeDocuments(String documentId) {
+        DiagnosisKeysRepository repository = new DiagnosisKeysRepository();
+        repository.removeDocument(documentId);
     }
 
     private String getRandomBatchTag() {
         return RandomStringUtils.random(10, true, true);
+    }
+
+    private Map<String ,DiagnosisKey> getDocuments() {
+        DiagnosisKeysRepository repository = new DiagnosisKeysRepository();
+        return repository.getLimitedDiagnosisKeys();
+    }
+
+    private List<DiagnosisKey> createDiagnosisKeyList(Map<String ,DiagnosisKey> documents) {
+        return documents.values()
+                .stream()
+                .collect(Collectors.toUnmodifiableList());
     }
 }

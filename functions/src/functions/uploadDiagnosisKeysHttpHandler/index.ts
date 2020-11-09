@@ -2,7 +2,6 @@ import {verify} from "jsonwebtoken";
 import config, {secretManager} from "../../config";
 import * as functions from "firebase-functions";
 
-const {log} = require("firebase-functions/lib/logger");
 import {v4} from "uuid";
 import * as admin from "firebase-admin";
 import moment = require("moment");
@@ -50,7 +49,6 @@ export const saveDiagnosisKeys = (body: any) => {
         const id = v4();
         const createdAt = moment().unix();
         const itemToSave = {id, createdAt, ...exposureKey};
-        log(`saving diagnosis keys on firestore: `, itemToSave);
         db.collection(config.efgs.firestore.diagnosisKeysCollectionName)
             .doc(id)
             .set(itemToSave)
