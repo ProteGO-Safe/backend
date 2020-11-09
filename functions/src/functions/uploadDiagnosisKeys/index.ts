@@ -9,7 +9,7 @@ const uploadDiagnosisKeys = async (data: any): Promise<any> => {
     return superagent
         .post(config.exposureEndpoint)
         .send(data)
-        .set('Authorization', `Bearer ${idToken}`)
+        .set('Authorization', `Bearer ${idToken}`);
 };
 
 const getIdToken = async (): Promise<string> => {
@@ -34,6 +34,6 @@ const getIdToken = async (): Promise<string> => {
     });
 
     return <string>response.data.id_token;
-}
+};
 
 export default uploadDiagnosisKeys;

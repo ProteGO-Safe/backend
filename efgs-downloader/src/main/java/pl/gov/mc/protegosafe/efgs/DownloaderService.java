@@ -6,9 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.message.MessageSender;
-import pl.gov.mc.protegosafe.efgs.model.Key;
 import pl.gov.mc.protegosafe.efgs.repository.BatchTagRepository;
-import pl.gov.mc.protegosafe.efgs.utils.Partition;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
@@ -39,12 +37,12 @@ class DownloaderService {
             return;
         }
 
-        Partition<Key> partitions = Partition.ofSize(downloadedKeys.getKeys(), MAX_GENS_SIZE);
+        KeyChunker keyChunker = KeyChunker.of(downloadedKeys.getKeys(), MAX_GENS_SIZE);
 
-        IntStream.range(0, partitions.size())
+        IntStream.range(0, keyChunker.size())
             .skip(offset / MAX_GENS_SIZE)
             .forEach(index -> {
-                messageSender.sendMessage(partitions.get(index));
+                messageSender.sendMessage(keyChunker.get(index));
                 batchTagRepository.saveBatchTag(date, downloadedBatchTag, ++index * MAX_GENS_SIZE);
             });
 

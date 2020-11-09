@@ -19,7 +19,11 @@ const uploadDiagnosisKeysSubscriber = async (message: any) => {
     const data = convertMessage(message.data);
 
     try {
-        await uploadDiagnosisKeys(data)
+        log(`uploading ${data.temporaryExposureKeys.length} keys`);
+
+        await uploadDiagnosisKeys(data);
+
+        log(`uploaded ${data.temporaryExposureKeys.length} keys`);
     } catch (e) {
         if (e.response && e.response.error) {
             error(e.response.error.text)
