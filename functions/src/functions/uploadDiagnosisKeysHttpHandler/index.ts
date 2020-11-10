@@ -39,7 +39,7 @@ async function auth(token: string | undefined): Promise<boolean> {
 }
 
 export const saveDiagnosisKeys = (body: any) => {
-    const { isInteroperabilityEnabled, temporaryExposureKeys } = body;
+    const { isInteroperabilityEnabled, data : {temporaryExposureKeys} } = body;
     if (!isInteroperabilityEnabled) {
         return;
     }
