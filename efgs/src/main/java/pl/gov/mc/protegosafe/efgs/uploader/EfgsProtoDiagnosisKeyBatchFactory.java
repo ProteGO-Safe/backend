@@ -2,8 +2,6 @@ package pl.gov.mc.protegosafe.efgs.uploader;
 
 import com.google.protobuf.ByteString;
 import eu.interop.federationgateway.model.EfgsProto;
-import pl.gov.mc.protegosafe.efgs.uploader.model.DiagnosisKey;
-import pl.gov.mc.protegosafe.efgs.uploader.model.DiagnosisKeyBatch;
 
 import java.util.Base64;
 import java.util.List;
@@ -26,10 +24,10 @@ class EfgsProtoDiagnosisKeyBatchFactory {
     private static EfgsProto.DiagnosisKey createEfgsProtoDiagnosisKey(DiagnosisKey diagnosisKey) {
         return EfgsProto.DiagnosisKey.newBuilder()
                 .setRollingPeriod(diagnosisKey.getRollingPeriod())
-                .setRollingStartIntervalNumber(diagnosisKey.getRollingStartIntervalNumber())
+                .setRollingStartIntervalNumber(diagnosisKey.getRollingStartIntervalNumber().intValue())
                 .setTransmissionRiskLevel(diagnosisKey.getTransmissionRiskLevel())
                 .setOrigin(diagnosisKey.getOrigin())
-                .setReportType(EfgsProto.ReportType.CONFIRMED_CLINICAL_DIAGNOSIS)
+                .setReportType(EfgsProto.ReportType.forNumber(diagnosisKey.getReportType().getValue()))
                 .setKeyData(ByteString.copyFrom(Base64.getDecoder().decode(diagnosisKey.getKeyData().getBytes())))
                 .setDaysSinceOnsetOfSymptoms(diagnosisKey.getDaysSinceOnsetOfSymptoms())
                 .addAllVisitedCountries(diagnosisKey.getVisitedCountries())

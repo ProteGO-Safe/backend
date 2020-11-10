@@ -1,20 +1,22 @@
 package pl.gov.mc.protegosafe.efgs.uploader;
 
-import com.google.api.client.util.Lists;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pl.gov.mc.protegosafe.efgs.uploader.model.DiagnosisKey;
-import pl.gov.mc.protegosafe.efgs.uploader.model.ReportType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EfgsFakeDiagnosisKeysFactoryTest {
+import static com.google.common.collect.Lists.newArrayList;
+
+class EfgsFakeDiagnosisKeysFactoryTest {
+
+
     @Test
-    public void shouldFillEmptyDiagnosisKeysList() {
+    void shouldFillEmptyDiagnosisKeysList() {
+
         // given
         int filledTo = 5;
-        List<DiagnosisKey> keysList = new ArrayList<DiagnosisKey>();
+        List<DiagnosisKey> keysList = new ArrayList<>();
 
         // when
         List<DiagnosisKey> filledCollection = EfgsFakeDiagnosisKeysFactory.fillFakesDiagnosisKeys(keysList, filledTo);
@@ -25,31 +27,11 @@ public class EfgsFakeDiagnosisKeysFactoryTest {
 
 
     @Test
-    public void shouldFillToDiagnosisKeysList() {
+    void shouldFillToDiagnosisKeysList() {
+
         // given
         int filledTo = 5;
-        List<DiagnosisKey> keysList = new ArrayList<DiagnosisKey>();
-        keysList.add(new DiagnosisKey(
-                "key",
-                1,
-                1,
-                1,
-                Lists.newArrayList(),
-                "origin",
-                ReportType.CONFIRMED_TEST,
-                1
-        ));
-
-        keysList.add(new DiagnosisKey(
-                "key2",
-                1,
-                1,
-                1,
-                Lists.newArrayList(),
-                "origin",
-                ReportType.CONFIRMED_TEST,
-                1
-        ));
+        List<DiagnosisKey> keysList = newArrayList(DiagnosisKey.random(), DiagnosisKey.random());
 
         // when
         List<DiagnosisKey> filledCollection = EfgsFakeDiagnosisKeysFactory.fillFakesDiagnosisKeys(keysList, filledTo);

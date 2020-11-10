@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import pl.gov.mc.protegosafe.efgs.TestData;
 
 class EfgsDiagnosisKeysUploaderTest {
 
@@ -26,7 +25,7 @@ class EfgsDiagnosisKeysUploaderTest {
     	// given
 
     	// when
-        efgsDiagnosisKeysUploader.accept(TestData.VALID_JSON_FROM_FIRESTORE, context);
+        efgsDiagnosisKeysUploader.accept(null, context);
 
     	// then
 

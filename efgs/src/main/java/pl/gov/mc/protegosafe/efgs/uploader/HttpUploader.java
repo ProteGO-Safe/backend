@@ -8,6 +8,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
+import static java.lang.String.format;
 import static pl.gov.mc.protegosafe.efgs.Constants.ENV_EFGS_URL;
 import static pl.gov.mc.protegosafe.efgs.utils.WebClientFactory.*;
 
@@ -18,7 +19,7 @@ class HttpUploader {
         try {
             makeCall(batch, uploaderBatchTag, batchSignature);
         } catch (WebClientResponseException e) {
-            log.error("Error during uploading diagnosis keys", e);
+            log.error(format("Error during uploading diagnosis keys. Code: %s, Message: %s", e.getStatusCode(), e.getResponseBodyAsString()), e);
             return false;
         }
         return true;
