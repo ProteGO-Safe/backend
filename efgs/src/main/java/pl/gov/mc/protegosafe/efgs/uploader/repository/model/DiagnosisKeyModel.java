@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class DiagnosisKeyModel {
     private final String key = null;
-    private final Integer rollingStartNumber = null;
+    private final Long rollingStartNumber = null;
     private final Integer rollingPeriod = null;
     private final Integer transmissionRisk = null;
 }

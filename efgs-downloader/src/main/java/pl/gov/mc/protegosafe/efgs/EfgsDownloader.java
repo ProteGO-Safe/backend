@@ -22,7 +22,7 @@ public class EfgsDownloader {
 	}
 
 	@Bean
-	public Consumer<TriggerEvent> uppercase() {
+	public Consumer<TriggerEvent> process() {
 		return value -> efgsKeysProcessor.process();
 	}
 }

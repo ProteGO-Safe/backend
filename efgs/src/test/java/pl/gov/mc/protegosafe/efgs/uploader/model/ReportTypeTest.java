@@ -2,8 +2,7 @@ package pl.gov.mc.protegosafe.efgs.uploader.model;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.io.NotActiveException;
+import pl.gov.mc.protegosafe.efgs.uploader.ReportType;
 
 public class ReportTypeTest {
 

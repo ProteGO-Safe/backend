@@ -30,6 +30,9 @@ class DownloaderService {
         log.info("started processing download, date: {}, batchTag: {}, offset: {}", date, batchTag, offset);
 
         DownloadedKeys downloadedKeys = batchTagFetcher.fetchBatches(date, batchTag);
+
+        log.info("downloaded keys: {}, batch tag: {}, next batch tag: {}", downloadedKeys.getKeys().size(), downloadedKeys.getBatchTag(), downloadedKeys.getNextBatchTag());
+
         String downloadedBatchTag = downloadedKeys.getBatchTag();
         @Nullable String nextBatchTag = downloadedKeys.getNextBatchTag();
 
