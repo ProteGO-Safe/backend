@@ -9,6 +9,7 @@ import com.google.pubsub.v1.TopicName;
 import lombok.AccessLevel;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.Properties;
@@ -16,6 +17,7 @@ import pl.gov.mc.protegosafe.efgs.model.Key;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 class PubSubMessageSender implements MessageSender {
@@ -32,8 +34,8 @@ class PubSubMessageSender implements MessageSender {
     @SneakyThrows
     @Override
     public void sendMessage(List<Key> keys) {
+        log.info("Sending message with keys: {}", keys.size());
         TopicName topicName = TopicName.of(projectId, topicId);
-
         Publisher publisher = Publisher.newBuilder(topicName)
                 .build();
         ByteString data = ByteString.copyFromUtf8(buildMessage(keys));

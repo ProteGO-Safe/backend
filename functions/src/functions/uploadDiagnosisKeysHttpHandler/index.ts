@@ -1,3 +1,4 @@
+const {log} = require("firebase-functions/lib/logger");
 import {verify} from "jsonwebtoken";
 import config, {secretManager} from "../../config";
 import * as functions from "firebase-functions";
@@ -12,14 +13,18 @@ export async function uploadDiagnosisKeysHttpHandler(request: functions.Request,
     if (!await auth(body.data.verificationPayload)) {
         return response.status(401).send({error: {message: "", status: "UNAUTHENTICATED"}});
     }
+    const { isInteroperabilityEnabled, data : {temporaryExposureKeys} } = body;
     try {
         await uploadDiagnosisKeys(body.data)
             .then((ignore: any) => saveDiagnosisKeys(body))
     } catch (error) {
         if (error.response && error.response.error) {
+            log(`failed uploading keys from user to gens, keys: ${temporaryExposureKeys.length}, return code: ${error.response.error.status}, isInteroperabilityEnabled: ${isInteroperabilityEnabled}`);
             return response.status(error.response.error.status).send(JSON.parse(error.response.error.text));
         }
     }
+
+    log(`uploaded keys from user to gens, keys: ${temporaryExposureKeys.length}, return code: 200, isInteroperabilityEnabled: ${isInteroperabilityEnabled}`);
 
     return response.status(200).send({result: ""});
 }
