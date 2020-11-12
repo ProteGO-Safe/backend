@@ -1,3 +1,5 @@
+import config from "../../../config";
+
 const {log, error} = require("firebase-functions/lib/logger");
 import uploadDiagnosisKeys from "../../uploadDiagnosisKeys";
 import createGensPayloadMessage from "../gensPayloadFactory";
@@ -8,9 +10,9 @@ const convertMessage = (dataAsBase64: any) => {
     const efgsData = JSON.parse(data);
     return {
         ...createGensPayloadMessage(efgsData.keysData),
-        regions: ['PL'], // todo PSAFE-2456
-        appPackageName: 'pl.gov.mc.protegosafe.devel', // todo PSAFE-2456
-        platform: 'ios' // todo PSAFE-2456
+        regions: config.efgs.gens.regions,
+        appPackageName: config.efgs.gens.appPackageName,
+        platform: config.efgs.gens.platform
     }
 };
 

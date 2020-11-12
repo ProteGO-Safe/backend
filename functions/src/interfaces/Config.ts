@@ -27,6 +27,11 @@ interface Config {
     efgs: {
         firestore: {
             diagnosisKeysCollectionName: string
+        },
+        gens: {
+            regions: Array<string>,
+            appPackageName: string,
+            platform: string,
         }
     }
     backupTranslations: {

@@ -42,6 +42,11 @@ const config: Config = {
     efgs: {
         firestore: {
             diagnosisKeysCollectionName: 'collectionName'
+        },
+        gens: {
+            regions: ['PL'],
+            appPackageName: 'appPackageName',
+            platform: '',
         }
     }
 };
