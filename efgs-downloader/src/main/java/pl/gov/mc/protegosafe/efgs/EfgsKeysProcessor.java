@@ -26,9 +26,9 @@ class EfgsKeysProcessor {
         BatchTag batchTag = batchTagService.fetchNextBatchTag(date);
         if (batchTag.isEmpty()) {
             log.info("No next batch tag for date: {}", date);
-            return;
+        } else {
+            downloaderService.process(date, batchTag.getBatchTag(), batchTag.getOffset());
         }
-        downloaderService.process(date, batchTag.getBatchTag(), batchTag.getOffset());
         processedDateService.markDateAsProcessed(date);
     }
 }

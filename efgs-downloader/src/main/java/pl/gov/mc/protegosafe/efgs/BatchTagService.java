@@ -28,10 +28,10 @@ class BatchTagService {
         FirestoreBatchTag firestoreBatchTag = batchTagRepository.fetchLastProcessedBatchTag(date);
 
         if (firestoreBatchTag.isProcessed()) {
-            return fetchNextBatchTag(date, firestoreBatchTag);
+            return EMPTY;
         }
 
-        return new BatchTag(firestoreBatchTag.getBatchTag(), firestoreBatchTag.getSentKeys());
+        return fetchNextBatchTag(date, firestoreBatchTag);
     }
 
     private BatchTag fetchNextBatchTag(LocalDate date, FirestoreBatchTag firestoreBatchTag) {
@@ -42,6 +42,6 @@ class BatchTagService {
     }
 
     private BatchTag createBatchTag(BatchesResponse batchesResponse) {
-        return new BatchTag(batchesResponse.getBatchTag());
+        return new BatchTag(batchesResponse.getNextBatchTag());
     }
 }

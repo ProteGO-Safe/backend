@@ -55,6 +55,18 @@ class FirestoreRepositoryTest {
 
         // then
         System.out.println();
+    }
+
+    @Test
+    void shouldFetchLastProcessedBatchTag() {
+
+        // given
+
+        // when
+        FirestoreBatchTag firestoreBatchTag = firestoreRepository.fetchLastProcessedBatchTag(LocalDate.parse("2020-11-08"));
+
+        // then
+        System.out.println(firestoreBatchTag);
 
     }
 
@@ -62,7 +74,7 @@ class FirestoreRepositoryTest {
     Firestore provideFirestore() {
         FirestoreOptions firestoreOptions =
                 FirestoreOptions.getDefaultInstance().toBuilder()
-                        .setProjectId("protego-fb-dev")
+                        .setProjectId("")
                         .setCredentials(GoogleCredentials.getApplicationDefault())
                         .build();
         return firestoreOptions.getService();

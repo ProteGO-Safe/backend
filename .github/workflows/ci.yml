@@ -15,6 +15,9 @@ jobs:
   deploy-efgs-downloader:
     name: Deploy Efgs Downloader
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags') ||
+      startsWith(github.ref, 'refs/heads/release') ||
+      startsWith(github.ref, 'refs/heads/pre-prod/')
     defaults:
       run:
         working-directory: ./efgs-downloader
@@ -106,6 +109,9 @@ jobs:
   deploy-efgs-uploader:
     name: Deploy Efgs Uploader
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags') ||
+      startsWith(github.ref, 'refs/heads/release') ||
+      startsWith(github.ref, 'refs/heads/pre-prod/')
     defaults:
       run:
         working-directory: ./efgs

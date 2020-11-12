@@ -6,6 +6,8 @@ import com.google.cloud.firestore.FirestoreOptions;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import static pl.gov.mc.protegosafe.efgs.Constants.ENV_PROJECT_ID;
+
 @Slf4j
 public class FirestoreProvider {
 
@@ -13,7 +15,7 @@ public class FirestoreProvider {
     public static Firestore provideFirestore() {
         FirestoreOptions firestoreOptions =
                 FirestoreOptions.getDefaultInstance().toBuilder()
-                        .setProjectId("protego-fb-dev")
+                        .setProjectId(ENV_PROJECT_ID)
                         .setCredentials(GoogleCredentials.getApplicationDefault())
                         .build();
         return firestoreOptions.getService();
