@@ -8,5 +8,3 @@ efgs:
       collections:
         batch-tag: processedBatchTags
     days-to-check-before-now: 14
-  message:
-    topic-id: firebase-subscription-uploadDiagnosisKeysSubscriber-europe-west1
