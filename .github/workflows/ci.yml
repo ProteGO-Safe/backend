@@ -67,6 +67,16 @@ jobs:
           EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
 
+      - name: Set region for DEV
+        run: |
+          echo "REGION=europe-west1" >> $GITHUB_ENV
+        if: env.ENVIRONMENT == 'DEV'
+
+      - name: Set region for STAGE
+        run: |
+          echo "REGION=europe-west3" >> $GITHUB_ENV
+        if: env.ENVIRONMENT == 'STAGE'
+
       - name: Install java 11
         uses: actions/setup-java@v1
         with:
@@ -100,9 +110,9 @@ jobs:
              --entry-point org.springframework.cloud.function.adapter.gcp.GcfJarLauncher \
              --runtime java11 \
              --memory 2048MB  \
-             --trigger-topic=firebase-schedule-sendKeysFromEfgsToGens-europe-west1 \
+             --trigger-topic=firebase-schedule-sendKeysFromEfgsToGens-$REGION \
              --allow-unauthenticated \
-             --region europe-west1 \
+             --region $REGION \
              --timeout=540s \
              --set-env-vars EFGS_MESSAGE_PROJECT_ID=$PROJECT_ID,EFGS_API=$EFGS_URL
 
@@ -162,6 +172,16 @@ jobs:
           EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
 
+      - name: Set region for DEV
+        run: |
+          echo "REGION=europe-west1" >> $GITHUB_ENV
+        if: env.ENVIRONMENT == 'DEV'
+
+      - name: Set region for STAGE
+        run: |
+          echo "REGION=europe-west3" >> $GITHUB_ENV
+        if: env.ENVIRONMENT == 'STAGE'
+
       - name: mvn OWASP
         run: mvn -DfailBuildOnCVSS=5 org.owasp:dependency-check-maven:6.0.3:check
         shell: bash
@@ -184,8 +204,8 @@ jobs:
              --runtime java11 \
              --memory 512MB \
              --allow-unauthenticated \
-             --region europe-west1 \
-             --trigger-topic=firebase-schedule-sendKeysFromGensToEfgs-europe-west1 \
+             --region $REGION \
+             --trigger-topic=firebase-schedule-sendKeysFromGensToEfgs-$REGION \
              --set-env-vars NBBS_LOCATION=./src/nbbs,NBTLS_LOCATION=./src/nbtls,EFGS_URL=$EFGS_URL,PROJECT_ID=$PROJECT_ID
 
   Lint_TS:
