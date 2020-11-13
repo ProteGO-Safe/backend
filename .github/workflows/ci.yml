@@ -28,7 +28,7 @@ jobs:
         
       - uses: actions/cache@v2
         env:
-          cache-name: efgs-downloader
+          cache-name: efgs-dl
         with:
           path: ~/.m2/repository
           key: ${{ env.cache-name }}-${{ hashFiles('**/efgs-downloader/pom.xml') }}
@@ -84,7 +84,6 @@ jobs:
           java-package: jdk
           architecture: x64
 
-#     STH TO DO!!!
       - name: mvn OWASP
         run: mvn -DfailBuildOnCVSS=5 org.owasp:dependency-check-maven:6.0.3:check
         shell: bash
@@ -132,7 +131,7 @@ jobs:
 
       - uses: actions/cache@v2
         env:
-          cache-name: efgs
+          cache-name: efgs-up
         with:
           path: ~/.m2/repository
           key: ${{ env.cache-name }}-${{ hashFiles('**/efgs/pom.xml') }}
