@@ -41,7 +41,8 @@ const config: Config = {
     },
     efgs: {
         firestore: {
-            diagnosisKeysCollectionName: 'collectionName'
+            diagnosisKeysCollectionName: 'collectionName',
+            failedUploadingToGensDiagnosisKeysCollectionName: 'collectionName'
         },
         gens: {
             regions: ['PL'],

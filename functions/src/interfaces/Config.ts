@@ -26,7 +26,8 @@ interface Config {
     },
     efgs: {
         firestore: {
-            diagnosisKeysCollectionName: string
+            diagnosisKeysCollectionName: string,
+            failedUploadingToGensDiagnosisKeysCollectionName: string
         },
         gens: {
             regions: Array<string>,
