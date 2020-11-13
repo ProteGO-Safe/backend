@@ -59,23 +59,15 @@ jobs:
           echo "NBBS_CERT=${{ secrets[env.NBBS_ENV] }}" >> $GITHUB_ENV
           echo "NBTLS_CERT=${{ secrets[env.NBTLS_ENV] }}" >> $GITHUB_ENV
           echo "EFGS_URL=${{ secrets[env.EFGS_ENV] }}" >> $GITHUB_ENV
+          echo "REGION=${{ secrets[env.REGION_ENV] }}" >> $GITHUB_ENV
         env:
           SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
           NBBS_ENV: "${{ env.ENVIRONMENT }}_NBBS"
           NBTLS_ENV: "${{ env.ENVIRONMENT }}_NBTLS"
           EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
+          REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
-
-      - name: Set region for DEV
-        run: |
-          echo "REGION=europe-west1" >> $GITHUB_ENV
-        if: env.ENVIRONMENT == 'DEV'
-
-      - name: Set region for STAGE
-        run: |
-          echo "REGION=europe-west3" >> $GITHUB_ENV
-        if: env.ENVIRONMENT == 'STAGE'
 
       - name: Install java 11
         uses: actions/setup-java@v1
@@ -164,23 +156,15 @@ jobs:
           echo "NBBS_CERT=${{ secrets[env.NBBS_ENV] }}" >> $GITHUB_ENV
           echo "NBTLS_CERT=${{ secrets[env.NBTLS_ENV] }}" >> $GITHUB_ENV
           echo "EFGS_URL=${{ secrets[env.EFGS_ENV] }}" >> $GITHUB_ENV
+          echo "REGION=${{ secrets[env.REGION_ENV] }}" >> $GITHUB_ENV
         env:
           SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
           NBBS_ENV: "${{ env.ENVIRONMENT }}_NBBS"
           NBTLS_ENV: "${{ env.ENVIRONMENT }}_NBTLS"
           EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
+          REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
-
-      - name: Set region for DEV
-        run: |
-          echo "REGION=europe-west1" >> $GITHUB_ENV
-        if: env.ENVIRONMENT == 'DEV'
-
-      - name: Set region for STAGE
-        run: |
-          echo "REGION=europe-west3" >> $GITHUB_ENV
-        if: env.ENVIRONMENT == 'STAGE'
 
       - name: mvn OWASP
         run: mvn -DfailBuildOnCVSS=5 org.owasp:dependency-check-maven:6.0.3:check
