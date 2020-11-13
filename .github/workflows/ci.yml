@@ -26,6 +26,14 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
         
+      - uses: actions/cache@v2
+        env:
+          cache-name: efgs-downloader
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.cache-name }}-${{ hashFiles('**/efgs-downloader/pom.xml') }}
+          restore-keys: ${{ env.cache-name }}-
+        
       - name: Set env to DEV
         if: github.repository_owner != 'ProteGO-Safe'
             && startsWith(github.ref, 'refs/heads/release')
@@ -122,6 +130,14 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
+      - uses: actions/cache@v2
+        env:
+          cache-name: efgs
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.cache-name }}-${{ hashFiles('**/efgs/pom.xml') }}
+          restore-keys: ${{ env.cache-name }}-
+
       - name: Set env to DEV
         if: github.repository_owner != 'ProteGO-Safe'
             && startsWith(github.ref, 'refs/heads/release')
@@ -200,6 +216,13 @@ jobs:
         working-directory: functions
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        env:
+          cache-name: node
+        with:
+          path: ~/.npm
+          key: ${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ env.cache-name }}-
       - name: Use Node.js 10
         uses: actions/setup-node@v1
         with:
@@ -220,6 +243,14 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        env:
+          cache-name: node
+        with:
+          path: ~/.npm
+          key: ${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ env.cache-name }}-
 
       - name: Set env to DEV
         if: github.repository_owner != 'ProteGO-Safe'
