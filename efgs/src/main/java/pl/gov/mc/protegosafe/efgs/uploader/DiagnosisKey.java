@@ -15,7 +15,7 @@ import static org.apache.commons.lang3.RandomUtils.nextLong;
 @Getter
 public class DiagnosisKey {
 
-    private static final List<String> VISITED_COUNTRIES = Lists.newArrayList();
+    private static final List<String> VISITED_COUNTRIES = Lists.newArrayList("BE","GR","LT","PT","BG","ES","LU","RO","CZ","FR","HU","SI","DK","HR","MT","SK","DE","IT","NL","FI","EE","CY","AT","SE","IE","LV","IS","NO","LI","CH");
     private static final Integer DAYS_SINCE_ONSET_OF_SYMPTOMS = 4000;
     private static final String ORIGIN = "PL";
     private static final int ROLLING_START_INTERVAL_LENGTH = 600;
