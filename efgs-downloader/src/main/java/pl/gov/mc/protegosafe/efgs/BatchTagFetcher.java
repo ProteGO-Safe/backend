@@ -42,7 +42,12 @@ class BatchTagFetcher {
         @Nullable String nextBatchTag = batchesResponse.getNextBatchTag();
         String batchTag = batchesResponse.getBatchTag();
 
-        ByteArrayResource responseBody = batchesResponse.getResponseBody();
+        @Nullable ByteArrayResource responseBody = batchesResponse.getResponseBody();
+
+        if (responseBody == null) {
+            return new DownloadedKeys(batchTag, nextBatchTag);
+        }
+
         EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch = createDiagnosisKeyBatch(responseBody);
 
         List<AuditResponse> auditResponses = httpConnector.listAudits(batchTag, date);
