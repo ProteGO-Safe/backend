@@ -9,10 +9,15 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import pl.gov.mc.protegosafe.efgs.uploader.DiagnosisKey;
 import pl.gov.mc.protegosafe.efgs.uploader.repository.model.DiagnosisKeyModel;
+import pl.gov.mc.protegosafe.efgs.uploader.repository.model.FailedUploadingDiagnosisKey;
 
+import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.time.LocalDateTime.now;
 import static pl.gov.mc.protegosafe.efgs.utils.FirestoreProvider.provideFirestore;
 
 
@@ -21,6 +26,7 @@ import static pl.gov.mc.protegosafe.efgs.utils.FirestoreProvider.provideFirestor
 public class DiagnosisKeysRepository {
 
     static String COLLECTION_NAME = "diagnosisKeys";
+    static String FAILED_UPLOADING_COLLECTION_NAME = "failedUploadingToEfgsDiagnosisKeys";
     static int LIMIT = 1000;
     static int THREE_HOURS = 3 * 60 * 60;
 
@@ -58,5 +64,18 @@ public class DiagnosisKeysRepository {
         Firestore firestore = provideFirestore();
         firestore.collection(COLLECTION_NAME).document(documentId).delete().get();
         firestore.close();
+    }
+
+    @SneakyThrows
+    public void saveFailedUploadingDiagnosisKeys(List<DiagnosisKey> diagnosisKeys) {
+        Firestore firestore = provideFirestore();
+        String uuid = UUID.randomUUID().toString();
+        Long createdAt = now().toEpochSecond(ZoneOffset.UTC);
+
+        FailedUploadingDiagnosisKey failedUploadingDiagnosisKey = new FailedUploadingDiagnosisKey(uuid, createdAt, diagnosisKeys);
+
+        firestore.collection(FAILED_UPLOADING_COLLECTION_NAME).document(uuid)
+                .set(failedUploadingDiagnosisKey)
+                .get();
     }
 }

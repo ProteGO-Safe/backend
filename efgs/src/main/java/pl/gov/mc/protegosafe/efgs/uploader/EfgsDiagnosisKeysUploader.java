@@ -50,6 +50,8 @@ public class EfgsDiagnosisKeysUploader implements RawBackgroundFunction {
         if (isSuccessResponse) {
             idsWithDiagnosisKeys.keySet()
                     .forEach(this::removeDocuments);
+        } else {
+            processFailedUploading(diagnosisKeyBatch);
         }
     }
 
@@ -57,6 +59,11 @@ public class EfgsDiagnosisKeysUploader implements RawBackgroundFunction {
     private void removeDocuments(String documentId) {
         DiagnosisKeysRepository repository = new DiagnosisKeysRepository();
         repository.removeDocument(documentId);
+    }
+
+    private void processFailedUploading(List<DiagnosisKey> diagnosisKeys) {
+        DiagnosisKeysRepository repository = new DiagnosisKeysRepository();
+        repository.saveFailedUploadingDiagnosisKeys(diagnosisKeys);
     }
 
     private String getRandomBatchTag() {
