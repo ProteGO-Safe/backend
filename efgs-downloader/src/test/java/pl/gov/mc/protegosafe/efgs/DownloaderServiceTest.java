@@ -28,11 +28,13 @@ class DownloaderServiceTest {
     private MessageSender messageSender;
     @Mock
     private BatchTagRepository batchTagRepository;
+    @Mock
+    private DownloadedKeysFilter downloadedKeysFilter;;
 
     @BeforeEach
     void beforeEach() {
         MockitoAnnotations.openMocks(this);
-        downloaderService = new DownloaderService(batchTagFetcher, messageSender, batchTagRepository);
+        downloaderService = new DownloaderService(batchTagFetcher, messageSender, batchTagRepository, downloadedKeysFilter);
     }
 
     @Test
@@ -66,6 +68,7 @@ class DownloaderServiceTest {
         List<Key> keys = generateMockedKeys(1);
         DownloadedKeys downloadedKeys = new DownloadedKeys(keys, batchTagFromEfgs, null);
         given(batchTagFetcher.fetchBatches(date, batchTag)).willReturn(downloadedKeys);
+        given(downloadedKeysFilter.filter(keys)).willReturn(keys);
 
         // when
         downloaderService.process(date, batchTag, offset);
@@ -88,6 +91,7 @@ class DownloaderServiceTest {
         List<Key> keys = generateMockedKeys(100);
         DownloadedKeys downloadedKeys = new DownloadedKeys(keys, batchTagFromEfgs, null);
         given(batchTagFetcher.fetchBatches(date, batchTag)).willReturn(downloadedKeys);
+        given(downloadedKeysFilter.filter(keys)).willReturn(keys);
 
         // when
         downloaderService.process(date, batchTag, offset);
@@ -114,6 +118,8 @@ class DownloaderServiceTest {
         List<Key> keys = generateMockedKeys(100);
         DownloadedKeys downloadedKeys = new DownloadedKeys(keys, batchTagFromEfgs, null);
         given(batchTagFetcher.fetchBatches(date, batchTag)).willReturn(downloadedKeys);
+        given(downloadedKeysFilter.filter(keys)).willReturn(keys);
+
         doThrow(IllegalArgumentException.class)
                 .when(batchTagRepository)
                 .saveBatchTag(date, batchTagFromEfgs, 60);
@@ -145,6 +151,7 @@ class DownloaderServiceTest {
         List<Key> keys = generateMockedKeys(100);
         DownloadedKeys downloadedKeys = new DownloadedKeys(keys, batchTagFromEfgs, null);
         given(batchTagFetcher.fetchBatches(date, batchTag)).willReturn(downloadedKeys);
+        given(downloadedKeysFilter.filter(keys)).willReturn(keys);
 
         // when
         downloaderService.process(date, batchTag, offset);
@@ -174,6 +181,8 @@ class DownloaderServiceTest {
 
         given(batchTagFetcher.fetchBatches(date, batchTag)).willReturn(downloadedKeysFirstTime);
         given(batchTagFetcher.fetchBatches(date, nextBatchTagFromEfgs)).willReturn(downloadedKeysSecondTime);
+        given(downloadedKeysFilter.filter(keysForFirstDownload)).willReturn(keysForFirstDownload);
+        given(downloadedKeysFilter.filter(keysForSecondDownload)).willReturn(keysForSecondDownload);
 
         // when
         downloaderService.process(date, batchTag, offset);
@@ -217,6 +226,9 @@ class DownloaderServiceTest {
         given(batchTagFetcher.fetchBatches(date, batchTag)).willReturn(downloadedKeysFirstTime);
         given(batchTagFetcher.fetchBatches(date, nextBatchTagForFirstDownload)).willReturn(downloadedKeysSecondTime);
         given(batchTagFetcher.fetchBatches(date, nextBatchTagForSecondDownload)).willReturn(downloadedKeysThirdTime);
+        given(downloadedKeysFilter.filter(keysForFirstDownload)).willReturn(keysForFirstDownload);
+        given(downloadedKeysFilter.filter(keysForSecondDownload)).willReturn(keysForSecondDownload);
+        given(downloadedKeysFilter.filter(keysForThirdDownload)).willReturn(keysForThirdDownload);
 
         // when
         downloaderService.process(date, batchTag, offset);
@@ -257,6 +269,30 @@ class DownloaderServiceTest {
         verify(batchTagFetcher, times(1)).fetchBatches(date, batchTag);
         verify(batchTagFetcher, times(1)).fetchBatches(any(), any());
         verify(messageSender, never()).sendMessage(any());
+    }
+
+    @Test
+    void shouldProcessWhenFilteredDownloadedKeys() {
+
+        // given
+        LocalDate date = LocalDate.parse("2020-11-01");
+        String batchTag = null;
+        String batchTagFromEfgs = "2020-11-01-1";
+        int offset = 0;
+        List<Key> keys = generateMockedKeys(100);
+        List<Key> filteredKeys = generateMockedKeys(10);
+        DownloadedKeys downloadedKeys = new DownloadedKeys(keys, batchTagFromEfgs, null);
+        given(batchTagFetcher.fetchBatches(date, batchTag)).willReturn(downloadedKeys);
+        given(downloadedKeysFilter.filter(keys)).willReturn(filteredKeys);
+
+        // when
+        downloaderService.process(date, batchTag, offset);
+
+        // then
+        verify(batchTagFetcher, times(1)).fetchBatches(date, batchTag);
+        verify(batchTagFetcher, times(1)).fetchBatches(any(), any());
+        verify(messageSender, times(1)).sendMessage(any());
+        verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 30);
     }
 
     private List<Key> generateMockedKeys(int amount) {

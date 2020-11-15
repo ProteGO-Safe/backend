@@ -24,6 +24,7 @@ class DownloaderService {
     BatchTagFetcher batchTagFetcher;
     MessageSender messageSender;
     BatchTagRepository batchTagRepository;
+    DownloadedKeysFilter downloadedKeysFilter;
 
     void process(LocalDate date, String batchTag, int offset) {
 
@@ -40,7 +41,7 @@ class DownloaderService {
             return;
         }
 
-        KeyChunker keyChunker = KeyChunker.of(downloadedKeys.getKeys(), MAX_GENS_SIZE);
+        KeyChunker keyChunker = KeyChunker.of(downloadedKeysFilter.filter(downloadedKeys.getKeys()), MAX_GENS_SIZE);
 
         IntStream.range(0, keyChunker.size())
             .skip(offset / MAX_GENS_SIZE)
