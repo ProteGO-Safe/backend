@@ -17,10 +17,24 @@ export const validateApiTokenAndIp = async (request: functions.Request): Promise
         return false;
     }
 
-    if (apiToken !== await secretManager.getConfig('apiToken')) {
+    if (!(await resolveApiTokens()).includes(apiToken)) {
         log("api token doesn't allow to access");
         return false;
     }
 
     return true
 };
+
+const resolveApiTokens = async (): Promise<Array<string>> => {
+    const token = await secretManager.getConfig('apiToken')
+
+    if (Array.isArray(token)) {
+        return token;
+    }
+
+    if (!token) {
+        return Array();
+    }
+
+    return Array(String(token));
+}
