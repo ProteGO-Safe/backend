@@ -3,9 +3,7 @@ package pl.gov.mc.protegosafe.efgs;
 import com.google.common.collect.ImmutableList;
 import pl.gov.mc.protegosafe.efgs.model.Key;
 
-import java.util.AbstractList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
@@ -65,5 +63,12 @@ class KeyChunker extends AbstractList<List<Key>> {
     @Override
     public int size() {
         return chunks.size();
+    }
+
+    long amountOfKeys() {
+        return chunks.values()
+                .stream()
+                .mapToInt(List::size)
+                .sum();
     }
 }

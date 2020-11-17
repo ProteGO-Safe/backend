@@ -7,10 +7,13 @@ import * as admin from "firebase-admin";
 import {v4} from "uuid";
 import moment = require("moment");
 
-const convertMessage = (dataAsBase64: any) => {
+const parseJson = (dataAsBase64: any) => {
     const data = Buffer.from(dataAsBase64, 'base64')
         .toString();
-    const efgsData = JSON.parse(data);
+    return JSON.parse(data);
+};
+
+const convertMessage = (efgsData: any) => {
     return {
         ...createGensPayloadMessage(efgsData.keysData),
         regions: config.efgs.gens.regions,
@@ -31,9 +34,10 @@ const uploadDiagnosisKeysSubscriber = async (message: any) => {
     const {data} = message;
 
     try {
-        const gensPayloadMessage = convertMessage(data);
+        const efgsData = parseJson(data);
+        const gensPayloadMessage = convertMessage(efgsData);
 
-        log(`uploading ${gensPayloadMessage.temporaryExposureKeys.length} keys`);
+        log(`uploading ${gensPayloadMessage.temporaryExposureKeys.length} keys from batchTag ${efgsData.batchTag}`);
 
         await uploadDiagnosisKeys(gensPayloadMessage);
 

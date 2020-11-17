@@ -43,10 +43,12 @@ class DownloaderService {
 
         KeyChunker keyChunker = KeyChunker.of(downloadedKeysFilter.filter(downloadedKeys.getKeys()), MAX_GENS_SIZE);
 
+        log.info("started processing chunks of keys, size: {}, keys: {}", keyChunker.size(), keyChunker.amountOfKeys());
+
         IntStream.range(0, keyChunker.size())
             .skip(offset / MAX_GENS_SIZE)
             .forEach(index -> {
-                messageSender.sendMessage(keyChunker.get(index));
+                messageSender.sendMessage(keyChunker.get(index), downloadedBatchTag);
                 batchTagRepository.saveBatchTag(date, downloadedBatchTag, ++index * MAX_GENS_SIZE);
             });
 

@@ -33,12 +33,12 @@ class PubSubMessageSender implements MessageSender {
 
     @SneakyThrows
     @Override
-    public void sendMessage(List<Key> keys) {
+    public void sendMessage(List<Key> keys, String batchTag) {
         log.info("Sending message with keys: {}", keys.size());
         TopicName topicName = TopicName.of(projectId, topicId);
         Publisher publisher = Publisher.newBuilder(topicName)
                 .build();
-        ByteString data = ByteString.copyFromUtf8(buildMessage(keys));
+        ByteString data = ByteString.copyFromUtf8(buildMessage(keys, batchTag));
         PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
         ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
         messageIdFuture.get();
@@ -46,9 +46,9 @@ class PubSubMessageSender implements MessageSender {
     }
 
     @SneakyThrows
-    private String buildMessage(List<Key> keys) {
+    private String buildMessage(List<Key> keys, String batchTag) {
         ObjectMapper objectMapper = new ObjectMapper();
-        Message message = new Message(keys);
+        Message message = new Message(keys, batchTag);
         return objectMapper.writeValueAsString(message);
     }
 }

@@ -53,7 +53,7 @@ class DownloaderServiceTest {
         // then
         verify(batchTagFetcher, times(1)).fetchBatches(date, batchTag);
         verify(batchTagFetcher, times(1)).fetchBatches(any(), any());
-        verify(messageSender, never()).sendMessage(any());
+        verify(messageSender, never()).sendMessage(any(), any());
         verify(batchTagRepository, never()).saveBatchTag(any(), any(), anyInt());
     }
 
@@ -76,7 +76,7 @@ class DownloaderServiceTest {
         // then
         verify(batchTagFetcher, times(1)).fetchBatches(date, batchTag);
         verify(batchTagFetcher, times(1)).fetchBatches(any(), any());
-        verify(messageSender, times(1)).sendMessage(any());
+        verify(messageSender, times(1)).sendMessage(any(), eq(batchTagFromEfgs));
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 30);
     }
 
@@ -99,7 +99,7 @@ class DownloaderServiceTest {
         // then
         verify(batchTagFetcher, times(1)).fetchBatches(date, batchTag);
         verify(batchTagFetcher, times(1)).fetchBatches(any(), any());
-        verify(messageSender, times(4)).sendMessage(any());
+        verify(messageSender, times(4)).sendMessage(any(), eq(batchTagFromEfgs));
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 30);
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 60);
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 90);
@@ -134,7 +134,7 @@ class DownloaderServiceTest {
         // then
         verify(batchTagFetcher, times(1)).fetchBatches(date, batchTag);
         verify(batchTagFetcher, times(1)).fetchBatches(any(), any());
-        verify(messageSender, times(2)).sendMessage(any());
+        verify(messageSender, times(2)).sendMessage(any(), eq(batchTagFromEfgs));
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 30);
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 60);
         verify(batchTagRepository, times(2)).saveBatchTag(any(), any(), anyInt());
@@ -159,7 +159,7 @@ class DownloaderServiceTest {
         // then
         verify(batchTagFetcher, times(1)).fetchBatches(date, batchTag);
         verify(batchTagFetcher, times(1)).fetchBatches(any(), any());
-        verify(messageSender, times(2)).sendMessage(any());
+        verify(messageSender, times(2)).sendMessage(any(), eq(batchTagFromEfgs));
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 90);
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 120);
         verify(batchTagRepository, times(2)).saveBatchTag(any(), any(), anyInt());
@@ -191,16 +191,18 @@ class DownloaderServiceTest {
         verify(batchTagFetcher, times(1)).fetchBatches(date, batchTag);
         verify(batchTagFetcher, times(1)).fetchBatches(date, nextBatchTagFromEfgs);
         verify(batchTagFetcher, times(2)).fetchBatches(any(), any());
-        verify(messageSender, times(9)).sendMessage(any());
+        verify(messageSender, times(9)).sendMessage(any(), any());
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 30);
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 60);
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 90);
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 120);
+        verify(messageSender, times(4)).sendMessage(any(), eq(batchTagFromEfgs));
         verify(batchTagRepository, times(1)).saveBatchTag(date, nextBatchTagFromEfgs, 30);
         verify(batchTagRepository, times(1)).saveBatchTag(date, nextBatchTagFromEfgs, 60);
         verify(batchTagRepository, times(1)).saveBatchTag(date, nextBatchTagFromEfgs, 90);
         verify(batchTagRepository, times(1)).saveBatchTag(date, nextBatchTagFromEfgs, 120);
         verify(batchTagRepository, times(1)).saveBatchTag(date, nextBatchTagFromEfgs, 150);
+        verify(messageSender, times(5)).sendMessage(any(), eq(nextBatchTagFromEfgs));
         verify(batchTagRepository, times(9)).saveBatchTag(any(), any(), anyInt());
     }
 
@@ -238,7 +240,7 @@ class DownloaderServiceTest {
         verify(batchTagFetcher, times(1)).fetchBatches(date, nextBatchTagForFirstDownload);
         verify(batchTagFetcher, times(1)).fetchBatches(date, nextBatchTagForSecondDownload);
         verify(batchTagFetcher, times(3)).fetchBatches(any(), any());
-        verify(messageSender, times(10)).sendMessage(any());
+        verify(messageSender, times(10)).sendMessage(any(), any());
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagForFirstDownload, 30);
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagForFirstDownload, 60);
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagForFirstDownload, 90);
@@ -268,7 +270,7 @@ class DownloaderServiceTest {
         // then
         verify(batchTagFetcher, times(1)).fetchBatches(date, batchTag);
         verify(batchTagFetcher, times(1)).fetchBatches(any(), any());
-        verify(messageSender, never()).sendMessage(any());
+        verify(messageSender, never()).sendMessage(any(), any());
     }
 
     @Test
@@ -291,7 +293,7 @@ class DownloaderServiceTest {
         // then
         verify(batchTagFetcher, times(1)).fetchBatches(date, batchTag);
         verify(batchTagFetcher, times(1)).fetchBatches(any(), any());
-        verify(messageSender, times(1)).sendMessage(any());
+        verify(messageSender, times(1)).sendMessage(any(), eq(batchTagFromEfgs));
         verify(batchTagRepository, times(1)).saveBatchTag(date, batchTagFromEfgs, 30);
     }
 

@@ -8,6 +8,7 @@ import IPChecker from "./utils/IPChecker";
 const config: Config = {
     secretManagerPath: "/path/to/your/secret/object/versions/latest",
     exposureEndpoint: 'https://exposure.run.app/',
+    exposureTimeout: 10000,
     buckets: {
         cdn: 'gs://somegcs.appspot.com',
         archive: 'gs://somegcs'

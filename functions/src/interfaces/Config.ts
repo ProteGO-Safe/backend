@@ -7,6 +7,7 @@ declare type SUPPORTED_REGIONS = "us-central1" | "us-east1" | "us-east4" | "euro
 interface Config {
     secretManagerPath: string,
     exposureEndpoint: string,
+    exposureTimeout: number // in milliseconds
     buckets: {
         cdn: string,
         archive: string

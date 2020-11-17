@@ -8,6 +8,7 @@ const uploadDiagnosisKeys = async (data: any): Promise<any> => {
     const idToken = await getIdToken();
     return superagent
         .post(config.exposureEndpoint)
+        .timeout(config.exposureTimeout)
         .send(data)
         .set('Authorization', `Bearer ${idToken}`);
 };

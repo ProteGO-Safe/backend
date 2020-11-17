@@ -14,4 +14,5 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Message {
     List<Key> keysData;
+    String batchTag;
 }
