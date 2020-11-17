@@ -5,10 +5,10 @@ import {generateCodeIPChecker, secretManager} from "../../config";
 export const validateApiTokenAndIp = async (request: functions.Request): Promise<boolean> => {
 
     const ip = request.header('Cf-Connecting-Ip');
-    const apiToken = request.header('efgsApiUrl-token');
+    const apiToken = request.header('api-token');
 
     if (!ip || !apiToken) {
-        log("ip or efgsApiUrl token don't exist in header");
+        log("ip or api token don't exist in header");
         return false;
     }
 
@@ -18,7 +18,7 @@ export const validateApiTokenAndIp = async (request: functions.Request): Promise
     }
 
     if (apiToken !== await secretManager.getConfig('apiToken')) {
-        log("efgsApiUrl token doesn't allow to access");
+        log("api token doesn't allow to access");
         return false;
     }
 
