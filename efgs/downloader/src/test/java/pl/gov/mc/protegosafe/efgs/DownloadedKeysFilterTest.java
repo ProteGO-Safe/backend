@@ -39,9 +39,9 @@ class DownloadedKeysFilterTest {
         LocalDate now = LocalDate.parse("2020-11-30");
         given(dateProvider.now()).willReturn(now);
         Key validKey1 = createKey(LocalDateTime.parse("2020-11-30T10:10:00"));
-        Key validKey2 = createKey(LocalDateTime.parse("2020-11-14T10:10:00"));
-        Key validKey3 = createKey(LocalDateTime.parse("2020-11-14T00:00:00"));
-        Key invalidKey1 = createKey(LocalDateTime.parse("2020-11-13T23:50:00"));
+        Key validKey2 = createKey(LocalDateTime.parse("2020-11-15T10:10:00"));
+        Key validKey3 = createKey(LocalDateTime.parse("2020-11-15T00:00:00"));
+        Key invalidKey1 = createKey(LocalDateTime.parse("2020-11-14T23:50:00"));
         List<Key> keys = Lists.newArrayList(
                 validKey1,
                 validKey2,

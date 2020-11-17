@@ -6,8 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.model.Key;
 
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,11 +28,9 @@ class DownloadedKeysFilter {
 
     private boolean isKeyNotToOld(Key key) {
         long minimumRollingStart = dateProvider.now()
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant()
-                .truncatedTo(ChronoUnit.DAYS)
-                .minus(15, ChronoUnit.DAYS)
-                .getEpochSecond() / ROLLING_START_INTERVAL_LENGTH;
+                .minusDays(15)
+                .atStartOfDay()
+                .toEpochSecond(ZoneOffset.UTC) / ROLLING_START_INTERVAL_LENGTH;
 
         return minimumRollingStart <= key.getRollingStartIntervalNumber();
     }
