@@ -1,5 +1,6 @@
 package pl.gov.mc.protegosafe.efgs;
 
+import eu.interop.federationgateway.model.EfgsProto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,11 +23,12 @@ class DownloadedKeysFilter {
     List<Key> filter(List<Key> keys) {
 
         return keys.stream()
-                .filter(this::isKeyNotToOld)
+                .filter(this::isKeyNotTooOld)
+                .filter(this::isReportTypeAsConfirmedTest)
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    private boolean isKeyNotToOld(Key key) {
+    private boolean isKeyNotTooOld(Key key) {
         long minimumRollingStart = dateProvider.now()
                 .minusDays(15)
                 .atStartOfDay()
@@ -35,4 +37,8 @@ class DownloadedKeysFilter {
         return minimumRollingStart <= key.getRollingStartIntervalNumber();
     }
 
+    private boolean isReportTypeAsConfirmedTest(Key key)
+    {
+        return key.getReportType() == EfgsProto.ReportType.CONFIRMED_TEST_VALUE;
+    }
 }

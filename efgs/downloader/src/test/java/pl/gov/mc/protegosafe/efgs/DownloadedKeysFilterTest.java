@@ -1,6 +1,7 @@
 package pl.gov.mc.protegosafe.efgs;
 
 import com.google.common.collect.Lists;
+import eu.interop.federationgateway.model.EfgsProto;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.assertj.core.api.Assertions;
@@ -57,11 +58,48 @@ class DownloadedKeysFilterTest {
         Assertions.assertThat(filteredKeys).doesNotContain(invalidKey1);
     }
 
+
+    @Test
+    void shouldFilterKeysReportType() {
+
+        // given
+        LocalDate now = LocalDate.parse("2020-11-30");
+        given(dateProvider.now()).willReturn(now);
+
+        Key invalidKey1 = createKey(LocalDateTime.parse("2020-11-30T10:10:00"), EfgsProto.ReportType.SELF_REPORT_VALUE);
+        Key invalidKey2 = createKey(LocalDateTime.parse("2020-11-15T10:10:00"), EfgsProto.ReportType.RECURSIVE_VALUE);
+        Key validKey1 = createKey(LocalDateTime.parse("2020-11-15T00:00:00"), EfgsProto.ReportType.CONFIRMED_TEST_VALUE);
+        Key validKey2 = createKey(LocalDateTime.parse("2020-11-16T23:50:00"), EfgsProto.ReportType.CONFIRMED_TEST_VALUE);
+
+        List<Key> keys = Lists.newArrayList(
+                invalidKey1,
+                invalidKey2,
+                validKey1,
+                validKey2
+        );
+
+        // when
+        List<Key> filteredKeys = downloadedKeysFilter.filter(keys);
+
+        // then
+        Assertions.assertThat(filteredKeys).contains(validKey1, validKey2);
+        Assertions.assertThat(filteredKeys).doesNotContain(invalidKey1, invalidKey2);
+    }
+
     private Key createKey(LocalDateTime rollingStartTime) {
+        return createKey(rollingStartTime, EfgsProto.ReportType.CONFIRMED_TEST_VALUE);
+    }
+
+    private Key createKey(LocalDateTime rollingStartTime, int reportType) {
 
         long rollingStartIntervalNumber = rollingStartTime.toEpochSecond(ZoneOffset.UTC) / ROLLING_START_INTERVAL_LENGTH;
 
-        return new Key(RandomStringUtils.randomAlphabetic(10), rollingStartIntervalNumber, 144, RandomUtils.nextInt());
+        return new Key(RandomStringUtils.randomAlphabetic(10),
+                rollingStartIntervalNumber,
+                144,
+                RandomUtils.nextInt(),
+                reportType
+        );
     }
 
 }
