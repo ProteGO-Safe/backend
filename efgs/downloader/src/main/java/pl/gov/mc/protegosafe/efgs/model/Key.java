@@ -12,15 +12,9 @@ import lombok.experimental.FieldDefaults;
 @EqualsAndHashCode
 public class Key {
 
-    private static final int DEFAULT_RISK_LEVEL = 8;
-
     String keyData;
     long rollingStartIntervalNumber;
     int rollingPeriod;
     int transmissionRiskLevel;
-    int reportType;
-
-    public int getTransmissionRiskLevel() {
-        return DEFAULT_RISK_LEVEL;
-    }
+    ReportType reportType;
 }

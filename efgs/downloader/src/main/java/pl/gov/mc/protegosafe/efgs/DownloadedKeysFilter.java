@@ -1,6 +1,5 @@
 package pl.gov.mc.protegosafe.efgs;
 
-import eu.interop.federationgateway.model.EfgsProto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -8,8 +7,8 @@ import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.model.Key;
 
 import java.time.ZoneOffset;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import static pl.gov.mc.protegosafe.efgs.model.ReportType.CONFIRMED_TEST;
 
 @Service
 @AllArgsConstructor
@@ -20,12 +19,9 @@ class DownloadedKeysFilter {
 
     private static final int ROLLING_START_INTERVAL_LENGTH = 600;
 
-    List<Key> filter(List<Key> keys) {
+    boolean filter(Key key) {
 
-        return keys.stream()
-                .filter(this::isKeyNotTooOld)
-                .filter(this::isReportTypeAsConfirmedTest)
-                .collect(Collectors.toUnmodifiableList());
+        return isKeyNotTooOld(key) && isReportTypeAsConfirmedTest(key);
     }
 
     private boolean isKeyNotTooOld(Key key) {
@@ -39,6 +35,6 @@ class DownloadedKeysFilter {
 
     private boolean isReportTypeAsConfirmedTest(Key key)
     {
-        return key.getReportType() == EfgsProto.ReportType.CONFIRMED_TEST_VALUE;
+        return key.getReportType().equals(CONFIRMED_TEST);
     }
 }

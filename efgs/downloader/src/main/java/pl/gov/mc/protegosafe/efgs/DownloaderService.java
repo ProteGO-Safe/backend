@@ -6,10 +6,13 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.message.MessageSender;
+import pl.gov.mc.protegosafe.efgs.model.Key;
 import pl.gov.mc.protegosafe.efgs.repository.BatchTagRepository;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -25,6 +28,7 @@ class DownloaderService {
     MessageSender messageSender;
     BatchTagRepository batchTagRepository;
     DownloadedKeysFilter downloadedKeysFilter;
+    DownloadedKeysMapper downloadedKeysMapper;
 
     void process(LocalDate date, String batchTag, int offset) {
 
@@ -41,7 +45,9 @@ class DownloaderService {
             return;
         }
 
-        KeyChunker keyChunker = KeyChunker.of(downloadedKeysFilter.filter(downloadedKeys.getKeys()), MAX_GENS_SIZE);
+        List<Key> keys = prepareKeys(downloadedKeys.getKeys());
+
+        KeyChunker keyChunker = KeyChunker.of(keys, MAX_GENS_SIZE);
 
         log.info("started processing chunks of keys, size: {}, keys: {}", keyChunker.size(), keyChunker.amountOfKeys());
 
@@ -57,5 +63,12 @@ class DownloaderService {
         }
 
         process(date, nextBatchTag, 0);
+    }
+
+    private List<Key> prepareKeys(List<Key> keys) {
+        return keys.stream()
+                .filter(downloadedKeysFilter::filter)
+                .map(downloadedKeysMapper::map)
+                .collect(Collectors.toUnmodifiableList());
     }
 }

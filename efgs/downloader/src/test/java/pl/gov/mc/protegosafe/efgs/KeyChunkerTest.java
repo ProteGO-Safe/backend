@@ -1,11 +1,11 @@
 package pl.gov.mc.protegosafe.efgs;
 
 import com.google.common.collect.Lists;
-import eu.interop.federationgateway.model.EfgsProto;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import pl.gov.mc.protegosafe.efgs.model.Key;
+import pl.gov.mc.protegosafe.efgs.model.ReportType;
 
 import java.util.List;
 
@@ -168,7 +168,7 @@ class KeyChunkerTest {
     }
 
     private Key createKey(long rollingStartIntervalNumber) {
-        return new Key(RandomStringUtils.randomAlphabetic(10), rollingStartIntervalNumber, ROLLING_PERIOD, RandomUtils.nextInt(), EfgsProto.ReportType.CONFIRMED_TEST_VALUE);
+        return new Key(RandomStringUtils.randomAlphabetic(10), rollingStartIntervalNumber, ROLLING_PERIOD, RandomUtils.nextInt(), ReportType.CONFIRMED_TEST);
     }
 
 }
