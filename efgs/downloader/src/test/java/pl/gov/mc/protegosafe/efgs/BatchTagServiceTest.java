@@ -55,14 +55,15 @@ class BatchTagServiceTest {
 
         // given
         LocalDate date = LocalDate.parse("2020-10-01");
-        String batchTag = null;
-        String nextBatchTag = "2020-10-01-1";
+        String batchTag = "2020-10-01-1";
+        String nextBatchTag = "2020-10-01-2";
         FirestoreBatchTag firestoreBatchTag = mock(FirestoreBatchTag.class);
         BatchesResponse batchesResponse = mock(BatchesResponse.class);
         given(batchTagRepository.fetchLastProcessedBatchTag(date)).willReturn(firestoreBatchTag);
-        given(httpConnector.fetchBatches(date, batchTag)).willReturn(Optional.of(batchesResponse));
+        given(httpConnector.fetchBatches(date, null)).willReturn(Optional.of(batchesResponse));
         given(firestoreBatchTag.isProcessed()).willReturn(false);
-        given(firestoreBatchTag.getBatchTag()).willReturn(batchTag);
+        given(firestoreBatchTag.getBatchTag()).willReturn(null);
+        given(batchesResponse.getBatchTag()).willReturn(batchTag);
         given(batchesResponse.getNextBatchTag()).willReturn(nextBatchTag);
 
         // when
@@ -70,8 +71,9 @@ class BatchTagServiceTest {
 
         // then
         assertThat(fetchedBatchTag.isEmpty()).isEqualTo(false);
+        assertThat(fetchedBatchTag.getBatchTag()).isEqualTo(batchTag);
         verify(batchTagRepository, times(1)).fetchLastProcessedBatchTag(date);
-        verify(httpConnector, times(1)).fetchBatches(date, batchTag);
+        verify(httpConnector, times(1)).fetchBatches(date, null);
     }
 
     @Test

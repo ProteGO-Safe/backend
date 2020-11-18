@@ -36,12 +36,17 @@ class BatchTagService {
 
     private BatchTag fetchNextBatchTag(LocalDate date, FirestoreBatchTag firestoreBatchTag) {
 
-        return httpConnector.fetchBatches(date, firestoreBatchTag.getBatchTag())
-                .map(this::createBatchTag)
+        String batchTag = firestoreBatchTag.getBatchTag();
+
+        return httpConnector.fetchBatches(date, batchTag)
+                .map(batchesResponse -> createBatchTag(batchesResponse, batchTag))
                 .orElse(EMPTY);
     }
 
-    private BatchTag createBatchTag(BatchesResponse batchesResponse) {
+    private BatchTag createBatchTag(BatchesResponse batchesResponse, String batchTag) {
+        if (batchTag == null) {
+            return new BatchTag(batchesResponse.getBatchTag());
+        }
         return new BatchTag(batchesResponse.getNextBatchTag());
     }
 }
