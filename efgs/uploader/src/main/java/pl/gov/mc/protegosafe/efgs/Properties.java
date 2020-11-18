@@ -14,6 +14,4 @@ public class Properties {
 
   String efgsApiUrl;
   String projectId;
-  String nbbsLocation;
-  String nbtlsLocation;
 }

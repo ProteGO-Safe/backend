@@ -2,6 +2,7 @@ package pl.gov.mc.protegosafe.efgs.utils;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -9,9 +10,8 @@ import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
@@ -19,8 +19,8 @@ import java.security.cert.X509Certificate;
 public class CertUtils {
 
     @SneakyThrows
-    public static X509Certificate loadCertificateFromFile(String certificateFileName) {
-        PEMParser parser = createPEMParser(certificateFileName);
+    public static X509Certificate loadCertificateFromFile(String cert) {
+        PEMParser parser = createPEMParser(cert);
         while (parser.ready()) {
             Object pemContent = parser.readObject();
 
@@ -49,12 +49,7 @@ public class CertUtils {
     }
 
     @SneakyThrows
-    private static PEMParser createPEMParser(String certificateFileName) {
-        return new PEMParser(new InputStreamReader(readFileFromResource(certificateFileName)));
-    }
-
-    @SneakyThrows
-    private static InputStream readFileFromResource(final String filePath) {
-        return new FileInputStream(filePath);
+    private static PEMParser createPEMParser(String cert) {
+        return new PEMParser(new InputStreamReader(IOUtils.toInputStream(cert, Charset.defaultCharset())));
     }
 }

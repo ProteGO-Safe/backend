@@ -29,17 +29,8 @@ public class Properties {
   @FieldDefaults(level = AccessLevel.PRIVATE)
   public static class Downloader {
 
-    final Certs certs = new Certs();
     Db db = new Db();
     int daysToCheckBeforeNow;
-
-    @Getter
-    @Setter
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class Certs {
-      String nbbsLocation;
-      String nbtlsLocation;
-    }
 
     @Getter
     @Setter

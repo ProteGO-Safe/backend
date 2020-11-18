@@ -8,6 +8,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.repository.DiagnosisKeysRepository;
+import pl.gov.mc.protegosafe.efgs.secret.CloudBackendConfig;
 import pl.gov.mc.protegosafe.efgs.utils.BatchSignatureUtils;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class EfgsDiagnosisKeysUploader {
 
     private static final int MAX_DIAGNOSIS_KEY_BATCH = 1000;
 
-    String nbbsLocation;
+    String nbbsCert;
     EfgsFakeDiagnosisKeysFactory efgsFakeDiagnosisKeysFactory;
     EfgsProtoDiagnosisKeyBatchFactory efgsProtoDiagnosisKeyBatchFactory;
     BatchSignatureUtils batchSignatureUtils;
@@ -31,13 +32,13 @@ public class EfgsDiagnosisKeysUploader {
 
     @Autowired
     EfgsDiagnosisKeysUploader(
-            Properties properties,
             EfgsFakeDiagnosisKeysFactory efgsFakeDiagnosisKeysFactory,
             EfgsProtoDiagnosisKeyBatchFactory efgsProtoDiagnosisKeyBatchFactory,
             BatchSignatureUtils batchSignatureUtils,
             HttpUploader httpUploader,
-            DiagnosisKeysRepository diagnosisKeysRepository) {
-        this.nbbsLocation = properties.getNbbsLocation();
+            DiagnosisKeysRepository diagnosisKeysRepository,
+            CloudBackendConfig cloudBackendConfig) {
+        this.nbbsCert = cloudBackendConfig.getNbbsCert();
         this.efgsFakeDiagnosisKeysFactory = efgsFakeDiagnosisKeysFactory;
         this.efgsProtoDiagnosisKeyBatchFactory = efgsProtoDiagnosisKeyBatchFactory;
         this.batchSignatureUtils = batchSignatureUtils;
@@ -64,7 +65,7 @@ public class EfgsDiagnosisKeysUploader {
         EfgsProto.DiagnosisKeyBatch batch = efgsProtoDiagnosisKeyBatchFactory.create(filledCollection);
 
         byte[] bytes = batchSignatureUtils.generateBytesToVerify(batch);
-        SignatureGenerator signatureGenerator = new SignatureGenerator(nbbsLocation);
+        SignatureGenerator signatureGenerator = new SignatureGenerator(nbbsCert);
         String signatureForBytes = signatureGenerator.getSignatureForBytes(bytes);
 
         String randomBatchTag = getRandomBatchTag();

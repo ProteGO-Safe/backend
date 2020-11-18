@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import pl.gov.mc.protegosafe.efgs.repository.DiagnosisKeysRepository;
+import pl.gov.mc.protegosafe.efgs.secret.CloudBackendConfig;
 import pl.gov.mc.protegosafe.efgs.utils.BatchSignatureUtils;
 
 @Disabled
@@ -14,7 +15,7 @@ class EfgsDiagnosisKeysUploaderTest {
     private EfgsDiagnosisKeysUploader efgsDiagnosisKeysUploader;
 
     @Mock
-    Properties properties;
+    CloudBackendConfig cloudBackendConfig;
     @Mock
     EfgsFakeDiagnosisKeysFactory efgsFakeDiagnosisKeysFactory;
     @Mock
@@ -32,12 +33,12 @@ class EfgsDiagnosisKeysUploaderTest {
         MockitoAnnotations.openMocks(this);
 
         efgsDiagnosisKeysUploader = new EfgsDiagnosisKeysUploader(
-                properties,
                 efgsFakeDiagnosisKeysFactory,
                 efgsProtoDiagnosisKeyBatchFactory,
                 batchSignatureUtils,
                 httpUploader,
-                diagnosisKeysRepository);
+                diagnosisKeysRepository,
+                cloudBackendConfig);
     }
 
     @Test

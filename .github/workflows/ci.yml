@@ -64,15 +64,11 @@ jobs:
         run: |
           echo "APPLICATION_CREDENTIALS=${{ secrets[env.SECRET_ENV] }}" >> $GITHUB_ENV
           echo "PROJECT_ID=${{ secrets[env.PROJECT_ENV] }}" >> $GITHUB_ENV
-          echo "NBBS_CERT=${{ secrets[env.NBBS_ENV] }}" >> $GITHUB_ENV
-          echo "NBTLS_CERT=${{ secrets[env.NBTLS_ENV] }}" >> $GITHUB_ENV
           echo "EFGS_URL=${{ secrets[env.EFGS_ENV] }}" >> $GITHUB_ENV
           echo "REGION=${{ secrets[env.REGION_ENV] }}" >> $GITHUB_ENV
         env:
           SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
-          NBBS_ENV: "${{ env.ENVIRONMENT }}_NBBS"
-          NBTLS_ENV: "${{ env.ENVIRONMENT }}_NBTLS"
           EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
           REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
@@ -84,20 +80,8 @@ jobs:
           java-package: jdk
           architecture: x64
 
-      - name: mvn OWASP
-        run: mvn -DfailBuildOnCVSS=5 org.owasp:dependency-check-maven:6.0.3:check
-        shell: bash
-
       - name: mvn package
         run: 'mvn package'
-        shell: bash
-
-      - name: Inject NBBS for build
-        run: '[[ -z "${NBBS_CERT}" ]] && NBBS_CERT="${{ secrets.NBBS }}" || NBBS_CERT="${NBBS_CERT}" ; echo "$NBBS_CERT" | base64 --decode > target/deploy/nbbs_eu'
-        shell: bash
-
-      - name: Inject NBTLS for build
-        run: '[[ -z "${NBTLS_CERT}" ]] && NBTLS_CERT="${{ secrets.NBTLS }}" || NBTLS_CERT="${NBTLS_CERT}" ; echo "$NBTLS_CERT" | base64 --decode > target/deploy/nbtls_eu'
         shell: bash
 
       - name: Deploy EfgsDiagnosisKeysDownloader
@@ -168,15 +152,11 @@ jobs:
         run: |
           echo "APPLICATION_CREDENTIALS=${{ secrets[env.SECRET_ENV] }}" >> $GITHUB_ENV
           echo "PROJECT_ID=${{ secrets[env.PROJECT_ENV] }}" >> $GITHUB_ENV
-          echo "NBBS_CERT=${{ secrets[env.NBBS_ENV] }}" >> $GITHUB_ENV
-          echo "NBTLS_CERT=${{ secrets[env.NBTLS_ENV] }}" >> $GITHUB_ENV
           echo "EFGS_URL=${{ secrets[env.EFGS_ENV] }}" >> $GITHUB_ENV
           echo "REGION=${{ secrets[env.REGION_ENV] }}" >> $GITHUB_ENV
         env:
           SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
-          NBBS_ENV: "${{ env.ENVIRONMENT }}_NBBS"
-          NBTLS_ENV: "${{ env.ENVIRONMENT }}_NBTLS"
           EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
           REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
@@ -188,20 +168,8 @@ jobs:
           java-package: jdk
           architecture: x64
 
-      - name: mvn OWASP
-        run: mvn -DfailBuildOnCVSS=5 org.owasp:dependency-check-maven:6.0.3:check
-        shell: bash
-
       - name: mvn package
         run: 'mvn package'
-        shell: bash
-
-      - name: Inject NBBS for build
-        run: '[[ -z "${NBBS_CERT}" ]] && NBBS_CERT="${{ secrets.NBBS }}" || NBBS_CERT="${NBBS_CERT}" ; echo "$NBBS_CERT" | base64 --decode > target/deploy/nbbs_eu'
-        shell: bash
-
-      - name: Inject NBTLS for build
-        run: '[[ -z "${NBTLS_CERT}" ]] && NBTLS_CERT="${{ secrets.NBTLS }}" || NBTLS_CERT="${NBTLS_CERT}" ; echo "$NBTLS_CERT" | base64 --decode > target/deploy/nbtls_eu'
         shell: bash
 
       - name: Deploy EfgsDiagnosisKeysUploader to Firebase

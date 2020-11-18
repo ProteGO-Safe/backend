@@ -25,9 +25,9 @@ class SignatureGenerator {
     private final X509CertificateHolder certificateHolder;
 
     @SneakyThrows
-    SignatureGenerator(String certificateFileName) {
-        X509Certificate certificate = CertUtils.loadCertificateFromFile(certificateFileName);
-        PrivateKey privateKey = CertUtils.loadPrivateKeyFromFile(certificateFileName);
+    SignatureGenerator(String cert) {
+        X509Certificate certificate = CertUtils.loadCertificateFromFile(cert);
+        PrivateKey privateKey = CertUtils.loadPrivateKeyFromFile(cert);
 
         DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
         ContentSigner contentSigner =

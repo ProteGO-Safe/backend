@@ -13,7 +13,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
-import pl.gov.mc.protegosafe.efgs.Properties;
+import pl.gov.mc.protegosafe.efgs.secret.CloudBackendConfig;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
@@ -26,11 +26,11 @@ import java.util.concurrent.TimeUnit;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class WebClientFactory {
 
-    String nbtlsLocation;
+    String nbtlsCert;
 
     @Autowired
-    WebClientFactory(Properties properties) {
-        this.nbtlsLocation = properties.getNbtlsLocation();
+    WebClientFactory(CloudBackendConfig cloudBackendConfig) {
+        this.nbtlsCert = cloudBackendConfig.getNbtlsCert();
     }
 
     public static final String ACCEPT_HEADER_JSON = "application/json; version=1.0";
@@ -39,8 +39,8 @@ public class WebClientFactory {
     @SneakyThrows
     public WebClient createWebClient() {
 
-        PrivateKey privateKey = CertUtils.loadPrivateKeyFromFile(nbtlsLocation);
-        X509Certificate certificate = CertUtils.loadCertificateFromFile(nbtlsLocation);
+        PrivateKey privateKey = CertUtils.loadPrivateKeyFromFile(nbtlsCert);
+        X509Certificate certificate = CertUtils.loadCertificateFromFile(nbtlsCert);
 
         HttpClient httpClient = HttpClient.create();
 
