@@ -37,6 +37,8 @@ const updateSubscription = async (request: functions.Request, response: function
 
     await config.subscription.repository.update(guid, {status: status, codeSha256: null, codeId: null});
 
+    log(`updated subscription, return code: 200`);
+
     return response.status(200).send({
         guid,
         status
