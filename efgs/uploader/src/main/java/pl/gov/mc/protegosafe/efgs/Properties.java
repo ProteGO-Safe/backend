@@ -14,4 +14,5 @@ public class Properties {
 
   String efgsApiUrl;
   String projectId;
+  Long diagnosisKeysFetchDelayFromRepository;
 }

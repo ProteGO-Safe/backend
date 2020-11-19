@@ -4,12 +4,12 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.DiagnosisKey;
+import pl.gov.mc.protegosafe.efgs.Properties;
 import pl.gov.mc.protegosafe.efgs.repository.model.DiagnosisKeyModel;
 import pl.gov.mc.protegosafe.efgs.repository.model.FailedUploadingDiagnosisKey;
 
@@ -25,22 +25,26 @@ import static java.time.LocalDateTime.now;
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Slf4j
-@AllArgsConstructor
 public class DiagnosisKeysRepository {
 
     static String COLLECTION_NAME = "diagnosisKeys";
     static String FAILED_UPLOADING_COLLECTION_NAME = "failedUploadingToEfgsDiagnosisKeys";
     static int LIMIT = 1000;
-    static int THREE_HOURS = 3 * 60 * 60;
 
     Firestore firestore;
+    Long fetchDelay;
+
+    public DiagnosisKeysRepository(Firestore firestore, Properties properties) {
+        this.firestore = firestore;
+        this.fetchDelay = properties.getDiagnosisKeysFetchDelayFromRepository();
+    }
 
     @SneakyThrows
     public Map<String, DiagnosisKey> getLimitedDiagnosisKeys() {
         int currentTimestamp = (int) (System.currentTimeMillis() / 1000);
 
         return firestore.collection(COLLECTION_NAME)
-                .whereLessThan("createdAt", currentTimestamp - (THREE_HOURS))
+                .whereLessThan("createdAt", currentTimestamp - fetchDelay)
                 .limit(LIMIT)
                 .get()
                 .get()

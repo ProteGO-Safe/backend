@@ -66,11 +66,13 @@ jobs:
           echo "PROJECT_ID=${{ secrets[env.PROJECT_ENV] }}" >> $GITHUB_ENV
           echo "EFGS_URL=${{ secrets[env.EFGS_ENV] }}" >> $GITHUB_ENV
           echo "REGION=${{ secrets[env.REGION_ENV] }}" >> $GITHUB_ENV
+          echo "DELAYER=${{ secrets[env.DELAYER_ENV] }}" >> $GITHUB_ENV"
         env:
           SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
           EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
           REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
+          DELAYER_ENV: "${{ env.ENVIRONMENT }}_DELAYER"
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
 
       - name: Install java 11
@@ -97,7 +99,7 @@ jobs:
              --allow-unauthenticated \
              --region $REGION \
              --timeout=540s \
-             --set-env-vars EFGS_MESSAGE_PROJECT_ID=$PROJECT_ID,EFGS_MESSAGE_TOPIC_ID=firebase-subscription-uploadDiagnosisKeysSubscriber-$REGION,EFGS_API=$EFGS_URL
+             --set-env-vars EFGS_MESSAGE_PROJECT_ID=$PROJECT_ID,EFGS_MESSAGE_TOPIC_ID=firebase-subscription-uploadDiagnosisKeysSubscriber-$REGION,EFGS_API=$EFGS_URL,diagnosisKeysFetchDelayFromRepository=$DELAYER
 
   deploy-efgs-uploader:
     name: Deploy Efgs Uploader
@@ -154,11 +156,13 @@ jobs:
           echo "PROJECT_ID=${{ secrets[env.PROJECT_ENV] }}" >> $GITHUB_ENV
           echo "EFGS_URL=${{ secrets[env.EFGS_ENV] }}" >> $GITHUB_ENV
           echo "REGION=${{ secrets[env.REGION_ENV] }}" >> $GITHUB_ENV
+          echo "DELAYER=${{ secrets[env.DELAYER_ENV] }}" >> $GITHUB_ENV"
         env:
           SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
           EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
           REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
+          DELAYER_ENV: "${{ env.ENVIRONMENT }}_DELAYER"
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
 
       - name: Install java 11
@@ -184,7 +188,7 @@ jobs:
              --trigger-topic=firebase-schedule-sendKeysFromGensToEfgs-$REGION \
              --allow-unauthenticated \
              --region $REGION \
-             --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_EFGSAPIURL=$EFGS_URL
+             --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_EFGSAPIURL=$EFGS_URL,diagnosisKeysFetchDelayFromRepository=$DELAYER
 
   Lint_TS:
     name: Lint&Audit TS Functions

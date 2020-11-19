@@ -1,3 +1,2 @@
 efgs:
-  nbbs-location: nbbs_eu # contains PRIVATE KEY and CERTIFICATE
-  nbtls-location: nbtls_eu # contains PRIVATE KEY and CERTIFICATE
+  diagnosisKeysFetchDelayFromRepository: ${3*60*60} // 3 hours
