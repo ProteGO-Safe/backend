@@ -1,10 +1,5 @@
 package pl.gov.mc.protegosafe.efgs.http;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
@@ -22,7 +17,6 @@ import javax.annotation.Nullable;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.of;
@@ -58,30 +52,6 @@ class HttpDownloader implements HttpConnector {
                 resolveBatchTag(response),
                 resolveNextBatchTag(nextBatchTag),
                 obtainBody(response));
-    }
-
-    @Override
-    public List<AuditResponse> listAudits(String batchTag, LocalDate date) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(api)
-                .pathSegment("audit")
-                .pathSegment("download")
-                .pathSegment(date.toString())
-                .pathSegment(batchTag).build()
-                .toUri();
-
-        ResponseEntity<String> response = webClientFactory.createWebClient().get()
-                .uri(uri)
-                .headers(headers -> {
-                    headers.set(HttpHeaders.ACCEPT, WebClientFactory.ACCEPT_HEADER_JSON);
-                })
-                .retrieve()
-                .toEntity(String.class)
-                .block();
-
-        return Optional.ofNullable(response)
-                .map(HttpEntity::getBody)
-                .map(this::readValue)
-                .orElseGet(Lists::newArrayList);
     }
 
     private String resolveNextBatchTag(String nextBatchTag) {
@@ -139,17 +109,5 @@ class HttpDownloader implements HttpConnector {
 
     private String resolveBatchTag(ResponseEntity<ByteArrayResource> response) {
         return obtainHeaderValue(response, "batchTag");
-    }
-
-    @SneakyThrows
-    private List<AuditResponse> readValue(String content) {
-        return createObjectMapper().readValue(content, new TypeReference<>() {
-        });
-    }
-
-    private static ObjectMapper createObjectMapper() {
-        return new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 }

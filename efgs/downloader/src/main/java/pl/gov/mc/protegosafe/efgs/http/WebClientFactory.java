@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 class WebClientFactory {
 
-    static final String ACCEPT_HEADER_JSON = "application/json; version=1.0";
     static final String ACCEPT_HEADER_PROTOBUF = "application/protobuf; version=1.0";
 
     CertUtils certUtils;
