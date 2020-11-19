@@ -186,7 +186,7 @@ jobs:
              --trigger-topic=firebase-schedule-sendKeysFromGensToEfgs-$REGION \
              --allow-unauthenticated \
              --region $REGION \
-             --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_EFGSAPIURL=$EFGS_URL,diagnosisKeysFetchDelayFromRepository=$DELAYER
+             --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_EFGSAPIURL=$EFGS_URL,EFGS_DIAGNOSISKEYSFETCHDELAYFROMREPOSITORY=$DELAYER
 
   Lint_TS:
     name: Lint&Audit TS Functions
