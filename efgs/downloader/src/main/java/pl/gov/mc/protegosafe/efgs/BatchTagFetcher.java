@@ -35,13 +35,13 @@ class BatchTagFetcher {
         @Nullable String nextBatchTag = batchesResponse.getNextBatchTag();
         String batchTag = batchesResponse.getBatchTag();
 
-        @Nullable String responseBody = batchesResponse.getResponseBody();
-
-        if (responseBody == null) {
-            return new DownloadedKeys(batchTag, nextBatchTag);
-        }
+        String responseBody = batchesResponse.getResponseBody();
 
         List<Key> keys = processedBatchesFactory.create(responseBody);
+
+        if (keys == null) {
+            return new DownloadedKeys(batchTag, nextBatchTag);
+        }
 
         return new DownloadedKeys(keys, batchTag, nextBatchTag);
     }
