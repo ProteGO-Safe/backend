@@ -1,11 +1,8 @@
 package pl.gov.mc.protegosafe.efgs;
 
-import eu.interop.federationgateway.model.EfgsProto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.http.BatchesResponse;
 import pl.gov.mc.protegosafe.efgs.http.HttpConnector;
@@ -24,7 +21,6 @@ import static pl.gov.mc.protegosafe.efgs.DownloadedKeys.EMPTY_DOWNLOADED_KEYS;
 class BatchTagFetcher {
 
     HttpConnector httpConnector;
-    ProtobufConverter protobufConverter;
     ProcessedBatchesFactory processedBatchesFactory;
 
     DownloadedKeys fetchBatches(LocalDate date, String batchTag) {
@@ -39,23 +35,14 @@ class BatchTagFetcher {
         @Nullable String nextBatchTag = batchesResponse.getNextBatchTag();
         String batchTag = batchesResponse.getBatchTag();
 
-        @Nullable ByteArrayResource responseBody = batchesResponse.getResponseBody();
+        @Nullable String responseBody = batchesResponse.getResponseBody();
 
         if (responseBody == null) {
             return new DownloadedKeys(batchTag, nextBatchTag);
         }
 
-        EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch = createDiagnosisKeyBatch(responseBody);
-
-        String diagnosisKeyBatchAsString = protobufConverter.printToString(diagnosisKeyBatch);
-
-        List<Key> keys = processedBatchesFactory.create(diagnosisKeyBatchAsString);
+        List<Key> keys = processedBatchesFactory.create(responseBody);
 
         return new DownloadedKeys(keys, batchTag, nextBatchTag);
-    }
-
-    @SneakyThrows
-    private EfgsProto.DiagnosisKeyBatch createDiagnosisKeyBatch(ByteArrayResource responseBody) {
-        return EfgsProto.DiagnosisKeyBatch.parseFrom(responseBody.getByteArray());
     }
 }

@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import org.springframework.core.io.ByteArrayResource;
 
 @Getter
 @AllArgsConstructor
@@ -13,5 +12,5 @@ public class BatchesResponse {
 
     String batchTag;
     String nextBatchTag;
-    ByteArrayResource responseBody;
+    String responseBody;
 }

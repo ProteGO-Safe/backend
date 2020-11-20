@@ -4,11 +4,9 @@ import lombok.AccessLevel;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 import pl.gov.mc.protegosafe.efgs.Properties;
@@ -22,7 +20,7 @@ import java.util.Optional;
 import static com.google.common.collect.ImmutableList.of;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static pl.gov.mc.protegosafe.efgs.http.WebClientFactory.ACCEPT_HEADER_PROTOBUF;
+import static pl.gov.mc.protegosafe.efgs.http.WebClientFactory.ACCEPT_HEADER_JSON;
 
 
 @Slf4j
@@ -46,7 +44,7 @@ class HttpDownloader implements HttpConnector {
                 .map(this::createBatchesResponse);
     }
 
-    private BatchesResponse createBatchesResponse(ResponseEntity<ByteArrayResource> response) {
+    private BatchesResponse createBatchesResponse(ClientResponse response) {
         @Nullable String nextBatchTag = obtainHeaderValue(response, "nextBatchTag");
         return new BatchesResponse(
                 resolveBatchTag(response),
@@ -61,13 +59,13 @@ class HttpDownloader implements HttpConnector {
         return nextBatchTag;
     }
 
-    private ByteArrayResource obtainBody(@Nullable ResponseEntity<ByteArrayResource> response) {
+    private String obtainBody(@Nullable ClientResponse response) {
         return Optional.ofNullable(response)
-                .map(HttpEntity::getBody)
+                .map(clientResponse -> clientResponse.bodyToMono(String.class).block())
                 .orElse(null);
     }
 
-    private Optional<ResponseEntity<ByteArrayResource>> fetchDiagnosisKeysResponse(String batchTag, LocalDate date) {
+    private Optional<ClientResponse> fetchDiagnosisKeysResponse(String batchTag, LocalDate date) {
 
         URI uri = prepareUri(date);
 
@@ -82,15 +80,14 @@ class HttpDownloader implements HttpConnector {
         }
     }
 
-    private ResponseEntity<ByteArrayResource> connect(String batchTag, URI uri) {
+    private ClientResponse connect(String batchTag, URI uri) {
         return webClientFactory.createWebClient().get()
                 .uri(uri)
                 .headers(headers -> {
-                    headers.set(HttpHeaders.ACCEPT, ACCEPT_HEADER_PROTOBUF);
+                    headers.set(HttpHeaders.ACCEPT, ACCEPT_HEADER_JSON);
                     headers.set("batchTag", batchTag);
                 })
-                .retrieve()
-                .toEntity(ByteArrayResource.class)
+                .exchange()
                 .block();
     }
 
@@ -102,12 +99,13 @@ class HttpDownloader implements HttpConnector {
                 .toUri();
     }
 
-    private String obtainHeaderValue(ResponseEntity<ByteArrayResource> response, String header) {
-        return response.getHeaders()
+    private String obtainHeaderValue(ClientResponse response, String header) {
+        return response.headers()
+                .asHttpHeaders()
                 .getFirst(header);
     }
 
-    private String resolveBatchTag(ResponseEntity<ByteArrayResource> response) {
+    private String resolveBatchTag(ClientResponse response) {
         return obtainHeaderValue(response, "batchTag");
     }
 }
