@@ -10,12 +10,11 @@ import org.springframework.stereotype.Service;
 import pl.gov.mc.protegosafe.efgs.http.BatchesResponse;
 import pl.gov.mc.protegosafe.efgs.http.HttpConnector;
 import pl.gov.mc.protegosafe.efgs.model.Key;
-import pl.gov.mc.protegosafe.efgs.model.ReportType;
+import pl.gov.mc.protegosafe.efgs.model.ProcessedBatchesFactory;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static pl.gov.mc.protegosafe.efgs.DownloadedKeys.EMPTY_DOWNLOADED_KEYS;
 
@@ -25,12 +24,15 @@ import static pl.gov.mc.protegosafe.efgs.DownloadedKeys.EMPTY_DOWNLOADED_KEYS;
 class BatchTagFetcher {
 
     HttpConnector httpConnector;
+    ProtobufConverter protobufConverter;
+    ProcessedBatchesFactory processedBatchesFactory;
 
     DownloadedKeys fetchBatches(LocalDate date, String batchTag) {
 
         return httpConnector.fetchBatches(date, batchTag)
                 .map(this::processBatchesResponse)
                 .orElse(EMPTY_DOWNLOADED_KEYS);
+
     }
 
     private DownloadedKeys processBatchesResponse(BatchesResponse batchesResponse) {
@@ -45,23 +47,11 @@ class BatchTagFetcher {
 
         EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch = createDiagnosisKeyBatch(responseBody);
 
-        List<Key> keys = diagnosisKeyBatch.getKeysList()
-                .stream()
-                .map(this::createKey)
-                .collect(Collectors.toUnmodifiableList());
+        String diagnosisKeyBatchAsString = protobufConverter.printToString(diagnosisKeyBatch);
+
+        List<Key> keys = processedBatchesFactory.create(diagnosisKeyBatchAsString);
 
         return new DownloadedKeys(keys, batchTag, nextBatchTag);
-    }
-
-    private Key createKey(EfgsProto.DiagnosisKey diagnosisKey) {
-
-        String keyData = diagnosisKey.getKeyData().toStringUtf8();
-        int rollingStartIntervalNumber = diagnosisKey.getRollingStartIntervalNumber();
-        int rollingPeriod = diagnosisKey.getRollingPeriod();
-        int transmissionRiskLevel = diagnosisKey.getTransmissionRiskLevel();
-        ReportType reportType = ReportType.valueOf(diagnosisKey.getReportType().name().toUpperCase());
-
-        return new Key(keyData, rollingStartIntervalNumber, rollingPeriod, transmissionRiskLevel, reportType);
     }
 
     @SneakyThrows
