@@ -7,6 +7,7 @@ declare type SUPPORTED_REGIONS = "us-central1" | "us-east1" | "us-east4" | "euro
 interface Config {
     secretManagerPath: string,
     exposureEndpoint: string,
+    exposureTimeout: number // in milliseconds
     buckets: {
         cdn: string,
         archive: string
@@ -23,6 +24,17 @@ interface Config {
     cache: {
         maxAge: number, // in seconds
         sMaxAge: number // in seconds
+    },
+    efgs: {
+        firestore: {
+            diagnosisKeysCollectionName: string,
+            failedUploadingToGensDiagnosisKeysCollectionName: string
+        },
+        gens: {
+            regions: Array<string>,
+            appPackageName: string,
+            platform: string,
+        }
     }
     backupTranslations: {
         token: string,

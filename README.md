@@ -105,3 +105,18 @@ someFunction()
 - exec with bash
 - to authorization first generate service account key at https://console.cloud.google.com/apis/credentials/serviceaccountkey, store it in root of project, next execute export GOOGLE_APPLICATION_CREDENTIALS="/app/path/to/file.json"
 - execute npx ts-node /app/functions/src/functions/someFunction.ts
+
+## Generating certification's files
+
+Please check the following: [CERTIFICATIONS.md](./doc/certifications.md)
+
+
+## Testing single function by deploy to Google Cloud Platform ##
+
+1) To deploy function we must enter to docker and go to `app` directory.
+2) It's possibility you must login. To do this you must run `firebase login` 
+3) Last step is deploy single function by command: `firebase deploy --only functions:functionName`
+
+TIPS:
+- Function name you can get from `src/index.ts` file. For example: `exports.generateCode = cloudFunctions.https(generateCode);` `generateCode` is function name. 
+- You can deploy many functions at once time. You must separate function names with `,`. Example: `firebase deploy --only functions:functionName1,functionName2` 

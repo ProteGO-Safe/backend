@@ -62,6 +62,8 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
 
         const accessToken = await generateJwt({guid}, secret, lifetime);
 
+        log(`created subscription, return code: 201`);
+
         return response.status(201).send({token: accessToken});
     } catch (e) {
         log(e);

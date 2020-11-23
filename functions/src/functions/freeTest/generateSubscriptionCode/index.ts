@@ -18,6 +18,8 @@ const generateSubscriptionCode = async (request: functions.Request, response: fu
 
         const {code, id} = await generateCode(moment().unix() + DELETE_LIFETIME);
 
+        log(`generated lab test code, return code: 201`);
+
         return response.status(201).send({id, code});
     } catch (e) {
         log(e);

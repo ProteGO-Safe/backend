@@ -48,3 +48,14 @@ export function scheduler(
 ) {
     return ff.runWith(runtime).region(...config.regions).pubsub.schedule(schedule).onRun(handler)
 }
+
+export function topicSubscriber (
+    handler : (data: any) => any | Promise<any>
+) {
+    return ff.runWith({memory: '256MB', timeoutSeconds: 30})
+        .region(...config.regions)
+        .pubsub.topic(`firebase-subscription-${handler.name}-${[...config.regions][0]}`)
+        .onPublish(handler)
+}
+
+
