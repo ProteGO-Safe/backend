@@ -67,3 +67,5 @@ node_modules/
 functions/src/config.ts
 
 .idea
+
+efgs-downloader/target

@@ -12,13 +12,197 @@ on:
       - '**'
 
 jobs:
-  build:
+  deploy-efgs-downloader:
+    name: Deploy Efgs Downloader
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags') ||
+      startsWith(github.ref, 'refs/heads/release') ||
+      startsWith(github.ref, 'refs/heads/pre-prod/')
+    defaults:
+      run:
+        working-directory: ./efgs/downloader
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        
+      - uses: actions/cache@v2
+        env:
+          cache-name: efgs-dl
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.cache-name }}-${{ hashFiles('**/efgs/downloader/pom.xml') }}
+          restore-keys: ${{ env.cache-name }}-
+        
+      - name: Set env to DEV
+        if: github.repository_owner != 'ProteGO-Safe'
+            && startsWith(github.ref, 'refs/heads/release')
+            && github.event_name == 'push'
+        run: |
+          echo "ENVIRONMENT=DEV" >> $GITHUB_ENV
+          
+      - name: Set env to STAGE
+        if: startsWith(github.ref, 'refs/tags/')
+            && github.repository_owner != 'ProteGO-Safe'
+            && startsWith( github.event.release.target_commitish, 'release' )
+            && github.event_name == 'release'
+        run: |
+          echo "ENVIRONMENT=STAGE" >> $GITHUB_ENV
+          
+      - name: Set env to PROD
+        if: (( startsWith(github.ref, 'refs/tags/') 
+            && github.repository_owner == 'ProteGO-Safe' 
+            && github.event.release.target_commitish == 'master' 
+            && github.event_name == 'release' ) ||
+            ( github.repository_owner != 'ProteGO-Safe' 
+            && startsWith(github.ref, 'refs/heads/pre-prod/' )
+            && github.event_name == 'push'))
+        run: |
+          echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
+          
+      - name: Set Env's from Git refs.
+        run: |
+          echo "APPLICATION_CREDENTIALS=${{ secrets[env.SECRET_ENV] }}" >> $GITHUB_ENV
+          echo "PROJECT_ID=${{ secrets[env.PROJECT_ENV] }}" >> $GITHUB_ENV
+          echo "EFGS_URL=${{ secrets[env.EFGS_ENV] }}" >> $GITHUB_ENV
+          echo "REGION=${{ secrets[env.REGION_ENV] }}" >> $GITHUB_ENV
+        env:
+          SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
+          PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
+          EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
+          REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
+        if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
+
+      - name: Install java 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+          java-package: jdk
+          architecture: x64
+
+      - name: mvn package
+        run: 'mvn package'
+        shell: bash
+
+      - name: Deploy EfgsDiagnosisKeysDownloader
+        uses: actions-hub/gcloud@master
+        with:
+          args: |
+             --quiet alpha functions deploy EfgsDiagnosisKeysDownloaderScheduler \
+             --source ./efgs/downloader/target/deploy \
+             --entry-point org.springframework.cloud.function.adapter.gcp.GcfJarLauncher \
+             --runtime java11 \
+             --memory 2048MB  \
+             --trigger-topic=firebase-schedule-sendKeysFromEfgsToGens-$REGION \
+             --allow-unauthenticated \
+             --region $REGION \
+             --timeout=540s \
+             --set-env-vars EFGS_MESSAGE_PROJECT_ID=$PROJECT_ID,EFGS_MESSAGE_TOPIC_ID=firebase-subscription-uploadDiagnosisKeysSubscriber-$REGION,EFGS_API=$EFGS_URL
+
+  deploy-efgs-uploader:
+    name: Deploy Efgs Uploader
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags') ||
+      startsWith(github.ref, 'refs/heads/release') ||
+      startsWith(github.ref, 'refs/heads/pre-prod/')
+    defaults:
+      run:
+        working-directory: ./efgs/uploader
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        env:
+          cache-name: efgs-up
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.cache-name }}-${{ hashFiles('**/efgs/uploader/pom.xml') }}
+          restore-keys: ${{ env.cache-name }}-
+
+      - name: Set env to DEV
+        if: github.repository_owner != 'ProteGO-Safe'
+            && startsWith(github.ref, 'refs/heads/release')
+            && github.event_name == 'push'
+        run: |
+          echo "ENVIRONMENT=DEV" >> $GITHUB_ENV
+          
+      - name: Set env to STAGE
+        if: startsWith(github.ref, 'refs/tags/')
+            && github.repository_owner != 'ProteGO-Safe'
+            && startsWith( github.event.release.target_commitish, 'release' )
+            && github.event_name == 'release'
+        run: |
+          echo "ENVIRONMENT=STAGE" >> $GITHUB_ENV
+          
+      - name: Set env to PROD
+        if: >-
+          (( startsWith(github.ref, 'refs/tags/') 
+          && github.repository_owner == 'ProteGO-Safe' 
+          && github.event.release.target_commitish == 'master' 
+          && github.event_name == 'release' ) ||
+          ( github.repository_owner != 'ProteGO-Safe' 
+          && startsWith(github.ref, 'refs/heads/pre-prod/' )
+          && github.event_name == 'push'))
+        run: |
+          echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
+          
+      - name: Set Env's from Git refs.
+        run: |
+          echo "APPLICATION_CREDENTIALS=${{ secrets[env.SECRET_ENV] }}" >> $GITHUB_ENV
+          echo "PROJECT_ID=${{ secrets[env.PROJECT_ENV] }}" >> $GITHUB_ENV
+          echo "EFGS_URL=${{ secrets[env.EFGS_ENV] }}" >> $GITHUB_ENV
+          echo "REGION=${{ secrets[env.REGION_ENV] }}" >> $GITHUB_ENV
+          echo "DELAYER=${{ secrets[env.DELAYER_ENV] }}" >> $GITHUB_ENV
+        env:
+          SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
+          PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
+          EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
+          REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
+          DELAYER_ENV: "${{ env.ENVIRONMENT }}_DELAYER"
+        if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
+
+      - name: Install java 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+          java-package: jdk
+          architecture: x64
+
+      - name: mvn package
+        run: 'mvn package'
+        shell: bash
+
+      - name: Deploy EfgsDiagnosisKeysUploader to Firebase
+        uses: actions-hub/gcloud@master
+        with:
+          args: |
+             --quiet alpha functions deploy EfgsDiagnosisKeysUploaderScheduler \
+             --source ./efgs/uploader/target/deploy \
+             --entry-point org.springframework.cloud.function.adapter.gcp.GcfJarLauncher \
+             --runtime java11 \
+             --memory 512MB \
+             --trigger-topic=firebase-schedule-sendKeysFromGensToEfgs-$REGION \
+             --allow-unauthenticated \
+             --region $REGION \
+             --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_EFGSAPIURL=$EFGS_URL,EFGS_DIAGNOSISKEYSFETCHDELAYFROMREPOSITORY=$DELAYER
+
+  Lint_TS:
+    name: Lint&Audit TS Functions
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: functions
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        env:
+          cache-name: node
+        with:
+          path: ~/.npm
+          key: ${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ env.cache-name }}-
       - name: Use Node.js 10
         uses: actions/setup-node@v1
         with:
@@ -28,48 +212,60 @@ jobs:
       - run: npm audit --audit-level moderate
       - run: npm test
 
-  deploy:
+  Deplot_TS:
+    name: Deploy TS Functions
+    needs: [Lint_TS,deploy-efgs-uploader,deploy-efgs-downloader]
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/pre-prod/') }}
+    if: startsWith(github.ref, 'refs/tags') ||
+        startsWith(github.ref, 'refs/heads/release') || 
+        startsWith(github.ref, 'refs/heads/pre-prod/')
+      
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
+      - uses: actions/cache@v2
+        env:
+          cache-name: node
+        with:
+          path: ~/.npm
+          key: ${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ env.cache-name }}-
+
       - name: Set env to DEV
         if: github.repository_owner != 'ProteGO-Safe'
-            && startsWith(github.ref, 'refs/heads/release/')
+            && startsWith(github.ref, 'refs/heads/release')
             && github.event_name == 'push'
         run: |
-          echo "::set-env name=ENVIRONMENT::DEV"
+          echo "ENVIRONMENT=DEV" >> $GITHUB_ENV
 
       - name: Set env to STAGE
         if: startsWith(github.ref, 'refs/tags/')
-            &&  github.repository_owner != 'ProteGO-Safe'
+            && github.repository_owner != 'ProteGO-Safe'
             && startsWith( github.event.release.target_commitish, 'release' )
             && github.event_name == 'release'
         run: |
-          echo "::set-env name=ENVIRONMENT::STAGE"
+          echo "ENVIRONMENT=STAGE" >> $GITHUB_ENV
 
       - name: Set env to PROD
-        if: (( startsWith(github.ref, 'refs/tags/') && github.repository_owner == 'ProteGO-Safe' && github.event.release.target_commitish == 'master' && github.event_name == 'release' ) || ( github.repository_owner != 'ProteGO-Safe' && startsWith(github.ref, 'refs/heads/pre-prod/' ) && github.event_name == 'push'))
+        if: (( startsWith(github.ref, 'refs/tags/') 
+            && github.repository_owner == 'ProteGO-Safe' 
+            && github.event.release.target_commitish == 'master' 
+            && github.event_name == 'release' ) ||
+            ( github.repository_owner != 'ProteGO-Safe' 
+            && startsWith(github.ref, 'refs/heads/pre-prod/' )
+            && github.event_name == 'push'))
         run: |
-          echo "::set-env name=ENVIRONMENT::PROD"
+          echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
 
       - name: Set Env's from Git refs.
         run: |
-          echo "::set-env name=SOURCE_NAME::${GITHUB_REF#refs/*/}"
-          echo "::set-env name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}"
-          echo "::set-env name=SOURCE_TAG::${GITHUB_REF#refs/tags/}"
-          echo "::set-env name=GCP_SA_KEY::${{ secrets[env.SECRET_ENV] }}"
-          echo "::set-env name=SECRET_PROJECT::${{ secrets[env.PROJECT_ENV] }}"
+          echo "GCP_SA_KEY=${{ secrets[env.SECRET_ENV] }}" >> $GITHUB_ENV
+          echo "PROJECT_ID=${{ secrets[env.PROJECT_ENV] }}" >> $GITHUB_ENV
+          echo "PROJECT_ENVS=${{ secrets[env.EV] }}" >> $GITHUB_ENV
         env:
           SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
-        if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
-
-      - name: Set Env's
-        run: echo "::set-env name=PROJECT_ENVS::${{ secrets[env.EV] }}"
-        env:
           EV: "${{ env.ENVIRONMENT }}_ENV"
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
 
@@ -85,7 +281,7 @@ jobs:
       - run: npm --prefix functions install
       - run: npm --prefix functions audit --audit-level moderate
 
-      - run: echo "::set-env name=FUNCTIONS::$(cat functions/src/index.ts | sed -n '/exports/,/cloudFunctions/p' | sed -e 's/exports\(.*\)cloudFunctions/\1/' | sed 's/ = ..*;//' | sed 's/\./functions:/g' |tr '\n' ',')"
+      - run: echo "FUNCTIONS=$(cat functions/src/index.ts | sed -n '/exports/,/cloudFunctions/p' | sed -e 's/exports\(.*\)cloudFunctions/\1/' | sed 's/ = ..*;//' | sed 's/\./functions:/g' |tr '\n' ',')" >> $GITHUB_ENV
         shell: bash
 
       - run: echo FUNCTIONS=$FUNCTIONS
@@ -96,4 +292,4 @@ jobs:
         if: ( env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV' )
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only $FUNCTIONS --project $SECRET_PROJECT
+          args: deploy --only $FUNCTIONS --project $PROJECT_ID
