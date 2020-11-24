@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.4.1
+
+### Fixed
+- problem with max memory size of the EFGS downloader web client
+
+## 4.4.0
+
+### Added
+
+- new cloud function for downloading keys from the EFGS
+- new cloud function for uploading keys to the EFGS
+- new cloud function for uploading keys from the EFGS to the GENS
+
+### Changed
+
+- additional logs for cloud functions
+
 ## 4.3.1
 
 ### Changed
