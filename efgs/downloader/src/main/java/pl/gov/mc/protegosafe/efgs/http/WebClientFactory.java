@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import pl.gov.mc.protegosafe.efgs.secret.CloudBackendConfig;
 import reactor.core.publisher.Mono;
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 class WebClientFactory {
 
     static final String ACCEPT_HEADER_JSON = "application/json; version=1.0";
+    static final Integer MAX_IN_MEMORY_SIZE = 50 * 1024 * 1024;
 
     CertUtils certUtils;
     String nbtlsCert;
@@ -61,6 +63,12 @@ class WebClientFactory {
         });
 
         return WebClient.builder()
+                .exchangeStrategies(ExchangeStrategies.builder()
+                        .codecs(configurer -> configurer
+                                .defaultCodecs()
+                                .maxInMemorySize(MAX_IN_MEMORY_SIZE)
+                        )
+                        .build())
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .filters(exchangeFilterFunctions -> {
                     exchangeFilterFunctions.add(logRequest());
