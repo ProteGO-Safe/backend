@@ -1,24 +1,26 @@
 import {sign} from "jsonwebtoken";
-import config, {secretManager} from "../../config";
+import {secretManager} from "../../config";
 import Axios from "axios";
 
 const superagent = require('superagent');
 
 const uploadDiagnosisKeys = async (data: any): Promise<any> => {
     const idToken = await getIdToken();
+    const exposureEndpoint = await secretManager.getConfig('exposureEndpoint');
     return superagent
-        .post(config.exposureEndpoint)
-        .timeout(config.exposureTimeout)
+        .post(exposureEndpoint)
+        .timeout(10000) // 10 seconds
         .send(data)
         .set('Authorization', `Bearer ${idToken}`);
 };
 
 const getIdToken = async (): Promise<string> => {
     const serverConfig = await secretManager.getConfig('exposureServerConfig');
+    const exposureEndpoint = await secretManager.getConfig('exposureEndpoint');
 
     const jwt = sign(
         {
-            target_audience: config.exposureEndpoint
+            target_audience: exposureEndpoint
         },
         <string>serverConfig.private_key,
         {

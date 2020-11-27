@@ -1,11 +1,12 @@
 import axios from "axios";
-import config from "../../../config";
+import {secretManager} from "../../../config";
 import {saveFileInStorage} from "../storageSaver";
 import resolveRepository from "./Repository";
 
 const listLanguagesCodes = async (): Promise<Array<string>> => {
 
-    const response = await resolveRepository().post('', 'action=list_languages');
+    const {token, projectId} = await secretManager.getConfig('backupTranslations');
+    const response = await resolveRepository(token, projectId).post('', 'action=list_languages');
 
     const {list} = response.data;
 
@@ -14,7 +15,8 @@ const listLanguagesCodes = async (): Promise<Array<string>> => {
 
 const generateUrl = async (language: string): Promise<string> => {
 
-    const response = await resolveRepository().post('', `action=export&type=key_value_json&language=${language}`);
+    const {token, projectId} = await secretManager.getConfig('backupTranslations');
+    const response = await resolveRepository(token, projectId).post('', `action=export&type=key_value_json&language=${language}`);
 
     const {item} = response.data;
 
@@ -25,17 +27,20 @@ const throwError = (exception: string) => {
     throw new Error(exception)
 };
 
-const saveFile = (json: any, language: string) => {
+const saveFile = async (json: any, language: string) => {
     const fileName = `${new Date().getTime()}_${language}.json`;
     const compress = true;
-    saveFileInStorage(json.data, fileName, config.buckets.archive, compress)
+
+    const {archive} = await secretManager.getConfig('buckets');
+
+    saveFileInStorage(json.data, fileName, archive, compress)
         .catch(throwError)
 };
 
 const fetchFile = (url: string, language: string) => {
     axios.get(url)
         .catch(throwError)
-        .then(json => saveFile(json, language))
+        .then(json => async () => await saveFile(json, language))
         .catch(throwError)
 };
 

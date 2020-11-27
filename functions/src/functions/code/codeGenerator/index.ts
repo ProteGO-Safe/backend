@@ -9,7 +9,7 @@ export const generateCode = async (deleteTime?: number): Promise<any> => {
         code = config.code.generator.generate();
     } while ((await config.code.repository.get(code)).exists);
 
-    const expiryTime = config.code.lifetime * 60 + moment().unix();
+    const expiryTime = 30 * 60 + moment().unix(); // 30 minutes
 
     await config.code.repository.save(code, expiryTime, deleteTime || expiryTime);
     const codeEntity = await config.code.repository.get(code);

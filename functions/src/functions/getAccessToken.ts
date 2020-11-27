@@ -15,7 +15,8 @@ export const getAccessToken = async (data : any) => {
 
     await repository.remove(data.code);
     const secret = await secretManager.getConfig('secret');
-    const accessToken = await generateJwt({code: data.code}, secret, config.jwt.lifetime);
+    const lifetime = 30; // minutes
+    const accessToken = await generateJwt({code: data.code}, secret, lifetime);
 
     return {accessToken: accessToken};
 };

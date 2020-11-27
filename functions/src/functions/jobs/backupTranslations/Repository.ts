@@ -1,19 +1,18 @@
 import axios, {AxiosInstance} from 'axios';
-import config from "../../../config";
 
 const baseURL = 'https://poeditor.com/api/';
 
 class Repository {
     instance: AxiosInstance;
 
-    constructor() {
+    constructor(token: string, projectId: number) {
         this.instance = axios.create({baseURL});
         this.instance.interceptors.request.use((_config) => {
             const {data} = _config;
 
             return {
                 ..._config,
-                data: `api_token=${config.backupTranslations.token}&id=${config.backupTranslations.projectId}&${data}`
+                data: `api_token=${token}&id=${projectId}&${data}`
             };
         });
         this.instance.interceptors.response.use((response) => {
@@ -30,6 +29,6 @@ class Repository {
     }
 }
 
-const resolveRepository = () => new Repository().getInstance();
+const resolveRepository = (token: string, projectId: number) => new Repository(token, projectId).getInstance();
 
 export default resolveRepository;

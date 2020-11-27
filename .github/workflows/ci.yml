@@ -262,16 +262,13 @@ jobs:
         run: |
           echo "GCP_SA_KEY=${{ secrets[env.SECRET_ENV] }}" >> $GITHUB_ENV
           echo "PROJECT_ID=${{ secrets[env.PROJECT_ENV] }}" >> $GITHUB_ENV
-          echo "PROJECT_ENVS=${{ secrets[env.EV] }}" >> $GITHUB_ENV
+          echo "REGION=${{ secrets[env.REGION_ENV] }}" >> $GITHUB_ENV
+          echo "SECRET_MANAGER_PATH=${{ secrets[env.SECRET_MANAGER_PATH_ENV] }}" >> $GITHUB_ENV
         env:
           SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
-          EV: "${{ env.ENVIRONMENT }}_ENV"
-        if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
-
-      - name: Inject ENV's for builds
-        run: 'echo "$PROJECT_ENVS" | base64 --decode > functions/src/config.ts'
-        shell: bash
+          REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
+          SECRET_MANAGER_PATH_ENV: "${{ env.ENVIRONMENT }}_SECRET_MANAGER_PATH"
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
 
       - uses: actions/setup-node@v1
@@ -287,6 +284,12 @@ jobs:
       - run: echo FUNCTIONS=$FUNCTIONS
         shell: bash
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'DEV'
+
+      - name: Set firebase envs
+        if: ( env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV' )
+        uses: w9jds/firebase-action@master
+        with:
+          args: functions:config:set config.region=$REGION config.secretmanagerpath=$SECRET_MANAGER_PATH --project $PROJECT_ID
 
       - name: Deploy to Firebase
         if: ( env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV' )
