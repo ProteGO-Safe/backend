@@ -1,6 +1,6 @@
 const {log} = require("firebase-functions/lib/logger");
 import {verify} from "jsonwebtoken";
-import config, {secretManager} from "../../config";
+import {secretManager} from "../../config";
 import * as functions from "firebase-functions";
 
 import {v4} from "uuid";
@@ -43,6 +43,8 @@ async function auth(token: string | undefined): Promise<boolean> {
     return true;
 }
 
+const firestoreCollectionName = "diagnosisKeys";
+
 export const saveDiagnosisKeys = (body: any) => {
     const { isInteroperabilityEnabled, data : {temporaryExposureKeys} } = body;
     if (!isInteroperabilityEnabled) {
@@ -54,7 +56,7 @@ export const saveDiagnosisKeys = (body: any) => {
         const id = v4();
         const createdAt = moment().unix();
         const itemToSave = {id, createdAt, ...exposureKey};
-        db.collection(config.efgs.firestore.diagnosisKeysCollectionName)
+        db.collection(firestoreCollectionName)
             .doc(id)
             .set(itemToSave)
             .catch(reason => {

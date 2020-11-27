@@ -54,6 +54,8 @@ const uploadDiagnosisKeysSubscriber = async (message: any) => {
     log('Processed uploading keys to gens');
 };
 
+const firestoreCollectionName = "failedUploadingToGensDiagnosisKeys";
+
 const saveFailureUploadingDiagnosisKeys = (data: string, e: Error) => {
 
     const db = admin.firestore();
@@ -61,7 +63,7 @@ const saveFailureUploadingDiagnosisKeys = (data: string, e: Error) => {
     const createdAt = moment().unix();
     const errorMessage = fetchErrorMessage(e);
     const itemToSave = {id, content: data, createdAt, stackTrace: e.stack, errorMessage: errorMessage || ''};
-    db.collection(config.efgs.firestore.failedUploadingToGensDiagnosisKeysCollectionName)
+    db.collection(firestoreCollectionName)
         .doc(id)
         .set(itemToSave)
         .catch(reason => {

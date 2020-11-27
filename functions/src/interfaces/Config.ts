@@ -26,10 +26,6 @@ interface Config {
         sMaxAge: number // in seconds
     },
     efgs: {
-        firestore: {
-            diagnosisKeysCollectionName: string,
-            failedUploadingToGensDiagnosisKeysCollectionName: string
-        },
         gens: {
             regions: Array<string>,
             appPackageName: string,

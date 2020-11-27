@@ -41,10 +41,6 @@ const config: Config = {
         disabledSafetyToken: false
     },
     efgs: {
-        firestore: {
-            diagnosisKeysCollectionName: 'collectionName',
-            failedUploadingToGensDiagnosisKeysCollectionName: 'collectionName'
-        },
         gens: {
             regions: ['PL'],
             appPackageName: 'appPackageName',
