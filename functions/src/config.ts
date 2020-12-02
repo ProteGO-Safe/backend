@@ -1,14 +1,9 @@
-import RandomCodeGenerator from "./utils/RandomCodeGenerator";
-import Config from "./interfaces/Config"
-import CodeRepository from "./utils/CodeRepository";
-import SubscriptionRepository from "./utils/SubscriptionRepository";
-import SecretManager from "./utils/SecretManager";
-import IPChecker from "./utils/IPChecker";
-
-const config: Config = {
+const config = {
     code: {
-        generator: new RandomCodeGenerator(6),
-        repository: new CodeRepository()
+        lifetime: 30, // in minutes
+    },
+    jwt: {
+        lifetime: 30 // in minutes
     },
     efgs: {
         gens: {
@@ -22,11 +17,8 @@ const config: Config = {
         },
         android: {
             url: 'https://www.googleapis.com/androidcheck/v1/attestations/verify'
-        },
-        repository: new SubscriptionRepository(),
+        }
     }
 };
-export const secretManager = new SecretManager();
-export const generateCodeIPChecker = new IPChecker('generateCodeNetmasks');
-export const applicationIPChecker = new IPChecker('applicationNetmasks');
+
 export default config;

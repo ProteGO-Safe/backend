@@ -1,5 +1,5 @@
-import config from "../config";
+import { codeRepository } from "../services";
 
 export async function clearUnusedCodes() {
-    await config.code.repository.removeExpired();
+    await codeRepository.removeExpired();
 }

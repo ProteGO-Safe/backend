@@ -1,22 +1,20 @@
 import axios from "axios";
-import {secretManager} from "../../../config";
+import {secretManager} from "../../../services";
 import {saveFileInStorage} from "../storageSaver";
 import resolveRepository from "./Repository";
 
-const listLanguagesCodes = async (): Promise<Array<string>> => {
+const listLanguagesCodes = async (repository: any): Promise<Array<string>> => {
 
-    const {token, projectId} = await secretManager.getConfig('backupTranslations');
-    const response = await resolveRepository(token, projectId).post('', 'action=list_languages');
+    const response = await repository.post('', 'action=list_languages');
 
     const {list} = response.data;
 
     return list.map((item: any) => item.code)
 };
 
-const generateUrl = async (language: string): Promise<string> => {
+const generateUrl = async (language: string, repository: any): Promise<string> => {
 
-    const {token, projectId} = await secretManager.getConfig('backupTranslations');
-    const response = await resolveRepository(token, projectId).post('', `action=export&type=key_value_json&language=${language}`);
+    const response = await repository.post('', `action=export&type=key_value_json&language=${language}`);
 
     const {item} = response.data;
 
@@ -44,8 +42,8 @@ const fetchFile = (url: string, language: string) => {
         .catch(throwError)
 };
 
-const processLanguage = (language: string) => {
-    generateUrl(language)
+const processLanguage = (language: string, repository: any) => {
+    generateUrl(language, repository)
         .catch(throwError)
         .then(url => fetchFile(url, language))
         .catch(throwError)
@@ -54,8 +52,10 @@ const processLanguage = (language: string) => {
 const backupTranslations = async () => {
 
     try {
-        const languagesCodes = await listLanguagesCodes();
-        languagesCodes.forEach(processLanguage);
+        const {token, projectId} = await secretManager.getConfig('backupTranslations');
+        const repository = resolveRepository(token, projectId);
+        const languagesCodes = await listLanguagesCodes(repository);
+        languagesCodes.forEach(language => processLanguage(language, repository));
     } catch (exception) {
         throw new Error(exception);
     }

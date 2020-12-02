@@ -1,11 +1,13 @@
 import * as ff from 'firebase-functions';
-import {applicationIPChecker, secretManager} from "./config";
+import {applicationIPChecker, secretManager} from "./services";
+
+const region = ff.config().config.region;
 
 export function https(
     handler : (data: any, context: ff.https.CallableContext) => any | Promise<any>,
     runtime: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 30}
 ): ff.HttpsFunction {
-    const region = ff.config().config.region;
+
     return ff.runWith(runtime).region(region).https.onCall(async (data, context) => {
         const securityToken = await secretManager.getConfig('securityToken');
         const securityHeaderName = await secretManager.getConfig('securityTokenHeaderName');
@@ -26,7 +28,6 @@ export function httpsOnRequest(
     handler : (data: any, response: ff.Response) => any | Promise<any>,
     runtime: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 30}
 ): ff.HttpsFunction {
-    const region = ff.config().config.region;
     return ff.runWith(runtime).region(region).https.onRequest(async (request, response) => {
         const securityToken = await secretManager.getConfig('securityToken');
         const securityHeaderName = await secretManager.getConfig('securityTokenHeaderName');
@@ -48,12 +49,10 @@ export function scheduler(
     schedule: string,
     runtime: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 30}
 ) {
-    const region = ff.config().config.region;
     return ff.runWith(runtime).region(region).pubsub.schedule(schedule).onRun(handler)
 }
 
 export const topicSubscriber = (handler : (data: any) => any | Promise<any>) => {
-    const region = ff.config().config.region;
     return ff.runWith({memory: '256MB', timeoutSeconds: 30})
         .region(region)
         .pubsub.topic(`firebase-subscription-${handler.name}-${region}`)

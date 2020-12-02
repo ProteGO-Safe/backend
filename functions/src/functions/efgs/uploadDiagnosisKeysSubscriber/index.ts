@@ -1,5 +1,5 @@
-import config, {secretManager} from "../../../config";
-
+import config from "../../../config";
+import {secretManager} from "../../../services";
 const {log, error} = require("firebase-functions/lib/logger");
 import uploadDiagnosisKeys from "../../uploadDiagnosisKeys";
 import createGensPayloadMessage from "../gensPayloadFactory";

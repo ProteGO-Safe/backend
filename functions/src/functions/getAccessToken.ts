@@ -1,4 +1,5 @@
-import config, {secretManager} from "../config";
+import config from "../config";
+import {secretManager, codeRepository} from "../services";
 import * as functions from "firebase-functions";
 import {generateJwt} from "./jwtGenerator";
 import {validateCode} from "./code/codeValidator";
@@ -11,12 +12,9 @@ export const getAccessToken = async (data : any) => {
         throw new functions.https.HttpsError('not-found', 'Invalid code');
     }
 
-    const repository = config.code.repository;
-
-    await repository.remove(data.code);
+    await codeRepository.remove(data.code);
     const secret = await secretManager.getConfig('secret');
-    const lifetime = 30; // minutes
-    const accessToken = await generateJwt({code: data.code}, secret, lifetime);
+    const accessToken = await generateJwt({code: data.code}, secret, config.jwt.lifetime);
 
     return {accessToken: accessToken};
 };

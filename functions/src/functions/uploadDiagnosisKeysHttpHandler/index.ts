@@ -1,6 +1,6 @@
 const {log} = require("firebase-functions/lib/logger");
 import {verify} from "jsonwebtoken";
-import {secretManager} from "../../config";
+import {secretManager} from "../../services";
 import * as functions from "firebase-functions";
 
 import {v4} from "uuid";
