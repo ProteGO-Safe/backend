@@ -4,7 +4,7 @@
     "lint": "tslint --project tsconfig.json",
     "test": "mocha --recursive --require ts-node/register 'test/**/*.ts'",
     "build": "tsc",
-    "serve": "npm run build && firebase emulators:start --only functions",
+    "serve": "npm run build && firebase emulators:start --only functions --project protego-fb-dev",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
