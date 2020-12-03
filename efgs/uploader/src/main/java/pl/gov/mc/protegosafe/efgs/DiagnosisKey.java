@@ -63,7 +63,7 @@ public class DiagnosisKey {
         long minimumRollingStart = Instant
                 .now()
                 .truncatedTo(ChronoUnit.DAYS)
-                .minus(15, ChronoUnit.DAYS)
+                .minus(14, ChronoUnit.DAYS)
                 .getEpochSecond() / ROLLING_START_INTERVAL_LENGTH;
 
         long maximumRollingStart = Instant
