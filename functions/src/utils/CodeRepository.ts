@@ -1,12 +1,16 @@
 import * as admin from "firebase-admin";
 import {sha256} from "js-sha256";
 import {v4} from 'uuid';
-import moment = require("moment");
+import TokenRepository from "./TokenRepository";
 
-class CodeRepository {
+class CodeRepository extends TokenRepository {
 
     getCollection(): FirebaseFirestore.CollectionReference {
         return admin.firestore().collection('codes');
+    }
+
+    deleteTimeFieldName(): string {
+        return "deleteTime"
     }
 
     async save(code: string, expiryTime: number, deleteTime: number): Promise<FirebaseFirestore.WriteResult> {
@@ -15,7 +19,7 @@ class CodeRepository {
         return await this.getCollection().doc(hashedCode).set({
             "id": v4(),
             "expiryTime": expiryTime,
-            "deleteTime" : deleteTime
+            [this.deleteTimeFieldName()]: deleteTime
         })
     }
 
@@ -39,20 +43,6 @@ class CodeRepository {
         const hashedCode = sha256(code);
 
         return await this.getCollection().doc(hashedCode).update(fieldsToUpdate);
-    }
-
-    async removeExpired(): Promise<void> {
-        await this.getCollection()
-            .where('deleteTime', '<', moment().unix())
-            .limit(100)
-            .get()
-            .then(snapshot => snapshot.forEach(doc => doc.ref.delete()))
-
-        await this.getCollection()
-            .where('deleteTime', '==', null)
-            .limit(100)
-            .get()
-            .then(snapshot => snapshot.forEach(doc => doc.ref.delete()))
     }
 }
 
