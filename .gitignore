@@ -69,3 +69,7 @@ functions/src/config.ts
 .idea
 
 efgs-downloader/target
+
+efgs/downloader/target
+efgs/uploader/target
+*.iml
