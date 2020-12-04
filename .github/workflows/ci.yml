@@ -82,7 +82,8 @@ jobs:
 
       - run: mvn dependency:tree -Dverbose
         shell: bash
-
+        if: env.ENVIRONMENT == 'DEV'
+        
       - name: mvn package
         run: 'mvn package'
         shell: bash
@@ -175,6 +176,7 @@ jobs:
 
       - run: mvn dependency:tree -Dverbose
         shell: bash
+        if: env.ENVIRONMENT == 'DEV'
 
       - name: mvn package
         run: 'mvn package'
