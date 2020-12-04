@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - EFGS random keys use cryptographically strong random number generator
 - EFGS random keys use strict report type: CONFIRMED_CLINICAL_DIAGNOSIS
 - Different minimumRollingStart for EFGS random keys
-- JWT token for uploading EN keys is singe use now
+- Single-use JWT token for uploading EN keys.
 
 ## 4.4.1
 
