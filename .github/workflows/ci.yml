@@ -80,6 +80,9 @@ jobs:
           java-package: jdk
           architecture: x64
 
+      - run: mvn dependency:tree -Dverbose
+        shell: bash
+
       - name: mvn package
         run: 'mvn package'
         shell: bash
@@ -169,6 +172,9 @@ jobs:
           java-version: '11'
           java-package: jdk
           architecture: x64
+
+      - run: mvn dependency:tree -Dverbose
+        shell: bash
 
       - name: mvn package
         run: 'mvn package'
