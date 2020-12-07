@@ -80,12 +80,12 @@ jobs:
           java-package: jdk
           architecture: x64
 
-      - run: mvn dependency:tree -Dverbose
+      - run: mvn dependency:tree -Dverbose -ntp
         shell: bash
         if: env.ENVIRONMENT == 'DEV'
         
       - name: mvn package
-        run: 'mvn package'
+        run: 'mvn package -ntp'
         shell: bash
 
       - name: Deploy EfgsDiagnosisKeysDownloader
@@ -175,12 +175,12 @@ jobs:
           java-package: jdk
           architecture: x64
 
-      - run: mvn dependency:tree -Dverbose
+      - run: mvn dependency:tree -Dverbose -ntp
         shell: bash
         if: env.ENVIRONMENT == 'DEV'
 
       - name: mvn package
-        run: 'mvn package'
+        run: 'mvn package -ntp'
         shell: bash
 
       - name: Deploy EfgsDiagnosisKeysUploader to Firebase
