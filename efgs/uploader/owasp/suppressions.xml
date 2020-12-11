@@ -3,6 +3,7 @@
     <suppress>
         <notes>see https://github.com/jeremylong/DependencyCheck/issues/1827></notes>
         <cve>CVE-2018-1258</cve>
+        <cve>CVE-2020-17527</cve>
     </suppress>
     <suppress>
         <packageUrl regex="true">^pkg:maven/io\.opencensus/opencensus\-contrib\-grpc\-util@.*$</packageUrl>
