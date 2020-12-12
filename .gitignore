@@ -67,3 +67,7 @@ node_modules/
 .idea
 
 efgs-downloader/target
+
+efgs/downloader/target
+efgs/uploader/target
+*.iml

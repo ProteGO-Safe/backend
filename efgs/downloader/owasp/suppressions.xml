@@ -13,7 +13,7 @@
         <cve>CVE-2017-7860</cve>
     </suppress>
     <suppress>
-        <packageUrl regex="true">^pkg:maven/com\.google\.api\.grpc/proto\-google\-cloud\-firestore\-v1beta1@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/com\.google\.api\.grpc/proto\-google.*$</packageUrl>
         <cve>CVE-2017-8359</cve>
         <cve>CVE-2020-7768</cve>
         <cve>CVE-2017-7861</cve>
@@ -21,19 +21,7 @@
         <cve>CVE-2017-7860</cve>
     </suppress>
     <suppress>
-        <packageUrl regex="true">^pkg:maven/com\.google\.api\.grpc/proto\-google\-iam\-v1@.*$</packageUrl>
-        <cve>CVE-2017-8359</cve>
-        <cve>CVE-2020-7768</cve>
-        <cve>CVE-2017-7861</cve>
-        <cve>CVE-2017-9431</cve>
-        <cve>CVE-2017-7860</cve>
-    </suppress>
-    <suppress>
-        <packageUrl regex="true">^pkg:maven/com\.google\.api\.grpc/proto\-google\-cloud\-secretmanager\-v1@.*$</packageUrl>
-        <cve>CVE-2020-7768</cve>
-    </suppress>
-    <suppress>
-        <packageUrl regex="true">^pkg:maven/com\.google\.api\.grpc/proto\-google\-cloud\-secretmanager\-v1beta1@.*$</packageUrl>
-        <cve>CVE-2020-7768</cve>
+        <packageUrl regex="true">^pkg:maven/com\.google\.http\-client/google\-http\-client.*$</packageUrl>
+        <cve>CVE-2020-13956</cve>
     </suppress>
 </suppressions>

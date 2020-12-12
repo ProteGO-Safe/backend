@@ -12,28 +12,11 @@ on:
       - '**'
 
 jobs:
-  deploy-efgs-downloader:
-    name: Deploy Efgs Downloader
+  Setup:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags') ||
-      startsWith(github.ref, 'refs/heads/release') ||
-      startsWith(github.ref, 'refs/heads/pre-prod/')
-    defaults:
-      run:
-        working-directory: ./efgs/downloader
-
+    outputs:
+      ENVIRONMENT: ${{ env.ENVIRONMENT }}
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-        
-      - uses: actions/cache@v2
-        env:
-          cache-name: efgs-dl
-        with:
-          path: ~/.m2/repository
-          key: ${{ env.cache-name }}-${{ hashFiles('**/efgs/downloader/pom.xml') }}
-          restore-keys: ${{ env.cache-name }}-
-        
       - name: Set env to DEV
         if: github.repository_owner != 'ProteGO-Safe'
             && startsWith(github.ref, 'refs/heads/release')
@@ -59,7 +42,29 @@ jobs:
             && github.event_name == 'push'))
         run: |
           echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
-          
+
+  deploy-efgs-downloader:
+    name: Deploy Efgs Downloader
+    needs: Setup
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./efgs/downloader
+    env:
+      ENVIRONMENT: ${{ needs.Setup.outputs.ENVIRONMENT }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        env:
+          cache-name: efgs-dl
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.cache-name }}-${{ hashFiles('**/efgs/downloader/pom.xml') }}
+          restore-keys: ${{ env.cache-name }}-
+
       - name: Set Env's from Git refs.
         run: |
           echo "APPLICATION_CREDENTIALS=${{ secrets[env.SECRET_ENV] }}" >> $GITHUB_ENV
@@ -71,7 +76,7 @@ jobs:
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
           EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
           REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
-        if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
+        if: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
       - name: Install java 11
         uses: actions/setup-java@v1
@@ -80,8 +85,12 @@ jobs:
           java-package: jdk
           architecture: x64
 
+      - run: mvn dependency:tree -Dverbose -ntp
+        shell: bash
+        if: env.ENVIRONMENT != 'PROD' || env.ENVIRONMENT != 'STAGE'
+
       - name: mvn package
-        run: 'mvn package'
+        run: 'mvn package -ntp'
         shell: bash
 
       - name: Deploy EfgsDiagnosisKeysDownloader
@@ -98,16 +107,17 @@ jobs:
              --region $REGION \
              --timeout=540s \
              --set-env-vars EFGS_MESSAGE_PROJECT_ID=$PROJECT_ID,EFGS_MESSAGE_TOPIC_ID=firebase-subscription-uploadDiagnosisKeysSubscriber-$REGION,EFGS_API=$EFGS_URL
+        if: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
   deploy-efgs-uploader:
     name: Deploy Efgs Uploader
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags') ||
-      startsWith(github.ref, 'refs/heads/release') ||
-      startsWith(github.ref, 'refs/heads/pre-prod/')
+    needs: Setup
     defaults:
       run:
         working-directory: ./efgs/uploader
+    env:
+      ENVIRONMENT: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
     steps:
       - name: Checkout Repo
@@ -121,33 +131,6 @@ jobs:
           key: ${{ env.cache-name }}-${{ hashFiles('**/efgs/uploader/pom.xml') }}
           restore-keys: ${{ env.cache-name }}-
 
-      - name: Set env to DEV
-        if: github.repository_owner != 'ProteGO-Safe'
-            && startsWith(github.ref, 'refs/heads/release')
-            && github.event_name == 'push'
-        run: |
-          echo "ENVIRONMENT=DEV" >> $GITHUB_ENV
-          
-      - name: Set env to STAGE
-        if: startsWith(github.ref, 'refs/tags/')
-            && github.repository_owner != 'ProteGO-Safe'
-            && startsWith( github.event.release.target_commitish, 'release' )
-            && github.event_name == 'release'
-        run: |
-          echo "ENVIRONMENT=STAGE" >> $GITHUB_ENV
-          
-      - name: Set env to PROD
-        if: >-
-          (( startsWith(github.ref, 'refs/tags/') 
-          && github.repository_owner == 'ProteGO-Safe' 
-          && github.event.release.target_commitish == 'master' 
-          && github.event_name == 'release' ) ||
-          ( github.repository_owner != 'ProteGO-Safe' 
-          && startsWith(github.ref, 'refs/heads/pre-prod/' )
-          && github.event_name == 'push'))
-        run: |
-          echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
-          
       - name: Set Env's from Git refs.
         run: |
           echo "APPLICATION_CREDENTIALS=${{ secrets[env.SECRET_ENV] }}" >> $GITHUB_ENV
@@ -161,7 +144,7 @@ jobs:
           EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
           REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
           DELAYER_ENV: "${{ env.ENVIRONMENT }}_DELAYER"
-        if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
+        if: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
       - name: Install java 11
         uses: actions/setup-java@v1
@@ -170,8 +153,12 @@ jobs:
           java-package: jdk
           architecture: x64
 
+      - run: mvn dependency:tree -Dverbose -ntp
+        shell: bash
+        if: env.ENVIRONMENT != 'PROD' || env.ENVIRONMENT != 'STAGE'
+
       - name: mvn package
-        run: 'mvn package'
+        run: 'mvn package -ntp'
         shell: bash
 
       - name: Deploy EfgsDiagnosisKeysUploader to Firebase
@@ -187,6 +174,7 @@ jobs:
              --allow-unauthenticated \
              --region $REGION \
              --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_EFGSAPIURL=$EFGS_URL,EFGS_DIAGNOSISKEYSFETCHDELAYFROMREPOSITORY=$DELAYER
+        if: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
   Lint_TS:
     name: Lint&Audit TS Functions
@@ -214,11 +202,11 @@ jobs:
 
   Deplot_TS:
     name: Deploy TS Functions
-    needs: [Lint_TS,deploy-efgs-uploader,deploy-efgs-downloader]
+    needs: [Setup,Lint_TS,deploy-efgs-uploader,deploy-efgs-downloader]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags') ||
-        startsWith(github.ref, 'refs/heads/release') || 
-        startsWith(github.ref, 'refs/heads/pre-prod/')
+    if: ${{ needs.Setup.outputs.ENVIRONMENT }}
+    env:
+      ENVIRONMENT: ${{ needs.Setup.outputs.ENVIRONMENT }}
       
     steps:
       - name: Checkout Repo
@@ -232,32 +220,6 @@ jobs:
           key: ${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ env.cache-name }}-
 
-      - name: Set env to DEV
-        if: github.repository_owner != 'ProteGO-Safe'
-            && startsWith(github.ref, 'refs/heads/release')
-            && github.event_name == 'push'
-        run: |
-          echo "ENVIRONMENT=DEV" >> $GITHUB_ENV
-
-      - name: Set env to STAGE
-        if: startsWith(github.ref, 'refs/tags/')
-            && github.repository_owner != 'ProteGO-Safe'
-            && startsWith( github.event.release.target_commitish, 'release' )
-            && github.event_name == 'release'
-        run: |
-          echo "ENVIRONMENT=STAGE" >> $GITHUB_ENV
-
-      - name: Set env to PROD
-        if: (( startsWith(github.ref, 'refs/tags/') 
-            && github.repository_owner == 'ProteGO-Safe' 
-            && github.event.release.target_commitish == 'master' 
-            && github.event_name == 'release' ) ||
-            ( github.repository_owner != 'ProteGO-Safe' 
-            && startsWith(github.ref, 'refs/heads/pre-prod/' )
-            && github.event_name == 'push'))
-        run: |
-          echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
-
       - name: Set Env's from Git refs.
         run: |
           echo "GCP_SA_KEY=${{ secrets[env.SECRET_ENV] }}" >> $GITHUB_ENV
@@ -267,9 +229,9 @@ jobs:
         env:
           SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
+          EV: "${{ env.ENVIRONMENT }}_ENV"
           REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
           SECRET_MANAGER_PATH_ENV: "${{ env.ENVIRONMENT }}_SECRET_MANAGER_PATH"
-        if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV'
 
       - uses: actions/setup-node@v1
         with:
@@ -292,7 +254,7 @@ jobs:
           args: functions:config:set config.region=$REGION config.secretmanagerpath=$SECRET_MANAGER_PATH --project $PROJECT_ID
 
       - name: Deploy to Firebase
-        if: ( env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV' )
+        if: ${{ needs.Setup.outputs.ENVIRONMENT }}
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only $FUNCTIONS --project $PROJECT_ID
