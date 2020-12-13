@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 const {log} = require("firebase-functions/lib/logger");
-import config, {secretManager} from "../../../config";
+import {secretManager, subscriptionRepository} from "../../../services";
 import checkSafetyToken from "../safetyTokenChecker";
 import {decode, verify} from "jsonwebtoken";
 import returnBadRequestResponse from "../../returnBadRequestResponse";
@@ -45,7 +45,7 @@ const getSubscription = async (request: functions.Request, response: functions.R
             return returnBadRequestResponse(response);
         }
 
-        const subscription = await config.subscription.repository.get(guid);
+        const subscription = await subscriptionRepository.get(guid);
 
         if (!subscription.exists) {
             log(`subscription doesn't exist`);

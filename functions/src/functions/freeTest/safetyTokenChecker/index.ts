@@ -2,12 +2,15 @@ const {log} = require("firebase-functions/lib/logger");
 import axios from 'axios';
 import {v4} from 'uuid';
 import {decode, sign} from "jsonwebtoken";
-import config, {secretManager} from "../../../config";
+import config from "../../../config";
+import {secretManager} from "../../../services";
 import moment = require("moment");
 
 const checkSafetyToken = async (safetyToken: string, platform: string): Promise<boolean> => {
 
-    if (config.subscription.disabledSafetyToken) {
+    const {disabledSafetyToken} = await secretManager.getConfig('subscription');
+
+    if (disabledSafetyToken) {
         return true;
     }
 

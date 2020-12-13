@@ -1,9 +1,8 @@
 import * as functions from "firebase-functions";
-
 const {log} = require("firebase-functions/lib/logger");
 import {validateApiTokenAndIp} from "../ipAndApiTokenValidator";
 import returnBadRequestResponse from "../returnBadRequestResponse";
-import config from "../../config";
+import {subscriptionRepository, codeRepository} from "../../services";
 
 const updateSubscription = async (request: functions.Request, response: functions.Response) => {
 
@@ -16,7 +15,7 @@ const updateSubscription = async (request: functions.Request, response: function
 
     const {guid, status} = request.body;
 
-    const subscription = await config.subscription.repository.get(guid);
+    const subscription = await subscriptionRepository.get(guid);
 
     if (!subscription.exists) {
         log(`subscription doesn't exist`);
@@ -32,10 +31,10 @@ const updateSubscription = async (request: functions.Request, response: function
 
     const codeSha256 = <string>subscription.get('codeSha256');
     if (codeSha256) {
-        await config.code.repository.removeByHashedCode(codeSha256);
+        await codeRepository.removeByHashedCode(codeSha256);
     }
 
-    await config.subscription.repository.update(guid, {status: status, codeSha256: null, codeId: null});
+    await subscriptionRepository.update(guid, {status: status, codeSha256: null, codeId: null});
 
     log(`updated subscription, return code: 200`);
 

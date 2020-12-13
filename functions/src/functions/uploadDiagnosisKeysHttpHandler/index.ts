@@ -1,6 +1,6 @@
 const {log} = require("firebase-functions/lib/logger");
 import {verify} from "jsonwebtoken";
-import config, {secretManager} from "../../config";
+import {secretManager, hashedAccessTokensRepository} from "../../services";
 import * as functions from "firebase-functions";
 
 import {v4} from "uuid";
@@ -26,8 +26,7 @@ export async function uploadDiagnosisKeysHttpHandler(request: functions.Request,
 
     log(`uploaded keys from user to gens, keys: ${temporaryExposureKeys.length}, return code: 200, isInteroperabilityEnabled: ${isInteroperabilityEnabled}`);
 
-    await config.code
-        .hashedAccessTokensRepository.save(body.data.verificationPayload)
+    await hashedAccessTokensRepository.save(body.data.verificationPayload)
         .catch(reason => {
             log("Failed to store hashed access token " + reason)
         });
@@ -46,7 +45,7 @@ async function auth(token: string | undefined): Promise<boolean> {
         return false;
     }
 
-    const hashedToken = await config.code.hashedAccessTokensRepository.get(token);
+    const hashedToken = await hashedAccessTokensRepository.get(token);
 
     return !hashedToken.exists;
 }
