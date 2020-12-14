@@ -46,6 +46,7 @@ jobs:
   deploy-efgs-downloader:
     name: Deploy Efgs Downloader
     needs: Setup
+    if: needs.Setup.outputs.ENVIRONMENT
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -112,6 +113,7 @@ jobs:
   deploy-efgs-uploader:
     name: Deploy Efgs Uploader
     runs-on: ubuntu-latest
+    if: needs.Setup.outputs.ENVIRONMENT
     needs: Setup
     defaults:
       run:
