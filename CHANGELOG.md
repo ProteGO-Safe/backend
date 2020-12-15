@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.4.2
+
+### Added
+- Configuration for firebase emulators
+
+### Changed
+- Refactor config class
+- EFGS random keys use cryptographically strong random number generator
+- EFGS random keys use strict report type: CONFIRMED_CLINICAL_DIAGNOSIS
+- Different minimumRollingStart for EFGS random keys
+- Single-use JWT token for uploading EN keys.
+
 ## 4.4.1
 
 ### Fixed

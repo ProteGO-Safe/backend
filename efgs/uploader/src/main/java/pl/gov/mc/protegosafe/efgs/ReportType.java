@@ -3,7 +3,6 @@ package pl.gov.mc.protegosafe.efgs;
 import lombok.AllArgsConstructor;
 
 import java.util.Arrays;
-import java.util.Random;
 
 @AllArgsConstructor
 public enum ReportType {
@@ -22,12 +21,6 @@ public enum ReportType {
                 .filter(reportType -> reportType.getValue() == value)
                 .findAny()
                 .orElseThrow(IllegalArgumentException::new);
-    }
-
-    public static ReportType obtainRandom() {
-        Random random = new Random();
-        return Arrays.asList(values())
-                .get(random.nextInt(values().length));
     }
 
     public int getValue() {

@@ -2,12 +2,13 @@ package pl.gov.mc.protegosafe.efgs;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.List;
-import java.util.Random;
 
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
@@ -62,7 +63,7 @@ public class DiagnosisKey {
         long minimumRollingStart = Instant
                 .now()
                 .truncatedTo(ChronoUnit.DAYS)
-                .minus(15, ChronoUnit.DAYS)
+                .minus(14, ChronoUnit.DAYS)
                 .getEpochSecond() / ROLLING_START_INTERVAL_LENGTH;
 
         long maximumRollingStart = Instant
@@ -77,15 +78,16 @@ public class DiagnosisKey {
                 nextInt(1, MAX_RISK_LEVEL),
                 VISITED_COUNTRIES,
                 ORIGIN,
-                ReportType.obtainRandom(),
+                ReportType.CONFIRMED_CLINICAL_DIAGNOSIS,
                 DiagnosisKey.DAYS_SINCE_ONSET_OF_SYMPTOMS
         );
 
     }
 
+    @SneakyThrows
     private static String generateRandomKey() {
         byte[] bytes = new byte[16];
-        new Random().nextBytes(bytes);
+        SecureRandom.getInstanceStrong().nextBytes(bytes);
         return Base64.getEncoder().encodeToString(bytes);
     }
 }
