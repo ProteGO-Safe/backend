@@ -176,6 +176,21 @@ jobs:
              --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_EFGSAPIURL=$EFGS_URL,EFGS_DIAGNOSISKEYSFETCHDELAYFROMREPOSITORY=$DELAYER
         if: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
+      - name: Deploy EfgsFailedDiagnosisKeysUploader to Firebase
+        uses: actions-hub/gcloud@master
+        with:
+          args: |
+            --quiet alpha functions deploy EfgsFailedDiagnosisKeysUploaderScheduler \
+            --source ./efgs/uploader/target/deploy \
+            --entry-point org.springframework.cloud.function.adapter.gcp.GcfJarLauncher \
+            --runtime java11 \
+            --memory 512MB \
+            --trigger-topic=firebase-schedule-sendFailedKeysFromGensToEfgs-$REGION \
+            --allow-unauthenticated \
+            --region $REGION \
+            --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_MODE=RETRY_KEYS,EFGS_EFGSAPIURL=$EFGS_URL,EFGS_DIAGNOSISKEYSFETCHDELAYFROMREPOSITORY=$DELAYER
+        if: ${{ needs.Setup.outputs.ENVIRONMENT }}
+
   Lint_TS:
     name: Lint&Audit TS Functions
     runs-on: ubuntu-latest

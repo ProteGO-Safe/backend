@@ -5,71 +5,68 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.gov.mc.protegosafe.efgs.repository.DiagnosisKeysRepository;
 import pl.gov.mc.protegosafe.efgs.repository.FailedDiagnosisKeysRepository;
 import pl.gov.mc.protegosafe.efgs.repository.model.DiagnosisKey;
+import pl.gov.mc.protegosafe.efgs.repository.model.FailedDiagnosisKey;
 import pl.gov.mc.protegosafe.efgs.secret.CloudBackendConfig;
 import pl.gov.mc.protegosafe.efgs.utils.BatchSignatureUtils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class EfgsDiagnosisKeysUploader extends DiagnosisKeysUploader implements DiagnosisKeysProcessor {
+public class EfgsFailedDiagnosisKeysUploader extends DiagnosisKeysUploader implements DiagnosisKeysProcessor {
 
-    private final DiagnosisKeysRepository diagnosisKeysRepository;
     private final FailedDiagnosisKeysRepository failedDiagnosisKeysRepository;
 
     @Autowired
-    EfgsDiagnosisKeysUploader(
+    EfgsFailedDiagnosisKeysUploader(
             EfgsFakeDiagnosisKeysFactory efgsFakeDiagnosisKeysFactory,
             EfgsProtoDiagnosisKeyBatchFactory efgsProtoDiagnosisKeyBatchFactory,
             BatchSignatureUtils batchSignatureUtils,
             HttpUploader httpUploader,
-            DiagnosisKeysRepository diagnosisKeysRepository,
             FailedDiagnosisKeysRepository failedDiagnosisKeysRepository,
             CloudBackendConfig cloudBackendConfig) {
         super(efgsFakeDiagnosisKeysFactory, efgsProtoDiagnosisKeyBatchFactory, batchSignatureUtils, httpUploader, cloudBackendConfig);
-        this.diagnosisKeysRepository = diagnosisKeysRepository;
         this.failedDiagnosisKeysRepository = failedDiagnosisKeysRepository;
     }
 
     public void process() {
-        log.info("started uploading keys to efgs");
+        log.info("started uploading failed keys to efgs");
 
-        final Map<String, DiagnosisKey> idsWithDiagnosisKeys = diagnosisKeysRepository.getLimitedDiagnosisKeys();
-        final List<DiagnosisKey> diagnosisKeyBatch = idsWithDiagnosisKeys
-                .values()
-                .stream()
-                .collect(Collectors.toUnmodifiableList());
+        final List<FailedDiagnosisKey> failedDiagnosisKeys = failedDiagnosisKeysRepository.getLimitedFailedDiagnosisKeys();
 
-        if (diagnosisKeyBatch.isEmpty()) {
-            log.info("No data to upload");
+        if (failedDiagnosisKeys.isEmpty()) {
+            log.info("No failed keys to upload");
             return;
         }
 
-        final boolean isSuccessResponse = signAndUpload(diagnosisKeyBatch, false);
+        final List<DiagnosisKey> diagnosisKeyBatch = failedDiagnosisKeys
+                .stream()
+                .map(FailedDiagnosisKey::fromFailedDiagnosisKey)
+                .collect(Collectors.toUnmodifiableList());
+
+        final boolean isSuccessResponse = signAndUpload(diagnosisKeyBatch, true);
 
         if (!isSuccessResponse) {
-            failedDiagnosisKeysRepository.saveFailedUploadingDiagnosisKeys(diagnosisKeyBatch);
+            failedDiagnosisKeysRepository.updateFailedUploadingDiagnosisKeys(failedDiagnosisKeys);
         } else {
             log.info("Uploaded successfully");
+            failedDiagnosisKeysRepository
+                    .removeDocument(failedDiagnosisKeys
+                            .stream()
+                            .map(FailedDiagnosisKey::getId)
+                            .collect(toList())
+                    );
         }
-
-        idsWithDiagnosisKeys
-                .keySet()
-                .forEach(this::removeDocuments);
     }
 
     @Override
     public Boolean isApplicable(Mode mode) {
-        return Mode.UPLOAD_KEYS.equals(mode);
-    }
-
-    private void removeDocuments(String documentId) {
-        diagnosisKeysRepository.removeDocument(documentId);
+        return Mode.RETRY_KEYS.equals(mode);
     }
 }

@@ -3,6 +3,7 @@ package pl.gov.mc.protegosafe.efgs;
 import com.google.protobuf.ByteString;
 import eu.interop.federationgateway.model.EfgsProto;
 import org.springframework.stereotype.Service;
+import pl.gov.mc.protegosafe.efgs.repository.model.DiagnosisKey;
 
 import java.util.Base64;
 import java.util.List;

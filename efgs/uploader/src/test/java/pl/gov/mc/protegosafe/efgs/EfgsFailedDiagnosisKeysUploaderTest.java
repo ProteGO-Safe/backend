@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import pl.gov.mc.protegosafe.efgs.repository.DiagnosisKeysRepository;
 import pl.gov.mc.protegosafe.efgs.repository.FailedDiagnosisKeysRepository;
 import pl.gov.mc.protegosafe.efgs.repository.model.DiagnosisKey;
 import pl.gov.mc.protegosafe.efgs.secret.CloudBackendConfig;
@@ -33,9 +32,9 @@ import java.util.stream.IntStream;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Disabled
-class EfgsDiagnosisKeysUploaderTest {
+class EfgsFailedDiagnosisKeysUploaderTest {
 
-    private EfgsDiagnosisKeysUploader efgsDiagnosisKeysUploader;
+    private EfgsFailedDiagnosisKeysUploader efgsFailedDiagnosisKeysUploader;
 
     @Autowired
     private Firestore firestore;
@@ -43,8 +42,6 @@ class EfgsDiagnosisKeysUploaderTest {
     private CloudBackendConfig cloudBackendConfig;
     @Autowired
     private HttpUploader httpUploader;
-    @Autowired
-    private DiagnosisKeysRepository diagnosisKeysRepository;
     @Autowired
     private FailedDiagnosisKeysRepository failedDiagnosisKeysRepository;
     @Autowired
@@ -56,19 +53,18 @@ class EfgsDiagnosisKeysUploaderTest {
 
     @BeforeEach
     public void beforeEach() {
-        efgsDiagnosisKeysUploader = new EfgsDiagnosisKeysUploader(
+        efgsFailedDiagnosisKeysUploader = new EfgsFailedDiagnosisKeysUploader(
                 efgsFakeDiagnosisKeysFactory,
                 efgsProtoDiagnosisKeyBatchFactory,
                 batchSignatureUtils,
                 httpUploader,
-                diagnosisKeysRepository,
                 failedDiagnosisKeysRepository,
                 cloudBackendConfig);
     }
 
     @Test
     public void shouldUploadDiagnosisKeys() throws Exception {
-        final Logger logger = (Logger) LoggerFactory.getLogger(EfgsDiagnosisKeysUploader.class);
+        final Logger logger = (Logger) LoggerFactory.getLogger(EfgsFailedDiagnosisKeysUploader.class);
         // given
         keys();
 
@@ -76,30 +72,36 @@ class EfgsDiagnosisKeysUploaderTest {
         final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
         logger.addAppender(listAppender);
-        efgsDiagnosisKeysUploader.process();
+        efgsFailedDiagnosisKeysUploader.process();
 
         Assertions.assertThat(listAppender.list)
                 .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
                 .contains(
-                        Tuple.tuple("started uploading keys to efgs", Level.INFO),
+                        Tuple.tuple("started uploading failed keys to efgs", Level.INFO),
                         Tuple.tuple("Uploaded successfully", Level.INFO)
                 );
     }
 
     private void keys() throws Exception {
         final WriteBatch batch = firestore.batch();
-        final CollectionReference diagnosisKeys = firestore.collection("diagnosisKeys");
+        final CollectionReference diagnosisKeys = firestore.collection("failedUploadingToEfgsDiagnosisKeys");
 
         IntStream.range(0, 10).forEach(e -> {
             final String id = UUID.randomUUID().toString();
             final DiagnosisKey random = DiagnosisKey.random();
             final Map<String, Object> docData = new HashMap<>();
-            docData.put("createdAt", (int) (System.currentTimeMillis() / 1000) - 108001);
             docData.put("id", id);
-            docData.put("key", random.getKeyData());
+            docData.put("keyData", random.getKeyData());
+            docData.put("rollingStartIntervalNumber", random.getRollingStartIntervalNumber());
             docData.put("rollingPeriod", random.getRollingPeriod());
-            docData.put("rollingStartNumber", random.getRollingStartIntervalNumber());
-            docData.put("transmissionRisk", random.getTransmissionRiskLevel());
+            docData.put("transmissionRiskLevel", random.getTransmissionRiskLevel());
+            docData.put("visitedCountries", random.getVisitedCountries());
+            docData.put("origin", random.getOrigin());
+            docData.put("reportType", random.getReportType().name());
+            docData.put("daysSinceOnsetOfSymptoms", random.getDaysSinceOnsetOfSymptoms());
+            docData.put("createdAt", (int) (System.currentTimeMillis() / 1000) - 10);
+            docData.put("updatedAt", (int) (System.currentTimeMillis() / 1000) - 10);
+            docData.put("numberOfRetries", 0);
 
             diagnosisKeys.document(id).create(docData);
         });
