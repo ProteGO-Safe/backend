@@ -1,6 +1,7 @@
 import RandomCodeGenerator from "./utils/RandomCodeGenerator";
 import Config from "./interfaces/Config"
 import CodeRepository from "./utils/CodeRepository";
+import HashedAccessTokensRepository from "./utils/HashedAccessTokensRepository";
 import SubscriptionRepository from "./utils/SubscriptionRepository";
 import SecretManager from "./utils/SecretManager";
 import IPChecker from "./utils/IPChecker";
@@ -17,7 +18,8 @@ const config: Config = {
     code: {
         generator: new RandomCodeGenerator(6),
         lifetime: 30,
-        repository: new CodeRepository()
+        repository: new CodeRepository(),
+        hashedAccessTokensRepository: new HashedAccessTokensRepository()
     },
     jwt: {
         lifetime: 30
@@ -41,10 +43,6 @@ const config: Config = {
         disabledSafetyToken: false
     },
     efgs: {
-        firestore: {
-            diagnosisKeysCollectionName: 'collectionName',
-            failedUploadingToGensDiagnosisKeysCollectionName: 'collectionName'
-        },
         gens: {
             regions: ['PL'],
             appPackageName: 'appPackageName',

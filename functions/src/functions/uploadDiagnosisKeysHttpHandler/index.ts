@@ -5,15 +5,15 @@ import * as functions from "firebase-functions";
 
 import {v4} from "uuid";
 import * as admin from "firebase-admin";
-import moment = require("moment");
 import uploadDiagnosisKeys from "../uploadDiagnosisKeys";
+import moment = require("moment");
 
 export async function uploadDiagnosisKeysHttpHandler(request: functions.Request, response: functions.Response) {
     const body = request.body;
     if (!await auth(body.data.verificationPayload)) {
         return response.status(401).send({error: {message: "", status: "UNAUTHENTICATED"}});
     }
-    const { isInteroperabilityEnabled, data : {temporaryExposureKeys} } = body;
+    const {isInteroperabilityEnabled, data: {temporaryExposureKeys}} = body;
     try {
         await uploadDiagnosisKeys(body.data)
             .then((ignore: any) => saveDiagnosisKeys(body))
@@ -25,6 +25,12 @@ export async function uploadDiagnosisKeysHttpHandler(request: functions.Request,
     }
 
     log(`uploaded keys from user to gens, keys: ${temporaryExposureKeys.length}, return code: 200, isInteroperabilityEnabled: ${isInteroperabilityEnabled}`);
+
+    await config.code
+        .hashedAccessTokensRepository.save(body.data.verificationPayload)
+        .catch(reason => {
+            log("Failed to store hashed access token " + reason)
+        });
 
     return response.status(200).send({result: ""});
 }
@@ -40,11 +46,15 @@ async function auth(token: string | undefined): Promise<boolean> {
         return false;
     }
 
-    return true;
+    const hashedToken = await config.code.hashedAccessTokensRepository.get(token);
+
+    return !hashedToken.exists;
 }
 
+const firestoreCollectionName = "diagnosisKeys";
+
 export const saveDiagnosisKeys = (body: any) => {
-    const { isInteroperabilityEnabled, data : {temporaryExposureKeys} } = body;
+    const {isInteroperabilityEnabled, data: {temporaryExposureKeys}} = body;
     if (!isInteroperabilityEnabled) {
         return;
     }
@@ -54,7 +64,7 @@ export const saveDiagnosisKeys = (body: any) => {
         const id = v4();
         const createdAt = moment().unix();
         const itemToSave = {id, createdAt, ...exposureKey};
-        db.collection(config.efgs.firestore.diagnosisKeysCollectionName)
+        db.collection(firestoreCollectionName)
             .doc(id)
             .set(itemToSave)
             .catch(reason => {

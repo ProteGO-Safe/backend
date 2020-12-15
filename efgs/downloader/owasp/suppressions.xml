@@ -3,5 +3,26 @@
     <suppress>
         <notes>see https://github.com/jeremylong/DependencyCheck/issues/1827></notes>
         <cve>CVE-2018-1258</cve>
+        <cve>CVE-2020-17527</cve>
+    </suppress>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/io\.opencensus/opencensus\-contrib\-grpc\-util@.*$</packageUrl>
+        <cve>CVE-2017-8359</cve>
+        <cve>CVE-2020-7768</cve>
+        <cve>CVE-2017-7861</cve>
+        <cve>CVE-2017-9431</cve>
+        <cve>CVE-2017-7860</cve>
+    </suppress>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/com\.google\.api\.grpc/proto\-google.*$</packageUrl>
+        <cve>CVE-2017-8359</cve>
+        <cve>CVE-2020-7768</cve>
+        <cve>CVE-2017-7861</cve>
+        <cve>CVE-2017-9431</cve>
+        <cve>CVE-2017-7860</cve>
+    </suppress>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/com\.google\.http\-client/google\-http\-client.*$</packageUrl>
+        <cve>CVE-2020-13956</cve>
     </suppress>
 </suppressions>

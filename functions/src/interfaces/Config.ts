@@ -1,6 +1,7 @@
 import RandomCodeGenerator from "../utils/RandomCodeGenerator";
 import CodeRepository from "../utils/CodeRepository";
 import SubscriptionRepository from "../utils/SubscriptionRepository";
+import HashedAccessTokensRepository from "../utils/HashedAccessTokensRepository";
 
 declare type SUPPORTED_REGIONS = "us-central1" | "us-east1" | "us-east4" | "europe-west1" | "europe-west2" | "europe-west3" | "asia-east2" | "asia-northeast1";
 
@@ -17,6 +18,7 @@ interface Config {
         generator: RandomCodeGenerator,
         lifetime: number //in minutes
         repository: CodeRepository
+        hashedAccessTokensRepository: HashedAccessTokensRepository
     },
     jwt: {
         lifetime: number //in minutes
@@ -26,10 +28,6 @@ interface Config {
         sMaxAge: number // in seconds
     },
     efgs: {
-        firestore: {
-            diagnosisKeysCollectionName: string,
-            failedUploadingToGensDiagnosisKeysCollectionName: string
-        },
         gens: {
             regions: Array<string>,
             appPackageName: string,

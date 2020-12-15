@@ -9,7 +9,7 @@ List of Cloud Functions:
 - **generateCode** - generating pin codes
 - **getAccessToken** - exchanging pin codes for access tokens
 - **uploadDiagnosisKeys** - uploading temporary exposure keys
-- **clearUnusedCodes** - clearing expired pin codes 
+- **clearExpiredData** - clearing expired pin codes and hashed access tokens
 - **faqParser** - parsing the government FAQ page
 - **advicesParser** - parsing the government advices page
 - **hospitalsParser** - parsing the government hospitals page
@@ -105,6 +105,14 @@ someFunction()
 - exec with bash
 - to authorization first generate service account key at https://console.cloud.google.com/apis/credentials/serviceaccountkey, store it in root of project, next execute export GOOGLE_APPLICATION_CREDENTIALS="/app/path/to/file.json"
 - execute npx ts-node /app/functions/src/functions/someFunction.ts
+
+## Running http function with firebase emulator
+
+- run docker container from ./docker/docker-compose.yml
+- exec with bash
+- to authorization first generate service account key at https://console.cloud.google.com/apis/credentials/serviceaccountkey, store it in root of project, next execute export GOOGLE_APPLICATION_CREDENTIALS="/app/path/to/file.json"
+- execute in container npm run serve
+- use http client (postman/curl) to call http function with url http://localhost:5001/protego-fb-dev/europe-west3/[function_name] 
 
 ## Generating certification's files
 
