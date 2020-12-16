@@ -18,6 +18,10 @@ const config = {
         android: {
             url: 'https://www.googleapis.com/androidcheck/v1/attestations/verify'
         }
+    },
+    statistics: {
+        fileName: 'covid_info.json',
+        sshDirName: '/home/stopcovid'
     }
 };
 

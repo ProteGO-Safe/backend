@@ -12,6 +12,7 @@ import generateSubscriptionCode from "./functions/freeTest/generateSubscriptionC
 import getSubscription from "./functions/freeTest/getSubscription";
 import uploadDiagnosisKeysSubscriber from "./functions/efgs/uploadDiagnosisKeysSubscriber";
 import generateCodesBatch from "./functions/generateCodesBatch";
+import updateCovidStatistics from "./functions/updateCovidStatistics";
 
 admin.initializeApp();
 
@@ -24,6 +25,7 @@ exports.generateSubscriptionCode = cloudFunctions.httpsOnRequest(generateSubscri
 exports.getAccessToken = cloudFunctions.https(getAccessToken);
 exports.getSubscription = cloudFunctions.httpsOnRequest(getSubscription);
 exports.getSubscriptionCode = cloudFunctions.httpsOnRequest(getSubscriptionCode);
+exports.updateCovidStatistics = cloudFunctions.scheduler(updateCovidStatistics, 'every 30 minutes');
 exports.updateSubscription = cloudFunctions.httpsOnRequest(updateSubscription);
 exports.uploadDiagnosisKeys = cloudFunctions.httpsOnRequest(uploadDiagnosisKeysHttpHandler);
 exports.uploadDiagnosisKeysSubscriber = cloudFunctions.topicSubscriber(uploadDiagnosisKeysSubscriber);
