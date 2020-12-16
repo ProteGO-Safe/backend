@@ -5,7 +5,7 @@ const region = ff.config().config.region;
 
 export function https(
     handler : (data: any, context: ff.https.CallableContext) => any | Promise<any>,
-    runtime: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 30}
+    runtime: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 180}
 ): ff.HttpsFunction {
 
     return ff.runWith(runtime).region(region).https.onCall(async (data, context) => {
