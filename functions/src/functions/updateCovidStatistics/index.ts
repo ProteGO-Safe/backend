@@ -1,6 +1,7 @@
 import {covidStatisticsRepository, statisticsReader} from "../../services";
 import {logger} from "firebase-functions";
 import {log} from "firebase-functions/lib/logger";
+import sendStatisticsNotification from "../notification/sendStatisticsNotification";
 
 const updateCovidStatistics = async () => {
     const covidStatistics = await covidStatisticsRepository.getCovidStats();
@@ -16,6 +17,9 @@ const updateCovidStatistics = async () => {
 
     await covidStatisticsRepository.save(newestStatistics);
     log('Saved new statistics to the bucket');
+
+    await sendStatisticsNotification(newestStatistics);
+    log('Pushed notification');
 }
 
 export default updateCovidStatistics;

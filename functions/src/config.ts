@@ -1,4 +1,5 @@
 const config = {
+    notificationUrl: "https://fcm.googleapis.com/fcm/send",
     code: {
         lifetime: 30, // in minutes
     },

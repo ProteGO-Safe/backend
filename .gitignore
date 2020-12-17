@@ -71,3 +71,4 @@ efgs-downloader/target
 efgs/downloader/target
 efgs/uploader/target
 *.iml
+.runtimeconfig.json
