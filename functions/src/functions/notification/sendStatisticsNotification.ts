@@ -88,6 +88,9 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
                     }
                 ]
             },
+            "route": {
+                "name": "home",
+            },
             covidStats
         }
     };
