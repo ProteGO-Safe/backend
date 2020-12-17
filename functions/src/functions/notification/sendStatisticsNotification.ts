@@ -97,8 +97,8 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
         notification: {
             "click_action": "covidStatsCategoryId",
             "mutable_content": true,
-            "title": defaultTitle,
-            "body": defaultContent
+            "title":  `COVID-19 w Polsce (${dateString})`,
+            "body": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
         }
     } : payload;
 }
