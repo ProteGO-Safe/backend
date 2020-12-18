@@ -31,6 +31,7 @@ public class EfgsUploader {
                 .stream()
                 .filter(e -> e.isApplicable(properties.getMode()))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow()
+                .process();
     }
 }
