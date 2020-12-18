@@ -206,10 +206,10 @@ jobs:
           path: ~/.npm
           key: ${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ env.cache-name }}-
-      - name: Use Node.js 10
+      - name: Use Node.js 12
         uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: 12
       - run: npm install
       - run: npm run lint
       - run: npm audit --audit-level moderate
@@ -250,7 +250,7 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: 12
 
       - run: npm --prefix functions install
       - run: npm --prefix functions audit --audit-level moderate
@@ -263,7 +263,6 @@ jobs:
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'DEV'
 
       - name: Set firebase envs
-        if: ( env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'PROD' || env.ENVIRONMENT == 'DEV' )
         uses: w9jds/firebase-action@master
         with:
           args: functions:config:set config.region=$REGION config.secretmanagerpath=$SECRET_MANAGER_PATH --project $PROJECT_ID
