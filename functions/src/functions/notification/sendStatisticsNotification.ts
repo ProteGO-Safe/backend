@@ -60,7 +60,7 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
                 "localizedNotifications": [
                     {
                         "title": `COVID-19 w Polsce (${dateString})`,
-                        "content": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, ${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`,
+                        "content": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, +${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`,
                         "languageISO": "pl"
                     },
                     {
@@ -103,7 +103,7 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
             "click_action": "covidStatsCategoryId",
             "mutable_content": true,
             "title":  `COVID-19 w Polsce (${dateString})`,
-            "body": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, ${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
+            "body": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, +${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
         }
     } : payload;
 }
