@@ -59,4 +59,14 @@ export const topicSubscriber = (handler : (data: any) => any | Promise<any>) => 
         .onPublish(handler);
 };
 
-
+export function storage(
+    handler: (object: ff.storage.ObjectMetadata) => any | Promise<any>,
+    runtimeOpt: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 60}
+): ff.CloudFunction<ff.storage.ObjectMetadata> {
+    return ff
+        .runWith(runtimeOpt)
+        .region(region)
+        .storage.object().onFinalize(async (object : ff.storage.ObjectMetadata) => {
+            return handler(object);
+        });
+}

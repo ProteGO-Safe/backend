@@ -5,8 +5,7 @@ import SecretManager from "./utils/SecretManager";
 import IPChecker from "./utils/IPChecker";
 import HashedAccessTokensRepository from "./utils/HashedAccessTokensRepository";
 import CovidStatisticsRepository from "./utils/CovidStatisticsRepository";
-import StatisticsReader from "./functions/updateCovidStatistics/StatisticsReader";
-import StatisticsFileReader from "./functions/updateCovidStatistics/StatisticsFileReader";
+import StatisticsFileParser from "./functions/updateCovidStatistics/StatisticsFileParser";
 
 export const secretManager = new SecretManager();
 export const generateCodeIPChecker = new IPChecker('generateCodeNetmasks');
@@ -16,4 +15,4 @@ export const codeRepository = new CodeRepository();
 export const subscriptionRepository = new SubscriptionRepository();
 export const hashedAccessTokensRepository = new HashedAccessTokensRepository();
 export const covidStatisticsRepository = new CovidStatisticsRepository();
-export const statisticsReader = new StatisticsReader(new StatisticsFileReader(secretManager));
+export const statisticsFileParser = new StatisticsFileParser();
