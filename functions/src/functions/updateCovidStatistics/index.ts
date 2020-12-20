@@ -6,17 +6,20 @@ import {Storage} from "@google-cloud/storage";
 import {log} from "firebase-functions/lib/logger";
 
 const updateCovidStatistics = async (object : ObjectMetadata) => {
-    if (!object.name || !object.name.match(/\d{8}_covid_stats/)) {
-        log('The finalized object doesnt match')
+    if (!object.name || !object.name.match(/covid-stats\/\d{8}_covid_stats/)) {
+        log('The finalized object doesnt match', object.name)
         log(object)
         return;
     }
 
     const fileContent = await downloadFileContent(object);
-    const newestStatistics = await statisticsFileParser.parse(fileContent);
+    const newestStatistics = await statisticsFileParser.parse(fileContent, object.name);
     const covidStatistics = await covidStatisticsRepository.getCovidStats();
 
-    newestStatistics.updated = resolveDatetimeFromFilename(object.name);
+    if (!newestStatistics.updated) {
+        logger.info('Updated timestamp is wrong', newestStatistics.updated, object.name);
+        return;
+    }
 
     log(`Read current saved covid statistics`, covidStatistics);
     log(`Read newest covid statistics`, newestStatistics);
@@ -46,16 +49,6 @@ const downloadFileContent = async (object: ObjectMetadata): Promise<string> => {
                 resolve(contents.toString())
             });
     });
-}
-
-const resolveDatetimeFromFilename = (filename: string) : number => {
-    const dateString = parseInt(filename).toString().substr(0, 8);
-
-    const year = dateString.substr(0, 4);
-    const month = parseInt(dateString.substr(4, 2)) - 1;
-    const day = dateString.substr(6, 2);
-
-    return new Date(parseInt(year), month, parseInt(day)).getTime() / 1000;
 }
 
 export default updateCovidStatistics;

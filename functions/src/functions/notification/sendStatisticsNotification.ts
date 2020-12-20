@@ -49,6 +49,8 @@ enum Platform {
 
 const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): any => {
     const date = new Date();
+    date.setTime(Number(covidStats.updated) * 1000);
+
     const dateString = `${date.getUTCDate()}.${date.getUTCMonth() + 1}`;
 
     const payload = {
@@ -58,7 +60,7 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
                 "localizedNotifications": [
                     {
                         "title": `COVID-19 w Polsce (${dateString})`,
-                        "content": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`,
+                        "content": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, ${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`,
                         "languageISO": "pl"
                     },
                     {
@@ -101,7 +103,7 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
             "click_action": "covidStatsCategoryId",
             "mutable_content": true,
             "title":  `COVID-19 w Polsce (${dateString})`,
-            "body": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
+            "body": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, ${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
         }
     } : payload;
 }
