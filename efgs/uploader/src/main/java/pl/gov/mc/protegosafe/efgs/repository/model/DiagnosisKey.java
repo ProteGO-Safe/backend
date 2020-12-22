@@ -1,4 +1,4 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.repository.model;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -32,7 +32,7 @@ public class DiagnosisKey {
     private final ReportType reportType;
     private final Integer daysSinceOnsetOfSymptoms;
 
-    private DiagnosisKey(String keyData,
+    public DiagnosisKey(String keyData,
                          Long rollingStartIntervalNumber,
                          Integer rollingPeriod,
                          Integer transmissionRiskLevel,
@@ -58,7 +58,7 @@ public class DiagnosisKey {
                 VISITED_COUNTRIES, ORIGIN, ReportType.CONFIRMED_CLINICAL_DIAGNOSIS, DAYS_SINCE_ONSET_OF_SYMPTOMS);
     }
 
-    static DiagnosisKey random() {
+    public static DiagnosisKey random() {
 
         long minimumRollingStart = Instant
                 .now()

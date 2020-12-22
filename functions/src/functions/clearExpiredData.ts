@@ -1,6 +1,6 @@
-import config from "../config";
+import {hashedAccessTokensRepository, codeRepository} from "../services";
 
 export async function clearExpiredData() {
-    await config.code.repository.removeExpired();
-    await config.code.hashedAccessTokensRepository.removeExpired();
+    await codeRepository.removeExpired();
+    await hashedAccessTokensRepository.removeExpired();
 }

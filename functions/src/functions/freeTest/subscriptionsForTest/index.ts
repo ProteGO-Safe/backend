@@ -1,12 +1,11 @@
 import * as functions from "firebase-functions";
-
 const {log} = require("firebase-functions/lib/logger");
 import moment = require("moment");
 import checkSafetyToken from "../safetyTokenChecker";
-import config, {secretManager} from "../../../config";
 import {generateJwt} from "../../jwtGenerator";
 import {validateCode} from "../../code/codeValidator";
 import returnBadRequestResponse from "../../returnBadRequestResponse";
+import {secretManager, codeRepository, subscriptionRepository} from "../../../services";
 
 const subscriptionsForTest = async (request: functions.Request, response: functions.Response) => {
 
@@ -29,27 +28,26 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
             return returnBadRequestResponse(response);
         }
 
-        const codeRepository = config.code.repository;
         const codeEntity = await codeRepository.get(code);
         const codeSha256 = codeEntity.id;
         const codeId = codeEntity.get('id');
         await codeRepository.update(code, {expiryTime: moment().unix()});
 
-        const subscription = await config.subscription.repository.get(guid);
+        const subscription = await subscriptionRepository.get(guid);
 
         if (subscription.exists) {
             log(`subscription already exists`);
             return returnBadRequestResponse(response);
         }
 
-        const existingSubscription = await config.subscription.repository.getByCodeSha256(codeSha256);
+        const existingSubscription = await subscriptionRepository.getByCodeSha256(codeSha256);
 
         if (existingSubscription) {
             log(`subscription already exists`);
             return returnBadRequestResponse(response);
         }
 
-        config.subscription.repository.save(guid, {
+        subscriptionRepository.save(guid, {
             created: moment().unix(),
             codeId,
             codeSha256,

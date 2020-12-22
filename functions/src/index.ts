@@ -11,6 +11,8 @@ import subscriptionsForTest from "./functions/freeTest/subscriptionsForTest";
 import generateSubscriptionCode from "./functions/freeTest/generateSubscriptionCode";
 import getSubscription from "./functions/freeTest/getSubscription";
 import uploadDiagnosisKeysSubscriber from "./functions/efgs/uploadDiagnosisKeysSubscriber";
+import generateCodesBatch from "./functions/generateCodesBatch";
+import updateCovidStatistics from "./functions/updateCovidStatistics";
 
 admin.initializeApp();
 
@@ -18,10 +20,12 @@ exports.backupTranslations = cloudFunctions.scheduler(backupTranslations, 'every
 exports.clearExpiredData = cloudFunctions.scheduler(clearExpiredData, 'every 30 minutes');
 exports.createSubscription = cloudFunctions.httpsOnRequest(subscriptionsForTest);
 exports.generateCode = cloudFunctions.https(generateCodeWrapper);
+exports.generateCodesBatch = cloudFunctions.https(generateCodesBatch);
 exports.generateSubscriptionCode = cloudFunctions.httpsOnRequest(generateSubscriptionCode);
 exports.getAccessToken = cloudFunctions.https(getAccessToken);
 exports.getSubscription = cloudFunctions.httpsOnRequest(getSubscription);
 exports.getSubscriptionCode = cloudFunctions.httpsOnRequest(getSubscriptionCode);
+exports.updateCovidStatistics = cloudFunctions.storage(updateCovidStatistics);
 exports.updateSubscription = cloudFunctions.httpsOnRequest(updateSubscription);
 exports.uploadDiagnosisKeys = cloudFunctions.httpsOnRequest(uploadDiagnosisKeysHttpHandler);
 exports.uploadDiagnosisKeysSubscriber = cloudFunctions.topicSubscriber(uploadDiagnosisKeysSubscriber);

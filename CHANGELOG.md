@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.4.3
+
+### Added
+- new cloud function for re-sending failed keys to the EFGS
+- new cloud function for updating Poland COVID-19 statistics
+- new cloud function for generating batch of PIN codes
+- new function for sending push notifications for COVID-19 daily statistics
+
+### Changed
+- node version
+
 ## 4.4.2
 
 ### Added

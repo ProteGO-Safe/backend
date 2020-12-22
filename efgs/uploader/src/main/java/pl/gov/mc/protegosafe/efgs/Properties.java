@@ -15,4 +15,5 @@ public class Properties {
   String efgsApiUrl;
   String projectId;
   Long diagnosisKeysFetchDelayFromRepository;
+  Mode mode = Mode.UPLOAD_KEYS;
 }

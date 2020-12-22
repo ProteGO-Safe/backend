@@ -1,13 +1,14 @@
+import * as ff from 'firebase-functions';
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager/build/src";
-import config from "../config";
 
 class SecretManager {
     configuration: any;
 
     async getConfig(name: string): Promise<any> {
         if (!this.configuration) {
+            const secretManagerPath = ff.config().config.secretmanagerpath;
             const secretManagerClient = new SecretManagerServiceClient();
-            const [accessResponse] = await secretManagerClient.accessSecretVersion({name: config.secretManagerPath});
+            const [accessResponse] = await secretManagerClient.accessSecretVersion({name: secretManagerPath});
             this.configuration = JSON.parse(<string>accessResponse.payload?.data?.toString());
         }
 
