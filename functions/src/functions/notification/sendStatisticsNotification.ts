@@ -84,7 +84,7 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
                         "languageISO": "ru"
                     },
                     {
-                        "title": `COVID-19 в Польше (${dateString})`,
+                        "title": `Polonya'da COVID-19 (${dateString})`,
                         "content": `+${covidStats.newCases} yeni vaka, +${covidStats.newDeaths} kişi vefat etti. Tıklayın ve istatistikleri STOP COVID - ProteGO Safe uygulamasında görün.`,
                         "languageISO": "tr"
                     }
