@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ENVIRONMENT: ${{ env.ENVIRONMENT }}
+      NODE_VERSION: 12
+      JAVA_VERSION: 11
     steps:
       - name: Set env to DEV
         if: github.repository_owner != 'ProteGO-Safe'
@@ -52,11 +54,12 @@ jobs:
         working-directory: ./efgs/downloader
     env:
       ENVIRONMENT: ${{ needs.Setup.outputs.ENVIRONMENT }}
+      JAVA_VERSION: ${{ needs.Setup.outputs.JAVA_VERSION }}
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-        
+
       - uses: actions/cache@v2
         env:
           cache-name: efgs-dl
@@ -78,17 +81,17 @@ jobs:
           REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
         if: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
-      - name: Install java 11
+      - name: Install java
         uses: actions/setup-java@v1
         with:
-          java-version: '11'
+          java-version: ${{ env.JAVA_VERSION }}
           java-package: jdk
           architecture: x64
 
       - run: mvn dependency:tree -Dverbose -ntp
         shell: bash
         if: env.ENVIRONMENT != 'PROD' || env.ENVIRONMENT != 'STAGE'
-        
+
       - name: mvn package
         run: 'mvn package -ntp'
         shell: bash
@@ -100,7 +103,7 @@ jobs:
              --quiet alpha functions deploy EfgsDiagnosisKeysDownloaderScheduler \
              --source ./efgs/downloader/target/deploy \
              --entry-point org.springframework.cloud.function.adapter.gcp.GcfJarLauncher \
-             --runtime java11 \
+             --runtime java${{ env.JAVA_VERSION }} \
              --memory 2048MB  \
              --trigger-topic=firebase-schedule-sendKeysFromEfgsToGens-$REGION \
              --allow-unauthenticated \
@@ -118,6 +121,7 @@ jobs:
         working-directory: ./efgs/uploader
     env:
       ENVIRONMENT: ${{ needs.Setup.outputs.ENVIRONMENT }}
+      JAVA_VERSION: ${{ needs.Setup.outputs.JAVA_VERSION }}
 
     steps:
       - name: Checkout Repo
@@ -146,10 +150,10 @@ jobs:
           DELAYER_ENV: "${{ env.ENVIRONMENT }}_DELAYER"
         if: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
-      - name: Install java 11
+      - name: Install java
         uses: actions/setup-java@v1
         with:
-          java-version: '11'
+          java-version: ${{ env.JAVA_VERSION }}
           java-package: jdk
           architecture: x64
 
@@ -168,7 +172,7 @@ jobs:
              --quiet alpha functions deploy EfgsDiagnosisKeysUploaderScheduler \
              --source ./efgs/uploader/target/deploy \
              --entry-point org.springframework.cloud.function.adapter.gcp.GcfJarLauncher \
-             --runtime java11 \
+             --runtime java${{ env.JAVA_VERSION }} \
              --memory 512MB \
              --trigger-topic=firebase-schedule-sendKeysFromGensToEfgs-$REGION \
              --allow-unauthenticated \
@@ -176,9 +180,27 @@ jobs:
              --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_EFGSAPIURL=$EFGS_URL,EFGS_DIAGNOSISKEYSFETCHDELAYFROMREPOSITORY=$DELAYER
         if: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
+      - name: Deploy EfgsFailedDiagnosisKeysUploader to Firebase
+        uses: actions-hub/gcloud@master
+        with:
+          args: |
+            --quiet alpha functions deploy EfgsFailedDiagnosisKeysUploaderScheduler \
+            --source ./efgs/uploader/target/deploy \
+            --entry-point org.springframework.cloud.function.adapter.gcp.GcfJarLauncher \
+            --runtime java${{ env.JAVA_VERSION }} \
+            --memory 512MB \
+            --trigger-topic=firebase-schedule-sendFailedKeysFromGensToEfgs-$REGION \
+            --allow-unauthenticated \
+            --region $REGION \
+            --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_MODE=RETRY_KEYS,EFGS_EFGSAPIURL=$EFGS_URL,EFGS_DIAGNOSISKEYSFETCHDELAYFROMREPOSITORY=$DELAYER
+        if: ${{ needs.Setup.outputs.ENVIRONMENT }}
+
   Lint_TS:
     name: Lint&Audit TS Functions
     runs-on: ubuntu-latest
+    needs: [Setup]
+    env:
+      NODE_VERSION: ${{ needs.Setup.outputs.NODE_VERSION }}
     defaults:
       run:
         working-directory: functions
@@ -191,10 +213,10 @@ jobs:
           path: ~/.npm
           key: ${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ env.cache-name }}-
-      - name: Use Node.js 10
+      - name: Install Node
         uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: ${{ env.NODE_VERSION }}
       - run: npm install
       - run: npm run lint
       - run: npm audit --audit-level moderate
@@ -207,6 +229,7 @@ jobs:
     if: ${{ needs.Setup.outputs.ENVIRONMENT }}
     env:
       ENVIRONMENT: ${{ needs.Setup.outputs.ENVIRONMENT }}
+      NODE_VERSION: ${{ needs.Setup.outputs.NODE_VERSION }}
       
     steps:
       - name: Checkout Repo
@@ -224,19 +247,18 @@ jobs:
         run: |
           echo "GCP_SA_KEY=${{ secrets[env.SECRET_ENV] }}" >> $GITHUB_ENV
           echo "PROJECT_ID=${{ secrets[env.PROJECT_ENV] }}" >> $GITHUB_ENV
-          echo "PROJECT_ENVS=${{ secrets[env.EV] }}" >> $GITHUB_ENV
+          echo "REGION=${{ secrets[env.REGION_ENV] }}" >> $GITHUB_ENV
+          echo "SECRET_MANAGER_PATH=${{ secrets[env.SECRET_MANAGER_PATH_ENV] }}" >> $GITHUB_ENV
         env:
           SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
           EV: "${{ env.ENVIRONMENT }}_ENV"
-
-      - name: Inject ENV's for builds
-        run: 'echo "$PROJECT_ENVS" | base64 --decode > functions/src/config.ts'
-        shell: bash
+          REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
+          SECRET_MANAGER_PATH_ENV: "${{ env.ENVIRONMENT }}_SECRET_MANAGER_PATH"
 
       - uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: ${{ env.NODE_VERSION }}
 
       - run: npm --prefix functions install
       - run: npm --prefix functions audit --audit-level moderate
@@ -247,6 +269,11 @@ jobs:
       - run: echo FUNCTIONS=$FUNCTIONS
         shell: bash
         if: env.ENVIRONMENT == 'STAGE' || env.ENVIRONMENT == 'DEV'
+
+      - name: Set firebase envs
+        uses: w9jds/firebase-action@master
+        with:
+          args: functions:config:set config.region=$REGION config.secretmanagerpath=$SECRET_MANAGER_PATH --project $PROJECT_ID
 
       - name: Deploy to Firebase
         if: ${{ needs.Setup.outputs.ENVIRONMENT }}

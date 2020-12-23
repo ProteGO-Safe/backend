@@ -3,15 +3,15 @@ const {log} = require("firebase-functions/lib/logger");
 import {sha256} from "js-sha256";
 import {validateApiTokenAndIp} from "../ipAndApiTokenValidator";
 import returnBadRequestResponse from "../returnBadRequestResponse";
-import config from "../../config";
+import {subscriptionRepository} from "../../services";
 
 const findSubscription = async (codeId: string, code: string): Promise<any> => {
     if (codeId) {
-        return await config.subscription.repository.getByCodeId(codeId);
+        return await subscriptionRepository.getByCodeId(codeId);
     }
     if (code) {
         const codeSha256 = sha256(code);
-        return await config.subscription.repository.getByCodeSha256(codeSha256);
+        return await subscriptionRepository.getByCodeSha256(codeSha256);
     }
     return undefined;
 

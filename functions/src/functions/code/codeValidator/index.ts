@@ -1,4 +1,4 @@
-import config from "../../../config";
+import {codeRepository} from "../../../services";
 import moment = require("moment");
 
 export const validateCode = async (code: string): Promise<boolean> => {
@@ -6,8 +6,7 @@ export const validateCode = async (code: string): Promise<boolean> => {
         return false;
     }
 
-    const repository = config.code.repository;
-    const storedCode = await repository.get(code);
+    const storedCode = await codeRepository.get(code);
 
     if (!storedCode.exists) {
         return false;

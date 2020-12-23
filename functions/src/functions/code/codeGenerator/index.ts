@@ -1,18 +1,14 @@
-import config from "../../../config";
-import moment = require("moment");
+import {codeGenerator, codeRepository} from "../../../services";
 
 
-export const generateCode = async (deleteTime?: number): Promise<any> => {
+export const generateCode = async (expiryTime: number, deleteTime?: number): Promise<any> => {
     let code;
 
     do {
-        code = config.code.generator.generate();
-    } while ((await config.code.repository.get(code)).exists);
+        code = codeGenerator.generate();
+    } while ((await codeRepository.get(code)).exists);
 
-    const expiryTime = config.code.lifetime * 60 + moment().unix();
+    const codeId = await codeRepository.save(code, expiryTime, deleteTime || expiryTime);
 
-    await config.code.repository.save(code, expiryTime, deleteTime || expiryTime);
-    const codeEntity = await config.code.repository.get(code);
-
-    return {id: codeEntity.get('id'), code};
+    return {id: codeId, code};
 };

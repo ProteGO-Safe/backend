@@ -64,8 +64,6 @@ node_modules/
 # dotenv environment variables file
 .env
 
-functions/src/config.ts
-
 .idea
 
 efgs-downloader/target
@@ -73,3 +71,4 @@ efgs-downloader/target
 efgs/downloader/target
 efgs/uploader/target
 *.iml
+.runtimeconfig.json

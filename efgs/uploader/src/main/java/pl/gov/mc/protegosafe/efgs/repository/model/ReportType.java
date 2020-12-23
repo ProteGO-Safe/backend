@@ -1,4 +1,4 @@
-package pl.gov.mc.protegosafe.efgs;
+package pl.gov.mc.protegosafe.efgs.repository.model;
 
 import lombok.AllArgsConstructor;
 

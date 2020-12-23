@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 const {log} = require("firebase-functions/lib/logger");
-import {generateCodeIPChecker, secretManager} from "../../config";
+import {generateCodeIPChecker, secretManager} from "../../services";
 
 export const validateApiTokenAndIp = async (request: functions.Request): Promise<boolean> => {
 

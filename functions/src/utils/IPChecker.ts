@@ -1,4 +1,4 @@
-import {secretManager} from "../config";
+import {secretManager} from "../services";
 import {Netmask} from "netmask";
 
 class IPChecker {

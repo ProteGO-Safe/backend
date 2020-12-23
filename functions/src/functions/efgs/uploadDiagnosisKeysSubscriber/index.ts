@@ -1,5 +1,5 @@
 import config from "../../../config";
-
+import {secretManager} from "../../../services";
 const {log, error} = require("firebase-functions/lib/logger");
 import uploadDiagnosisKeys from "../../uploadDiagnosisKeys";
 import createGensPayloadMessage from "../gensPayloadFactory";
@@ -13,11 +13,14 @@ const parseJson = (dataAsBase64: any) => {
     return JSON.parse(data);
 };
 
-const convertMessage = (efgsData: any) => {
+const convertMessage = async (efgsData: any) => {
+
+    const appPackageName = await secretManager.getConfig('appPackageName');
+
     return {
         ...createGensPayloadMessage(efgsData.keysData),
         regions: config.efgs.gens.regions,
-        appPackageName: config.efgs.gens.appPackageName,
+        appPackageName,
         platform: config.efgs.gens.platform
     }
 };
@@ -35,7 +38,7 @@ const uploadDiagnosisKeysSubscriber = async (message: any) => {
 
     try {
         const efgsData = parseJson(data);
-        const gensPayloadMessage = convertMessage(efgsData);
+        const gensPayloadMessage = await convertMessage(efgsData);
 
         log(`uploading ${gensPayloadMessage.temporaryExposureKeys.length} keys from batchTag ${efgsData.batchTag}`);
 

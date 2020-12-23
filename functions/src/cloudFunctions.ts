@@ -1,11 +1,14 @@
 import * as ff from 'firebase-functions';
-import config, {applicationIPChecker, secretManager} from "./config";
+import {applicationIPChecker, secretManager} from "./services";
+
+const region = ff.config().config.region;
 
 export function https(
     handler : (data: any, context: ff.https.CallableContext) => any | Promise<any>,
-    runtime: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 30}
+    runtime: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 180}
 ): ff.HttpsFunction {
-    return ff.runWith(runtime).region(...config.regions).https.onCall(async (data, context) => {
+
+    return ff.runWith(runtime).region(region).https.onCall(async (data, context) => {
         const securityToken = await secretManager.getConfig('securityToken');
         const securityHeaderName = await secretManager.getConfig('securityTokenHeaderName');
 
@@ -25,7 +28,7 @@ export function httpsOnRequest(
     handler : (data: any, response: ff.Response) => any | Promise<any>,
     runtime: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 30}
 ): ff.HttpsFunction {
-    return ff.runWith(runtime).region(...config.regions).https.onRequest(async (request, response) => {
+    return ff.runWith(runtime).region(region).https.onRequest(async (request, response) => {
         const securityToken = await secretManager.getConfig('securityToken');
         const securityHeaderName = await secretManager.getConfig('securityTokenHeaderName');
 
@@ -46,16 +49,24 @@ export function scheduler(
     schedule: string,
     runtime: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 30}
 ) {
-    return ff.runWith(runtime).region(...config.regions).pubsub.schedule(schedule).onRun(handler)
+    return ff.runWith(runtime).region(region).pubsub.schedule(schedule).onRun(handler)
 }
 
-export function topicSubscriber (
-    handler : (data: any) => any | Promise<any>
-) {
+export const topicSubscriber = (handler : (data: any) => any | Promise<any>) => {
     return ff.runWith({memory: '256MB', timeoutSeconds: 30})
-        .region(...config.regions)
-        .pubsub.topic(`firebase-subscription-${handler.name}-${[...config.regions][0]}`)
-        .onPublish(handler)
+        .region(region)
+        .pubsub.topic(`firebase-subscription-${handler.name}-${region}`)
+        .onPublish(handler);
+};
+
+export function storage(
+    handler: (object: ff.storage.ObjectMetadata) => any | Promise<any>,
+    runtimeOpt: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 60}
+): ff.CloudFunction<ff.storage.ObjectMetadata> {
+    return ff
+        .runWith(runtimeOpt)
+        .region(region)
+        .storage.object().onFinalize(async (object : ff.storage.ObjectMetadata) => {
+            return handler(object);
+        });
 }
-
-

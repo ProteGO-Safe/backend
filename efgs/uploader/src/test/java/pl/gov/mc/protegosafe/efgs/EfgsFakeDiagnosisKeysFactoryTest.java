@@ -3,6 +3,7 @@ package pl.gov.mc.protegosafe.efgs;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pl.gov.mc.protegosafe.efgs.repository.model.DiagnosisKey;
 
 import java.util.ArrayList;
 import java.util.List;

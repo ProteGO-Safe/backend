@@ -2,6 +2,7 @@ package pl.gov.mc.protegosafe.efgs;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import pl.gov.mc.protegosafe.efgs.repository.model.ReportType;
 
 public class ReportTypeTest {
 

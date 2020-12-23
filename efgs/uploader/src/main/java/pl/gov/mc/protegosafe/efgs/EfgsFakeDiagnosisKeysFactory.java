@@ -3,6 +3,7 @@ package pl.gov.mc.protegosafe.efgs;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
+import pl.gov.mc.protegosafe.efgs.repository.model.DiagnosisKey;
 
 import java.util.Collections;
 import java.util.List;
