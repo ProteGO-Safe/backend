@@ -10,6 +10,11 @@ const config = {
         gens: {
             regions: ['PL'],
             platform: 'android',
+        },
+        failedGens: {
+            retries: 3,
+            limit: 100,
+            retryExpirationDays: 14
         }
     },
     subscription: {

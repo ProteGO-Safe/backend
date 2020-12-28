@@ -11,6 +11,7 @@ import subscriptionsForTest from "./functions/freeTest/subscriptionsForTest";
 import generateSubscriptionCode from "./functions/freeTest/generateSubscriptionCode";
 import getSubscription from "./functions/freeTest/getSubscription";
 import uploadDiagnosisKeysSubscriber from "./functions/efgs/uploadDiagnosisKeysSubscriber";
+import uploadFailedDiagnosisKeysToGENS from "./functions/efgs/uploadFailedDiagnosisKeysToGENS";
 import generateCodesBatch from "./functions/generateCodesBatch";
 import updateCovidStatistics from "./functions/updateCovidStatistics";
 
@@ -29,3 +30,4 @@ exports.updateCovidStatistics = cloudFunctions.storage(updateCovidStatistics);
 exports.updateSubscription = cloudFunctions.httpsOnRequest(updateSubscription);
 exports.uploadDiagnosisKeys = cloudFunctions.httpsOnRequest(uploadDiagnosisKeysHttpHandler);
 exports.uploadDiagnosisKeysSubscriber = cloudFunctions.topicSubscriber(uploadDiagnosisKeysSubscriber);
+exports.uploadFailedDiagnosisKeysToGENSScheduler = cloudFunctions.scheduler(uploadFailedDiagnosisKeysToGENS, 'every 30 minutes');
