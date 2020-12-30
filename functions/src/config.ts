@@ -1,3 +1,7 @@
+import * as ff from "firebase-functions";
+
+const region = ff.config().config.region;
+
 const config = {
     notificationUrl: "https://fcm.googleapis.com/fcm/send",
     code: {
@@ -28,6 +32,12 @@ const config = {
     statistics: {
         fileName: 'covid_info.json',
         sshDirName: '/home/stopcovid'
+    },
+    metrics: {
+        uploadedKeyMetricTopicName: `firebase-subscription-sendUploadedKeysOpenCensusMetricSubscriber-${region}`,
+        uploadedKeyMetricName: 'metrics/uploaded_keys',
+        uploadedKeyMetricInterval: 60,
+        uploadedKeyMetricDescription: 'The number of keys uploaded'
     }
 };
 

@@ -217,10 +217,14 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - run: npm update
       - run: npm install
+      - run: npm outdated
       - run: npm run lint
       - run: npm audit --audit-level moderate
       - run: npm test
+        env:
+          CLOUD_RUNTIME_CONFIG: '{"config":{"region":"europe-west1"}}'
 
   Deplot_TS:
     name: Deploy TS Functions
