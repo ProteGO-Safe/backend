@@ -17,7 +17,7 @@
   "dependencies": {
     "@google-cloud/secret-manager": "^3.2.3",
     "@google-cloud/storage": "^5.7.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "crypto-random-string": "^3.3.0",
     "csv-parse": "^4.14.2",
     "firebase-admin": "^9.4.2",
