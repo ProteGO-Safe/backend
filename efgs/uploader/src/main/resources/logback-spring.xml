@@ -7,7 +7,7 @@
 
     <appender name="STACKDRIVER" class="org.springframework.cloud.gcp.logging.LoggingAppender">
         <log>${STACKDRIVER_LOG_NAME}</log>
-        <enhancer>pl.gov.mc.protegosafe.efgs.CloudEnhancer</enhancer>
+        <loggingEventEnhancer>pl.gov.mc.protegosafe.efgs.CloudEnhancer</loggingEventEnhancer>
         <flushLevel>${STACKDRIVER_LOG_FLUSH_LEVEL}</flushLevel>
     </appender>
 
