@@ -27,14 +27,7 @@ public class BatchSignatureUtils {
         return byteArrayOutputStream.toByteArray();
     }
 
-    private List<EfgsProto.DiagnosisKey> sortBatchByKeyData(EfgsProto.DiagnosisKeyBatch batch) {
-        return batch.getKeysList()
-                .stream()
-                .sorted(Comparator.comparing(diagnosisKey -> bytesToBase64(generateBytesToVerify(diagnosisKey))))
-                .collect(Collectors.toList());
-    }
-
-    private byte[] generateBytesToVerify(final EfgsProto.DiagnosisKey diagnosisKey) {
+    public byte[] generateBytesToVerify(final EfgsProto.DiagnosisKey diagnosisKey) {
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         writeBytesInByteArray(diagnosisKey.getKeyData(), byteArrayOutputStream);
         writeSeperatorInArray(byteArrayOutputStream);
@@ -54,6 +47,13 @@ public class BatchSignatureUtils {
         writeIntInByteArray(diagnosisKey.getDaysSinceOnsetOfSymptoms(), byteArrayOutputStream);
         writeSeperatorInArray(byteArrayOutputStream);
         return byteArrayOutputStream.toByteArray();
+    }
+
+    private List<EfgsProto.DiagnosisKey> sortBatchByKeyData(EfgsProto.DiagnosisKeyBatch batch) {
+        return batch.getKeysList()
+                .stream()
+                .sorted(Comparator.comparing(diagnosisKey -> bytesToBase64(generateBytesToVerify(diagnosisKey))))
+                .collect(Collectors.toList());
     }
 
     private void writeSeperatorInArray(final ByteArrayOutputStream byteArray) {
@@ -77,7 +77,7 @@ public class BatchSignatureUtils {
     }
 
     private void writeVisitedCountriesInByteArray(final ProtocolStringList countries,
-                                                         final ByteArrayOutputStream byteArray) {
+                                                  final ByteArrayOutputStream byteArray) {
         writeB64StringInByteArray(String.join(",", countries), byteArray);
     }
 

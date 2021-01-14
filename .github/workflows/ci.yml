@@ -219,7 +219,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm update
       - run: npm install
-      - run: npm outdated
       - run: npm run lint
       - run: npm audit --audit-level moderate
       - run: npm test

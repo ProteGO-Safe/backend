@@ -21,7 +21,7 @@
   "dependencies": {
     "@google-cloud/secret-manager": "^3.2.3",
     "@google-cloud/storage": "^5.7.0",
-    "@google-cloud/pubsub": "2.7.0",
+    "@google-cloud/pubsub": "2.8.0",
     "@opencensus/core": "0.0.22",
     "@opencensus/exporter-stackdriver": "0.0.22",
     "axios": "^0.21.1",

@@ -82,7 +82,7 @@ class EfgsDiagnosisKeysUploaderTest {
                 .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
                 .contains(
                         Tuple.tuple("started uploading keys to efgs", Level.INFO),
-                        Tuple.tuple("Uploaded successfully", Level.INFO)
+                        Tuple.tuple("Uploaded finished", Level.INFO)
                 );
     }
 

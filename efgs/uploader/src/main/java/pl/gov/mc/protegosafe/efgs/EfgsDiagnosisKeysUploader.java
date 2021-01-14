@@ -51,12 +51,12 @@ public class EfgsDiagnosisKeysUploader extends DiagnosisKeysUploader implements 
             return;
         }
 
-        final boolean isSuccessResponse = signAndUpload(diagnosisKeyBatch, false);
+        final boolean shouldFinishUploading = signAndUpload(diagnosisKeyBatch, false);
 
-        if (!isSuccessResponse) {
+        if (!shouldFinishUploading) {
             failedDiagnosisKeysRepository.saveFailedUploadingDiagnosisKeys(diagnosisKeyBatch);
         } else {
-            log.info("Uploaded successfully");
+            log.info("Uploaded finished");
         }
 
         idsWithDiagnosisKeys
