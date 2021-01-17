@@ -3,6 +3,7 @@ import config from "../../config";
 import * as admin from "firebase-admin";
 import {secretManager} from "../../services";
 import CovidStats from "../../utils/CovidStats";
+import {timestampToFormattedDayMonth} from "../../utils/dateUtils";
 
 const {log, error} = require("firebase-functions/lib/logger");
 
@@ -51,7 +52,7 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
     const date = new Date();
     date.setTime(Number(covidStats.updated) * 1000);
 
-    const dateString = `${date.getUTCDate()}.${date.getUTCMonth() + 1}`;
+    const dateString = timestampToFormattedDayMonth(covidStats.updated);
 
     const payload = {
         "to": topic,
@@ -102,7 +103,7 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
         notification: {
             "click_action": "covidStatsCategoryId",
             "mutable_content": true,
-            "title":  `COVID-19 w Polsce (${dateString})`,
+            "title": `COVID-19 w Polsce (${dateString})`,
             "body": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, +${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
         }
     } : payload;
