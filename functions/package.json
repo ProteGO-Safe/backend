@@ -19,12 +19,14 @@
   },
   "main": "lib/src/index.js",
   "dependencies": {
+    "@google-cloud/logging-bunyan": "^3.0.1",
+    "@google-cloud/pubsub": "2.8.0",
     "@google-cloud/secret-manager": "^3.2.3",
     "@google-cloud/storage": "^5.7.0",
-    "@google-cloud/pubsub": "2.8.0",
     "@opencensus/core": "0.0.22",
     "@opencensus/exporter-stackdriver": "0.0.22",
     "axios": "^0.21.1",
+    "bunyan": "^1.8.15",
     "crypto-random-string": "^3.3.0",
     "csv-parse": "^4.14.2",
     "firebase-admin": "^9.4.2",
@@ -34,11 +36,11 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "netmask": "^1.0.6",
+    "node-forge": "0.10.0",
     "ssh2": "^0.8.9",
     "ssh2-streams": "^0.4.10",
     "superagent": "^6.1.0",
-    "uuid": "^8.3.2",
-    "node-forge": "0.10.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/continuation-local-storage": "^3.2.2",
@@ -51,6 +53,7 @@
     "@types/ssh2": "^0.5.46",
     "@types/superagent": "^4.1.10",
     "@types/uuid": "^8.3.0",
+    "@types/bunyan": "1.8.6",
     "chai": "^4.2.0",
     "firebase-functions-test": "^0.2.3",
     "mocha": "^8.2.1",
