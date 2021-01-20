@@ -16,7 +16,7 @@ import static org.springframework.http.HttpStatus.OK;
 @Slf4j
 abstract public class DiagnosisKeysUploader {
 
-    private static final int MAX_DIAGNOSIS_KEY_BATCH = 1000;
+    private static final int MAX_DIAGNOSIS_KEY_BATCH = 200;
 
     String nbbsCert;
     EfgsFakeDiagnosisKeysFactory efgsFakeDiagnosisKeysFactory;

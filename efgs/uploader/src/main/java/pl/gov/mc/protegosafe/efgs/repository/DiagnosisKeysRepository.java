@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class DiagnosisKeysRepository {
 
     static String COLLECTION_NAME = "diagnosisKeys";
-    static int LIMIT = 1000;
+    static int LIMIT = 200;
 
     Firestore firestore;
     Long fetchDelay;
