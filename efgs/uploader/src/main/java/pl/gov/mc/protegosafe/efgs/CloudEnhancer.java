@@ -6,6 +6,8 @@ import com.google.cloud.logging.LogEntry;
 import com.google.cloud.logging.logback.LoggingEventEnhancer;
 import org.apache.commons.lang3.StringUtils;
 
+import static java.util.Objects.nonNull;
+
 public class CloudEnhancer implements LoggingEventEnhancer {
 
     public void enhanceLogEntry(LogEntry.Builder builder, ILoggingEvent e) {
@@ -15,11 +17,11 @@ public class CloudEnhancer implements LoggingEventEnhancer {
             }
         });
 
-        if (e.getLevel().equals(Level.ERROR)) {
+        if (Level.ERROR.equals(e.getLevel())) {
             builder.addLabel("error-stopcovid", e.getMessage());
         }
 
-        if (StringUtils.equals(e.getMarker().getName(), "CRITICAL")) {
+        if (nonNull(e.getMarker()) && StringUtils.equals(e.getMarker().getName(), "CRITICAL")) {
             builder.addLabel("critical-stopcovid", e.getMessage());
         }
     }
