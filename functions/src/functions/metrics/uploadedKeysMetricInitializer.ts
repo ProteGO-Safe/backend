@@ -2,14 +2,18 @@ import {StackdriverStatsExporter} from "@opencensus/exporter-stackdriver";
 import {AggregationType, globalStats, MeasureUnit} from "@opencensus/core";
 import OpenCensusContainer from "./OpenCensusContainer";
 import config from "../../config"
-const {log, error} = require("firebase-functions/lib/logger");
+import errorLogger from "../logger/errorLogger";
+import errorEntryLabels from "../logger/errorEntryLabels";
+
+const {log} = require("firebase-functions/lib/logger");
 
 export default (projectId: string): OpenCensusContainer => {
     const exporter = new StackdriverStatsExporter({
         projectId,
         period: config.metrics.uploadedKeyMetricInterval * 1000,
         onMetricUploadError: (err) => {
-            error(`Failed to upload metric: ${config.metrics.uploadedKeyMetricName}, ${err.name}, ${err.message}`);
+            const errorMessage = `Failed to upload metric: ${config.metrics.uploadedKeyMetricName}, ${err.name}, ${err.message}`;
+            errorLogger.error(errorEntryLabels(errorMessage), errorMessage);
         }
     });
 

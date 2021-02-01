@@ -4,6 +4,8 @@ import {generateCode} from "../../code/codeGenerator";
 import returnBadRequestResponse from "../../returnBadRequestResponse";
 import moment = require("moment");
 import config from "../../../config";
+import errorLogger from "../../logger/errorLogger";
+import errorEntryLabels from "../../logger/errorEntryLabels";
 
 const {log} = require("firebase-functions/lib/logger");
 const DELETE_LIFETIME = 48 * 60 * 60;
@@ -26,7 +28,8 @@ const generateSubscriptionCode = async (request: functions.Request, response: fu
 
         return response.status(201).send({id, code});
     } catch (e) {
-        log(e);
+        errorLogger.error(errorEntryLabels(e), e);
+
         return returnBadRequestResponse(response);
     }
 };

@@ -12,6 +12,8 @@ import {CodeStatus} from "../../code/CodeStatus";
 
 const {log} = require("firebase-functions/lib/logger");
 import moment = require("moment");
+import errorLogger from "../../logger/errorLogger";
+import errorEntryLabels from "../../logger/errorEntryLabels";
 
 const logCodeEventForSubscriptionsForTest = (
     hashedCode: string,
@@ -80,7 +82,8 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
             codeSha256,
             status: 1
         }).catch(reason => {
-            log(reason);
+            errorLogger.error(errorEntryLabels(reason), reason);
+
             return returnBadRequestResponse(response);
         });
         const {secret, lifetime} = await secretManager.getConfig('subscription');
@@ -91,7 +94,8 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
 
         return response.status(201).send({token: accessToken});
     } catch (e) {
-        log(e);
+        errorLogger.error(errorEntryLabels(e), e);
+
         return returnBadRequestResponse(response);
     }
 };

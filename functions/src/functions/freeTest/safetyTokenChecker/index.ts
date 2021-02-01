@@ -1,3 +1,5 @@
+import errorLogger from "../../logger/errorLogger";
+
 const {log} = require("firebase-functions/lib/logger");
 import axios from 'axios';
 import {v4} from 'uuid';
@@ -5,6 +7,7 @@ import {decode, sign} from "jsonwebtoken";
 import config from "../../../config";
 import {secretManager} from "../../../services";
 import moment = require("moment");
+import errorEntryLabels from "../../logger/errorEntryLabels";
 
 const checkSafetyToken = async (safetyToken: string, platform: string): Promise<boolean> => {
 
@@ -33,7 +36,8 @@ const checkForAndroid = async (safetyToken: string): Promise<boolean> => {
         .then(response => {
             return response.status === 200 && response.data.isValidSignature
         }).catch(reason => {
-            log(reason);
+            errorLogger.error(errorEntryLabels(reason), reason)
+
             return false;
         })
 };

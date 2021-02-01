@@ -1,7 +1,10 @@
 import {secretManager} from "../../../services";
-const {log, error} = require("firebase-functions/lib/logger");
 import uploadDiagnosisKeys from "../../uploadDiagnosisKeys";
 import createGensPayloadMessageFromEfgsMessageData from "../gensPayloadFactory";
+import errorLogger from "../../logger/errorLogger";
+import errorEntryLabels from "../../logger/errorEntryLabels";
+
+const {log} = require("firebase-functions/lib/logger");
 
 const uploadGensDiagnosisKeys = async (dataAsBase64: string, errorHandler: Function) => {
 
@@ -17,11 +20,13 @@ const uploadGensDiagnosisKeys = async (dataAsBase64: string, errorHandler: Funct
         log(`uploaded ${gensPayloadMessage.temporaryExposureKeys.length} keys`);
     } catch (e) {
         if (e.response && e.response.error) {
-            error(e.response.error.text)
+            errorLogger.error(errorEntryLabels(e.response.error.text), e.response.error.text);
         }
 
         errorHandler(e);
-        error('Error during uploading keys to gens');
+        const errorMessage = 'Error during uploading keys to gens';
+        errorLogger.error(errorEntryLabels(errorMessage), errorMessage);
+
         throw new Error(e);
     }
 

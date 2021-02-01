@@ -4,8 +4,10 @@ import * as admin from "firebase-admin";
 import {secretManager} from "../../services";
 import CovidStats from "../../utils/CovidStats";
 import {timestampToFormattedDayMonth} from "../../utils/dateUtils";
+import errorLogger from "../logger/errorLogger";
+import errorEntryLabels from "../logger/errorEntryLabels";
 
-const {log, error} = require("firebase-functions/lib/logger");
+const {log} = require("firebase-functions/lib/logger");
 
 const sendStatisticsNotification = async (covidStats: CovidStats) => {
     const token = await admin
@@ -31,7 +33,8 @@ const sendNotification = async (token: string, covidStats: CovidStats, topic: st
             "access_token_auth": "true"
         },
     }).then(response => response.status === 200 && response.data.hasOwnProperty("message_id")).catch(reason => {
-        error(`Error during sending notification (${platform}), ${reason}`);
+        const sendErrorMessage = `Error during sending notification (${platform}), ${reason}`;
+        errorLogger.error(errorEntryLabels(sendErrorMessage), sendErrorMessage);
 
         return false;
     });
@@ -39,7 +42,8 @@ const sendNotification = async (token: string, covidStats: CovidStats, topic: st
     if (result) {
         log(`Successfully sending notification (${platform})`);
     } else {
-        error(`Could not send notification (${platform})`);
+        const errorMessage = `Could not send notification (${platform})`;
+        errorLogger.error(errorEntryLabels(errorMessage), errorMessage);
     }
 }
 
