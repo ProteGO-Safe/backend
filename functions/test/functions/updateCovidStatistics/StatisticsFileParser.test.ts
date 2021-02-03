@@ -4,8 +4,8 @@ import {statisticsFileParser} from "../../../src/services";
 
 describe('StatisticsFileParser tests', () => {
     it('parse statistics file content', async () => {
-        const content = 'Liczba zakażonych,Liczba śmiertelnych,Liczba wyzdrowiałych,Dziś zakażonych,Dziś zmarło,Dziś wyzdrowiało\n' +
-            '1202700,25397,938269,8594,143,10546';
+        const content = 'Liczba zakażonych,Liczba śmiertelnych,Liczba wyzdrowiałych,Dziś zakażonych,Dziś zmarło,Dziś wyzdrowiało,liczba zaszczepionych,dzis zaszczepionych,liczba zaszczepionych 1,dzis zaszczepionych 1,liczba zaszczepionych 2,dzis zaszczepionych 2\n' +
+            '1202700,25397,938269,8594,143,10546,123,234,345,456,567,678';
         const filename = 'covid-stats/20201220_covid_stats.csv';
 
         const covidStats = await statisticsFileParser.parse(content, filename);
@@ -18,6 +18,12 @@ describe('StatisticsFileParser tests', () => {
             25397,
             10546,
             938269,
+            234,
+            123,
+            456,
+            345,
+            678,
+            567
         ));
     });
 });

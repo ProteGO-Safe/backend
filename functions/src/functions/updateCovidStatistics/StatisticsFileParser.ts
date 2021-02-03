@@ -14,6 +14,12 @@ class StatisticsFileParser {
             parseInt(parsedContent[1][1]) || null,
             parseInt(parsedContent[1][5]) || null,
             parseInt(parsedContent[1][2]) || null,
+            parseInt(parsedContent[1][7]) || null,
+            parseInt(parsedContent[1][6]) || null,
+            parseInt(parsedContent[1][9]) || null,
+            parseInt(parsedContent[1][8]) || null,
+            parseInt(parsedContent[1][11]) || null,
+            parseInt(parsedContent[1][10]) || null,
         );
     }
 

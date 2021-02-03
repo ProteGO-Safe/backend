@@ -27,6 +27,12 @@ class CovidStatisticsRepository {
             content.covidStats.totalDeaths ?? null,
             content.covidStats.newRecovered ?? null,
             content.covidStats.totalRecovered ?? null,
+            content.covidStats.newVaccinations ?? null,
+            content.covidStats.totalVaccinations ?? null,
+            content.covidStats.newVaccinationsDose1 ?? null,
+            content.covidStats.totalVaccinationsDose1 ?? null,
+            content.covidStats.newVaccinationsDose2 ?? null,
+            content.covidStats.totalVaccinationsDose2 ?? null,
         );
     }
 
