@@ -34,7 +34,13 @@ const checkForAndroid = async (safetyToken: string): Promise<boolean> => {
 
     return await axios.post(`${config.subscription.android.url}?key=${apiKey}`, {signedAttestation: safetyToken})
         .then(response => {
-            return response.status === 200 && response.data.isValidSignature
+            const isValid = response.status === 200 && response.data.isValidSignature;
+
+            if (!isValid) {
+                log('invalid android safety token')
+            }
+
+            return isValid;
         }).catch(reason => {
             errorLogger.error(errorEntryLabels(reason), reason)
 
@@ -49,7 +55,13 @@ const checkSha256ForAndroid = async (safetyToken: string): Promise<boolean> => {
         return false;
     }
     const {androidSafetyTokenCertificateSha256List = []} = await secretManager.getConfig('subscription');
-    return apkCertificateDigestSha256.every((value: string) => androidSafetyTokenCertificateSha256List.includes(value));
+    const isValid = apkCertificateDigestSha256.every((value: string) => androidSafetyTokenCertificateSha256List.includes(value));
+
+    if (!isValid) {
+        log(`invalid android cert's sha256`)
+    }
+
+    return isValid;
 };
 
 const generateJwtTokenForIos = async (): Promise<string> => {
@@ -78,7 +90,11 @@ const checkForIos = async (safetyToken: string): Promise<boolean> => {
         headers: {Authorization: `Bearer ${jwtToken}`}
     })
         .then(response => {
-            return response.status === 200
+            const isValid = response.status === 200;
+            if (!isValid) {
+                log('invalid ios safety token')
+            }
+            return isValid;
         }).catch(reason => {
             log(reason);
             return false;
