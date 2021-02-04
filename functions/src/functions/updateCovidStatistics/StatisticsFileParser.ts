@@ -8,18 +8,18 @@ class StatisticsFileParser {
 
         return new CovidStats(
             datetime,
-            parseInt(parsedContent[1][3]) || null,
-            parseInt(parsedContent[1][0]) || null,
-            parseInt(parsedContent[1][4]) || null,
-            parseInt(parsedContent[1][1]) || null,
-            parseInt(parsedContent[1][5]) || null,
-            parseInt(parsedContent[1][2]) || null,
-            parseInt(parsedContent[1][7]) || null,
-            parseInt(parsedContent[1][6]) || null,
-            parseInt(parsedContent[1][9]) || null,
-            parseInt(parsedContent[1][8]) || null,
-            parseInt(parsedContent[1][11]) || null,
-            parseInt(parsedContent[1][10]) || null,
+            this.parseInteger(parsedContent[1][3]),
+            this.parseInteger(parsedContent[1][0]),
+            this.parseInteger(parsedContent[1][4]),
+            this.parseInteger(parsedContent[1][1]),
+            this.parseInteger(parsedContent[1][5]),
+            this.parseInteger(parsedContent[1][2]),
+            this.parseInteger(parsedContent[1][7]),
+            this.parseInteger(parsedContent[1][6]),
+            this.parseInteger(parsedContent[1][9]),
+            this.parseInteger(parsedContent[1][8]),
+            this.parseInteger(parsedContent[1][11]),
+            this.parseInteger(parsedContent[1][10]),
         );
     }
 
@@ -31,6 +31,14 @@ class StatisticsFileParser {
         const day = dateString.substr(6, 2);
 
         return new Date(parseInt(year), month, parseInt(day)).getTime() / 1000;
+    };
+
+    private parseInteger = (numberAsString: string): any => {
+        if (numberAsString === undefined) {
+            return null;
+        }
+
+        return parseInt(numberAsString);
     }
 }
 
