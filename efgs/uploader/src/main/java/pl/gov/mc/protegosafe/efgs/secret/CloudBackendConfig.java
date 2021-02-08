@@ -2,10 +2,12 @@ package pl.gov.mc.protegosafe.efgs.secret;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
+@Setter
 public class CloudBackendConfig {
 
     Efgs efgs;
@@ -20,7 +22,8 @@ public class CloudBackendConfig {
 
     @FieldDefaults(level = AccessLevel.PRIVATE)
     @Getter
-    static private class Efgs {
+    @Setter
+    static public class Efgs {
         String nbbsCert;
         String nbtlsCert;
     }
