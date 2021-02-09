@@ -44,7 +44,7 @@ const saveFailureAgainUploadingDiagnosisKeys = (dataAsBase64: string, e: Error, 
 
         failureUploadingDiagnosisKeysRepository.save(itemToSave);
 
-        log(`saved failure uploading diagnosis keys, id: ${id}, tries: ${tries}`);
+        log(`saved failure uploading diagnosis keys, id: ${id}, tries: ${tries + 1}`);
     }
 };
 

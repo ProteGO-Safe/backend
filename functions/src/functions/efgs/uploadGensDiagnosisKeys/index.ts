@@ -28,8 +28,6 @@ const uploadGensDiagnosisKeys = async (dataAsBase64: string, errorHandler: Funct
         errorHandler(e);
         const errorMessage = 'Error during uploading keys to gens';
         errorLogger.error(errorEntryLabels(errorMessage), errorMessage);
-
-        throw new Error(e);
     }
 
     log('Processed uploading keys to gens');
