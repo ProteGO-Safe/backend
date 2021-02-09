@@ -6,7 +6,7 @@ import errorEntryLabels from "../../logger/errorEntryLabels";
 
 const {log} = require("firebase-functions/lib/logger");
 
-const uploadGensDiagnosisKeys = async (dataAsBase64: string, errorHandler: Function) => {
+const uploadGensDiagnosisKeys = async (dataAsBase64: string, errorHandler: Function, successHandler: Function) => {
 
     try {
         const appPackageName = await secretManager.getConfig('appPackageName');
@@ -16,6 +16,8 @@ const uploadGensDiagnosisKeys = async (dataAsBase64: string, errorHandler: Funct
         log(`uploading ${gensPayloadMessage.temporaryExposureKeys.length} keys`);
 
         await uploadDiagnosisKeys(gensPayloadMessage);
+
+        successHandler();
 
         log(`uploaded ${gensPayloadMessage.temporaryExposureKeys.length} keys`);
     } catch (e) {
