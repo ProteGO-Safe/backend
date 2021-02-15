@@ -3,22 +3,12 @@ import createGensPayloadMessage from "../../../../src/functions/efgs/gensPayload
 
 describe('gensPayloadFactory', function () {
     it('should create Gens payload message', function () {
-        const efgsData = [
-                {
-                    keyData: "TFgrUGM4MXA4Q0kvMUpGZGVRM1czdz09",
-                    rollingStartIntervalNumber: 2666440,
-                    rollingPeriod: 144,
-                    transmissionRiskLevel: 2,
-                }, {
-                    keyData: "a3dwbjFReEZqVExDZTl1S2pIOE9qQT09",
-                    rollingStartIntervalNumber: 2666296,
-                    rollingPeriod: 144,
-                    transmissionRiskLevel: 7,
-                }
-            ]
-        ;
+        const efgsData = "eyJiYXRjaFRhZyI6IjMyMzIzMiIsImtleXNEYXRhIjpbeyJrZXlEYXRhIjoiVEZnclVHTTRNWEE0UTBrdk1VcEdaR1ZSTTFjemR6MDkiLCJyb2xsaW5nU3RhcnRJbnRlcnZhbE51bWJlciI6MjY2NjQ0MCwicm9sbGluZ1BlcmlvZCI6MTQ0LCJ0cmFuc21pc3Npb25SaXNrTGV2ZWwiOjJ9LHsia2V5RGF0YSI6ImEzZHdiakZSZUVacVZFeERaVGwxUzJwSU9FOXFRVDA5Iiwicm9sbGluZ1N0YXJ0SW50ZXJ2YWxOdW1iZXIiOjI2NjYyOTYsInJvbGxpbmdQZXJpb2QiOjE0NCwidHJhbnNtaXNzaW9uUmlza0xldmVsIjo3fV19";
 
         const expectedGensPayloadMessage = {
+            appPackageName: 'appPackageName',
+            platform: 'android',
+            regions: ['PL'],
             temporaryExposureKeys: [
                 {
                     rollingPeriod: 144,
@@ -34,7 +24,7 @@ describe('gensPayloadFactory', function () {
                 }
             ]
         };
-        const gensPayloadMessage = createGensPayloadMessage(efgsData);
+        const gensPayloadMessage = createGensPayloadMessage(efgsData, 'appPackageName');
         expect(gensPayloadMessage).to.eql(expectedGensPayloadMessage)
     });
 });

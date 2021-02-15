@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ENVIRONMENT: ${{ env.ENVIRONMENT }}
+      PUSH_MODE: ${{ env.PUSH_MODE }}
       NODE_VERSION: 12
       JAVA_VERSION: 11
     steps:
@@ -25,7 +26,7 @@ jobs:
             && github.event_name == 'push'
         run: |
           echo "ENVIRONMENT=DEV" >> $GITHUB_ENV
-          
+
       - name: Set env to STAGE
         if: startsWith(github.ref, 'refs/tags/')
             && github.repository_owner != 'ProteGO-Safe'
@@ -33,7 +34,7 @@ jobs:
             && github.event_name == 'release'
         run: |
           echo "ENVIRONMENT=STAGE" >> $GITHUB_ENV
-          
+
       - name: Set env to PROD
         if: (( startsWith(github.ref, 'refs/tags/') 
             && github.repository_owner == 'ProteGO-Safe' 
@@ -44,6 +45,13 @@ jobs:
             && github.event_name == 'push'))
         run: |
           echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
+
+      - name: Set env to push mode
+        if: github.repository_owner != 'ProteGO-Safe'
+          && startsWith(github.ref, 'refs/heads/')
+          && github.event_name == 'push'
+        run: |
+          echo "PUSH_MODE=true" >> $GITHUB_ENV
 
   deploy-efgs-downloader:
     name: Deploy Efgs Downloader
@@ -109,13 +117,71 @@ jobs:
              --allow-unauthenticated \
              --region $REGION \
              --timeout=540s \
-             --set-env-vars EFGS_MESSAGE_PROJECT_ID=$PROJECT_ID,EFGS_MESSAGE_TOPIC_ID=firebase-subscription-uploadDiagnosisKeysSubscriber-$REGION,EFGS_API=$EFGS_URL
+             --set-env-vars EFGS_MESSAGE_PROJECT_ID=$PROJECT_ID,STACKDRIVER_LOG_NAME=EfgsDiagnosisKeysDownloader,EFGS_MESSAGE_TOPIC_ID=firebase-subscription-uploadDiagnosisKeysSubscriber-$REGION,EFGS_API=$EFGS_URL
         if: ${{ needs.Setup.outputs.ENVIRONMENT }}
+
+  test-efgs-uploader:
+    name: Test Efgs Uploader
+    runs-on: ubuntu-latest
+    needs: Setup
+    defaults:
+      run:
+        working-directory: ./efgs/uploader
+    env:
+      ENVIRONMENT: ${{ needs.Setup.outputs.ENVIRONMENT }}
+      PUSH_MODE: ${{ needs.Setup.outputs.PUSH_MODE }}
+      JAVA_VERSION: ${{ needs.Setup.outputs.JAVA_VERSION }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        env:
+          cache-name: efgs-up
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.cache-name }}-${{ hashFiles('**/efgs/uploader/pom.xml') }}
+          restore-keys: ${{ env.cache-name }}-
+
+      - name: Set Env's to run tests for dev or stage
+        run: |
+          echo "EFGS_URL=${{ secrets[env.EFGS_ENV] }}" >> $GITHUB_ENV
+          echo "NBBS=${{ secrets[env.NBBS_ENV] }}" >> $GITHUB_ENV
+          echo "NBTLS=${{ secrets[env.NBTLS_ENV] }}" >> $GITHUB_ENV
+        if: env.PUSH_MODE != 'true'
+        env:
+          EFGS_ENV: "${{ env.ENVIRONMENT }}_EFGS"
+          NBBS_ENV: "${{ env.ENVIRONMENT }}_NBBS"
+          NBTLS_ENV: "${{ env.ENVIRONMENT }}_NBTLS"
+
+      - name: Set Env's to run tests for push mode
+        run: |
+          echo "EFGS_URL=${{ secrets[env.EFGS_ENV] }}" >> $GITHUB_ENV
+          echo "NBBS=${{ secrets[env.NBBS_ENV] }}" >> $GITHUB_ENV
+          echo "NBTLS=${{ secrets[env.NBTLS_ENV] }}" >> $GITHUB_ENV
+        if: env.PUSH_MODE == 'true'
+        env:
+          EFGS_ENV: "DEV_EFGS"
+          NBBS_ENV: "DEV_NBBS"
+          NBTLS_ENV: "DEV_NBTLS"
+
+      - name: Install java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          java-package: jdk
+          architecture: x64
+
+      - name: mvn test
+        run: 'mvn test'
+        if: env.ENVIRONMENT != 'PROD' || env.PUSH_MODE == 'true'
+        shell: bash
 
   deploy-efgs-uploader:
     name: Deploy Efgs Uploader
     runs-on: ubuntu-latest
-    needs: Setup
+    needs: [Setup, test-efgs-uploader]
     defaults:
       run:
         working-directory: ./efgs/uploader
@@ -162,7 +228,7 @@ jobs:
         if: env.ENVIRONMENT != 'PROD' || env.ENVIRONMENT != 'STAGE'
 
       - name: mvn package
-        run: 'mvn package -ntp'
+        run: 'mvn package -ntp -Dmaven.test.skip=true'
         shell: bash
 
       - name: Deploy EfgsDiagnosisKeysUploader to Firebase
@@ -177,7 +243,7 @@ jobs:
              --trigger-topic=firebase-schedule-sendKeysFromGensToEfgs-$REGION \
              --allow-unauthenticated \
              --region $REGION \
-             --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_EFGSAPIURL=$EFGS_URL,EFGS_DIAGNOSISKEYSFETCHDELAYFROMREPOSITORY=$DELAYER
+             --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_EFGSAPIURL=$EFGS_URL,STACKDRIVER_LOG_NAME=EfgsDiagnosisKeysUploader,EFGS_DIAGNOSISKEYSFETCHDELAYFROMREPOSITORY=$DELAYER
         if: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
       - name: Deploy EfgsFailedDiagnosisKeysUploader to Firebase
@@ -192,7 +258,7 @@ jobs:
             --trigger-topic=firebase-schedule-sendFailedKeysFromGensToEfgs-$REGION \
             --allow-unauthenticated \
             --region $REGION \
-            --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_MODE=RETRY_KEYS,EFGS_EFGSAPIURL=$EFGS_URL,EFGS_DIAGNOSISKEYSFETCHDELAYFROMREPOSITORY=$DELAYER
+            --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_MODE=RETRY_KEYS,STACKDRIVER_LOG_NAME=EfgsFailedDiagnosisKeysUploader,EFGS_EFGSAPIURL=$EFGS_URL,EFGS_DIAGNOSISKEYSFETCHDELAYFROMREPOSITORY=$DELAYER
         if: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
   Lint_TS:
@@ -217,10 +283,13 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - run: npm update
       - run: npm install
       - run: npm run lint
       - run: npm audit --audit-level moderate
       - run: npm test
+        env:
+          CLOUD_RUNTIME_CONFIG: '{"config":{"region":"europe-west1"}}'
 
   Deplot_TS:
     name: Deploy TS Functions

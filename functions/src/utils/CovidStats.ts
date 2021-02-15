@@ -7,6 +7,12 @@ class CovidStats {
         public totalDeaths?: number|null,
         public newRecovered?: number|null,
         public totalRecovered?: number|null,
+        public newVaccinations?: number|null,
+        public totalVaccinations?: number|null,
+        public newVaccinationsDose1?: number|null,
+        public totalVaccinationsDose1?: number|null,
+        public newVaccinationsDose2?: number|null,
+        public totalVaccinationsDose2?: number|null,
     ){}
 }
 

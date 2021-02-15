@@ -10,3 +10,10 @@ services:
       - "5001:5001"
       - "4000:4000"
       - "9005:9005"
+
+  firestore-emulator:
+    image: pathmotion/firestore-emulator-docker
+    ports:
+      - 8088:8088
+    environment:
+      - FIRESTORE_PROJECT_ID=project-test

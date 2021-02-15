@@ -29,7 +29,7 @@ public class WebClientFactory {
     String nbtlsCert;
 
     @Autowired
-    WebClientFactory(CloudBackendConfig cloudBackendConfig) {
+    public WebClientFactory(CloudBackendConfig cloudBackendConfig) {
         this.nbtlsCert = cloudBackendConfig.getNbtlsCert();
     }
 

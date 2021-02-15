@@ -1,11 +1,33 @@
 import * as functions from "firebase-functions";
-const {log} = require("firebase-functions/lib/logger");
-import moment = require("moment");
 import checkSafetyToken from "../safetyTokenChecker";
 import {generateJwt} from "../../jwtGenerator";
 import {validateCode} from "../../code/codeValidator";
 import returnBadRequestResponse from "../../returnBadRequestResponse";
-import {secretManager, codeRepository, subscriptionRepository} from "../../../services";
+import {codeRepository, secretManager, subscriptionRepository} from "../../../services";
+import {CodeEvent} from "../../code/CodeEvent";
+import codeLogger from "../../logger/codeLogger";
+import getCodeLogEntryLabels from "../../logger/getCodeLogEntryLabels";
+import {sha256} from "js-sha256";
+import {CodeStatus} from "../../code/CodeStatus";
+
+const {log} = require("firebase-functions/lib/logger");
+import moment = require("moment");
+import errorLogger from "../../logger/errorLogger";
+import errorEntryLabels from "../../logger/errorEntryLabels";
+
+const logCodeEventForSubscriptionsForTest = (
+    hashedCode: string,
+    codeEvent: CodeEvent,
+    platform: string,
+    codeStatus?: CodeStatus
+) => {
+    codeLogger.info(getCodeLogEntryLabels(
+        hashedCode,
+        codeEvent,
+        platform,
+        codeStatus
+    ), `${codeEvent} : ${hashedCode}`);
+}
 
 const subscriptionsForTest = async (request: functions.Request, response: functions.Response) => {
 
@@ -20,11 +42,14 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
             log(`Safety token is invalid`);
             return returnBadRequestResponse(response);
         }
-
+        const hashedCode = sha256(code);
         const isCodeValid = await validateCode(code);
 
+        logCodeEventForSubscriptionsForTest(hashedCode, CodeEvent.ATTEMPTED_CODE, platform);
+
         if (!isCodeValid) {
-            log(`Code is invalid`);
+            logCodeEventForSubscriptionsForTest(hashedCode, CodeEvent.CODE_IS_NOT_VALID, platform);
+
             return returnBadRequestResponse(response);
         }
 
@@ -33,10 +58,13 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
         const codeId = codeEntity.get('id');
         await codeRepository.update(code, {expiryTime: moment().unix()});
 
+        logCodeEventForSubscriptionsForTest(hashedCode, CodeEvent.USED_CODE, platform, CodeStatus.USED);
+
         const subscription = await subscriptionRepository.get(guid);
 
         if (subscription.exists) {
             log(`subscription already exists`);
+
             return returnBadRequestResponse(response);
         }
 
@@ -44,6 +72,7 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
 
         if (existingSubscription) {
             log(`subscription already exists`);
+
             return returnBadRequestResponse(response);
         }
 
@@ -53,7 +82,8 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
             codeSha256,
             status: 1
         }).catch(reason => {
-            log(reason);
+            errorLogger.error(errorEntryLabels(reason), reason);
+
             return returnBadRequestResponse(response);
         });
         const {secret, lifetime} = await secretManager.getConfig('subscription');
@@ -64,7 +94,8 @@ const subscriptionsForTest = async (request: functions.Request, response: functi
 
         return response.status(201).send({token: accessToken});
     } catch (e) {
-        log(e);
+        errorLogger.error(errorEntryLabels(e), e);
+
         return returnBadRequestResponse(response);
     }
 };

@@ -4,7 +4,9 @@ import eu.interop.federationgateway.model.EfgsProto;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MarkerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -15,7 +17,6 @@ import java.net.URI;
 import static java.lang.String.format;
 import static pl.gov.mc.protegosafe.efgs.utils.WebClientFactory.ACCEPT_HEADER_JSON;
 import static pl.gov.mc.protegosafe.efgs.utils.WebClientFactory.ACCEPT_HEADER_PROTOBUF;
-
 
 @Slf4j
 @Service
@@ -30,14 +31,17 @@ class HttpUploader {
         this.efgsApiUrl = properties.getEfgsApiUrl();
     }
 
-    boolean uploadDiagnosisKeyBatch(EfgsProto.DiagnosisKeyBatch batch, String uploaderBatchTag, String batchSignature) {
+    HttpStatus uploadDiagnosisKeyBatch(EfgsProto.DiagnosisKeyBatch batch, String uploaderBatchTag, String batchSignature) {
         try {
             makeCall(batch, uploaderBatchTag, batchSignature);
         } catch (WebClientResponseException e) {
+            log.error(MarkerFactory.getMarker("CRITICAL"), "Wrong status code: " + e.getStatusCode());
             log.error(format("Error during uploading diagnosis keys. Code: %s, Message: %s", e.getStatusCode(), e.getResponseBodyAsString()), e);
-            return false;
+
+            return e.getStatusCode();
         }
-        return true;
+
+        return HttpStatus.OK;
     }
 
     private void makeCall(EfgsProto.DiagnosisKeyBatch batch, String uploaderBatchTag, String batchSignature) {

@@ -3,8 +3,11 @@ import config from "../../config";
 import * as admin from "firebase-admin";
 import {secretManager} from "../../services";
 import CovidStats from "../../utils/CovidStats";
+import {timestampToFormattedDayMonth} from "../../utils/dateUtils";
+import errorLogger from "../logger/errorLogger";
+import errorEntryLabels from "../logger/errorEntryLabels";
 
-const {log, error} = require("firebase-functions/lib/logger");
+const {log} = require("firebase-functions/lib/logger");
 
 const sendStatisticsNotification = async (covidStats: CovidStats) => {
     const token = await admin
@@ -30,7 +33,8 @@ const sendNotification = async (token: string, covidStats: CovidStats, topic: st
             "access_token_auth": "true"
         },
     }).then(response => response.status === 200 && response.data.hasOwnProperty("message_id")).catch(reason => {
-        error(`Error during sending notification (${platform}), ${reason}`);
+        const sendErrorMessage = `Error during sending notification (${platform}), ${reason}`;
+        errorLogger.error(errorEntryLabels(sendErrorMessage), sendErrorMessage);
 
         return false;
     });
@@ -38,7 +42,8 @@ const sendNotification = async (token: string, covidStats: CovidStats, topic: st
     if (result) {
         log(`Successfully sending notification (${platform})`);
     } else {
-        error(`Could not send notification (${platform})`);
+        const errorMessage = `Could not send notification (${platform})`;
+        errorLogger.error(errorEntryLabels(errorMessage), errorMessage);
     }
 }
 
@@ -51,7 +56,7 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
     const date = new Date();
     date.setTime(Number(covidStats.updated) * 1000);
 
-    const dateString = `${date.getUTCDate()}.${date.getUTCMonth() + 1}`;
+    const dateString = timestampToFormattedDayMonth(covidStats.updated);
 
     const payload = {
         "to": topic,
@@ -60,32 +65,32 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
                 "localizedNotifications": [
                     {
                         "title": `COVID-19 w Polsce (${dateString})`,
-                        "content": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, +${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`,
+                        "content": `Szczepienia: +${covidStats.newVaccinations} nowych zaszczepionych, +${covidStats.newVaccinationsDose1} z 1 dawką i +${covidStats.newVaccinationsDose2} z 2 dawką. COVID-19: +${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, +${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`,
                         "languageISO": "pl"
                     },
                     {
                         "title": `COVID-19 in Poland (${dateString})`,
-                        "content": `+${covidStats.newCases} new infections, +${covidStats.newDeaths} died. Click and see statistics in the STOP COVID - ProteGO Safe app.`,
+                        "content": `Vaccinations: +${covidStats.newVaccinations} new vaccinations, +${covidStats.newVaccinationsDose1} with 1st dose and +${covidStats.newVaccinationsDose2} with 2nd dose. COVID-19: +${covidStats.newCases} new infections, +${covidStats.newDeaths} deaths, +${covidStats.newRecovered} recoveries. Click and see the statistics in STOP COVID - ProteGO Safe application.`,
                         "languageISO": "en"
                     },
                     {
                         "title": `COVID-19 в Польщі (${dateString})`,
-                        "content": `+${covidStats.newCases} нових заражень, +${covidStats.newDeaths} померло, {{newRecovered}} видужало. Натисніть і подивіться статистику в додатку STOP COVID - ProteGO Safe.`,
+                        "content": `Щеплення: +${covidStats.newVaccinations} нових щеплень, +${covidStats.newVaccinationsDose1} щеплень одною дозою та +${covidStats.newVaccinationsDose2} щеплень другою дозою. COVID-19: +${covidStats.newCases} нових заражень, +${covidStats.newDeaths} померло, +${covidStats.newRecovered} одужало. Клацніть і перегляньте статистику в додатку STOP COVID - ProteGO Safe.`,
                         "languageISO": "uk"
                     },
                     {
                         "title": `COVID-19 in Polen (${dateString})`,
-                        "content": `+${covidStats.newCases} Neuinfizierte, +${covidStats.newDeaths} Verstorbene. Hier klicken und Statistiken in der App STOP COVID - ProteGO Safe verfolgen.`,
+                        "content": `Impfungen: +${covidStats.newVaccinations} neu Geimpfte, +${covidStats.newVaccinationsDose1} mit der 1. Dosis und +${covidStats.newVaccinationsDose2} mit der 2. Dosis. COVID-19: +${covidStats.newCases} neu Infizierte, +${covidStats.newDeaths} Verstorbene, +${covidStats.newRecovered} Genesene. Hier klicken und die Statistik in der App STOP COVID - ProteGO Safe anzeigen.`,
                         "languageISO": "de"
                     },
                     {
                         "title": `COVID-19 в Польше (${dateString})`,
-                        "content": `+${covidStats.newCases} новых заражений, +${covidStats.newDeaths} умерло. Нажмите и посмотрите статистику в приложении STOP COVID - ProteGO Safe.`,
+                        "content": `Вакцинация: +${covidStats.newVaccinations} новых прививок, +${covidStats.newVaccinationsDose1} прививок одной дозой и +${covidStats.newVaccinationsDose2} прививок второй дозой. COVID-19: +${covidStats.newCases} новых заражений, +${covidStats.newDeaths} умерло, +${covidStats.newRecovered} выздоровело. Кликните и посмотрите статистику в приложении STOP COVID - ProteGO Safe.`,
                         "languageISO": "ru"
                     },
                     {
                         "title": `Polonya'da COVID-19 (${dateString})`,
-                        "content": `+${covidStats.newCases} yeni vaka, +${covidStats.newDeaths} kişi vefat etti. Tıklayın ve istatistikleri STOP COVID - ProteGO Safe uygulamasında görün.`,
+                        "content": `Aşı: +${covidStats.newVaccinations} yeni aşılama, +${covidStats.newVaccinationsDose1} ilk doz ve +${covidStats.newVaccinationsDose2} ikinci doz. COVID-19: +${covidStats.newCases} yeni vaka, +${covidStats.newDeaths} vefat, +${covidStats.newRecovered} iyileşen. İstatistikleri STOP COVID-ProteGo Safe uygulamasında görmek için tıklayın.`,
                         "languageISO": "tr"
                     }
                 ]
@@ -102,8 +107,8 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
         notification: {
             "click_action": "covidStatsCategoryId",
             "mutable_content": true,
-            "title":  `COVID-19 w Polsce (${dateString})`,
-            "body": `+${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, +${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
+            "title": `COVID-19 w Polsce (${dateString})`,
+            "body": `Szczepienia: +${covidStats.newVaccinations} nowych zaszczepionych, +${covidStats.newVaccinationsDose1} z 1 dawką i +${covidStats.newVaccinationsDose2} z 2 dawką. COVID-19: +${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, +${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
         }
     } : payload;
 }

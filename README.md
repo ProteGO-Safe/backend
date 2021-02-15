@@ -14,6 +14,7 @@ List of Cloud Functions:
 - **advicesParser** - parsing the government advices page
 - **hospitalsParser** - parsing the government hospitals page
 - **backupTranslations** - backup translation's files
+- **sendUploadedKeysOpenCensusMetricSubscriber** - sending OpenCensus metric after uploading keys to GENS
 
 
 ## Configuration

@@ -3,7 +3,14 @@ import {sha256} from "js-sha256";
 import {v4} from 'uuid';
 import TokenRepository from "./TokenRepository";
 import ArrayHelper from "./ArrayHelper";
-
+import codeLogger from "../functions/logger/codeLogger";
+import getCodeLogEntryLabels from "../functions/logger/getCodeLogEntryLabels";
+import {CodeStatus} from "../functions/code/CodeStatus";
+import {CodeType} from "../functions/code/CodeType";
+import {CodeEvent} from "../functions/code/CodeEvent";
+import {firestore} from "firebase-admin/lib/firestore";
+import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
+import DocumentData = firestore.DocumentData;
 
 class CodeRepository extends TokenRepository {
 
@@ -18,24 +25,39 @@ class CodeRepository extends TokenRepository {
     async save(code: string, expiryTime: number, deleteTime: number): Promise<string> {
         const savedCodes = await this.saveCodes([code], expiryTime, deleteTime);
 
-        return <string> savedCodes.pop();
+        return <string>savedCodes.pop();
     }
 
     async saveCodes(codes: Array<string>, expiryTime: number, deleteTime: number): Promise<Array<string>> {
         const batch = admin.firestore().batch();
+        const codeObjects = new Array<any>();
 
         codes.forEach(code => {
             const hashedCode = sha256(code), id = v4();
-
-            batch.set(this.getCollection().doc(hashedCode), {
+            const codeObject = {
                 "id": id,
-                'hashedCode' : hashedCode,
+                'hashedCode': hashedCode,
                 "expiryTime": expiryTime,
                 [this.deleteTimeFieldName()]: deleteTime
-            })
+            };
+
+            batch.set(this.getCollection().doc(hashedCode), codeObject)
+            codeObjects.push(codeObject)
         })
 
         await batch.commit();
+
+        codeObjects.forEach((code: any) => {
+            codeLogger.info(getCodeLogEntryLabels(
+                code.hashedCode,
+                CodeEvent.GENERATED_CODE,
+                "",
+                CodeStatus.NOT_USED,
+                code.expiryTime === code.deleteTime ? CodeType.PIN : CodeType.LAB,
+                code.expiryTime,
+                code.deleteTime
+            ), `${CodeEvent.GENERATED_CODE} : ${code.hashedCode}`);
+        });
 
         return codes;
     }
@@ -74,6 +96,15 @@ class CodeRepository extends TokenRepository {
         );
 
         return !!existingHashedCodesChunks.filter(Boolean).length;
+    }
+
+    onRemoved(doc: QueryDocumentSnapshot<DocumentData>) {
+        const hashedCode = doc.data().hashedCode;
+
+        codeLogger.info(getCodeLogEntryLabels(
+            hashedCode,
+            CodeEvent.REMOVED_CODE,
+        ), `${CodeEvent.REMOVED_CODE} : ${hashedCode}`);
     }
 }
 

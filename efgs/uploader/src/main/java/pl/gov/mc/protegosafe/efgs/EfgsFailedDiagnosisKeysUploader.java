@@ -50,12 +50,12 @@ public class EfgsFailedDiagnosisKeysUploader extends DiagnosisKeysUploader imple
                 .map(FailedDiagnosisKey::fromFailedDiagnosisKey)
                 .collect(Collectors.toUnmodifiableList());
 
-        final boolean isSuccessResponse = signAndUpload(diagnosisKeyBatch, true);
+        final boolean shouldFinishUploading = signAndUpload(diagnosisKeyBatch, true);
 
-        if (!isSuccessResponse) {
+        if (!shouldFinishUploading) {
             failedDiagnosisKeysRepository.updateFailedUploadingDiagnosisKeys(failedDiagnosisKeys);
         } else {
-            log.info("Uploaded successfully");
+            log.info("Uploaded finished");
             failedDiagnosisKeysRepository
                     .removeDocument(failedDiagnosisKeys
                             .stream()
