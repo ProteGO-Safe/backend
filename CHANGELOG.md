@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.4.4
+
+### Added
+- OpenCensus metrics
+- EFGS integration tests
+
+### Changed
+- much more logs in the application
+- EFGS status code handling
+- date format in the COVID-19 statistics notification
+- number of fake keys generated for EFGS
+
+### Fixed
+- messages in the notification of COVID-19 statistics  
+- parsing csv files
+
 ## 4.4.3
 
 ### Added
