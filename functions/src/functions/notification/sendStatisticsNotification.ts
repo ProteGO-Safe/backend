@@ -65,7 +65,7 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
                 "localizedNotifications": [
                     {
                         "title": `COVID-19 w Polsce (${dateString})`,
-                        "content": `Szczepienia: +${covidStats.newVaccinations} nowych zaszczepionych, +${covidStats.newVaccinationsDose1} z 1 dawką i +${covidStats.newVaccinationsDose2} z 2 dawką. COVID-19: +${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, +${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`,
+                        "content": `Szczepienia: +${covidStats.newVaccinations} wykonanych szczepień, +${covidStats.newVaccinationsDose1} z 1 dawką i +${covidStats.newVaccinationsDose2} z 2 dawką. COVID-19: +${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, +${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`,
                         "languageISO": "pl"
                     },
                     {
@@ -108,7 +108,7 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
             "click_action": "covidStatsCategoryId",
             "mutable_content": true,
             "title": `COVID-19 w Polsce (${dateString})`,
-            "body": `Szczepienia: +${covidStats.newVaccinations} nowych zaszczepionych, +${covidStats.newVaccinationsDose1} z 1 dawką i +${covidStats.newVaccinationsDose2} z 2 dawką. COVID-19: +${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, +${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
+            "body": `Szczepienia: +${covidStats.newVaccinations} wykonanych szczepień, +${covidStats.newVaccinationsDose1} z 1 dawką i +${covidStats.newVaccinationsDose2} z 2 dawką. COVID-19: +${covidStats.newCases} nowych zakażeń, +${covidStats.newDeaths} zmarło, +${covidStats.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
         }
     } : payload;
 }
