@@ -8,3 +8,9 @@ efgs:
       collections:
         batch-tag: processedBatchTags
     days-to-check-before-now: 14
+
+spring:
+  cloud:
+    gcp:
+      logging:
+        enabled: true

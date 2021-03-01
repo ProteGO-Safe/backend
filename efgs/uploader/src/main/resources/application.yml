@@ -1,2 +1,8 @@
 efgs:
-  diagnosisKeysFetchDelayFromRepository: ${3*60*60} // 3 hours
+  diagnosisKeysFetchDelayFromRepository: 10800
+
+spring:
+  cloud:
+    gcp:
+      logging:
+        enabled: true

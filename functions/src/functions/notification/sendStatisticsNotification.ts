@@ -65,27 +65,27 @@ const getPayload = (topic: string, covidStats: CovidStats, platform: Platform): 
                     },
                     {
                         "title": `COVID-19 in Poland (${dateString})`,
-                        "content": `+${covidStats.newCases} new infections, +${covidStats.newDeaths} died. Click and see statistics in the STOP COVID - ProteGO Safe app.`,
+                        "content": `+${covidStats.newCases} new infections, +${covidStats.newDeaths} died, +${covidStats.newRecovered} recovered. Click and see statistics in the STOP COVID - ProteGO Safe app.`,
                         "languageISO": "en"
                     },
                     {
                         "title": `COVID-19 в Польщі (${dateString})`,
-                        "content": `+${covidStats.newCases} нових заражень, +${covidStats.newDeaths} померло, {{newRecovered}} видужало. Натисніть і подивіться статистику в додатку STOP COVID - ProteGO Safe.`,
+                        "content": `+${covidStats.newCases} нових заражень, +${covidStats.newDeaths} померло, +${covidStats.newRecovered} видужало. Натисніть і подивіться статистику в додатку STOP COVID - ProteGO Safe.`,
                         "languageISO": "uk"
                     },
                     {
                         "title": `COVID-19 in Polen (${dateString})`,
-                        "content": `+${covidStats.newCases} Neuinfizierte, +${covidStats.newDeaths} Verstorbene. Hier klicken und Statistiken in der App STOP COVID - ProteGO Safe verfolgen.`,
+                        "content": `+${covidStats.newCases} Neuinfizierte, +${covidStats.newDeaths} Verstorbene, +${covidStats.newRecovered} Genesene. Hier klicken und Statistiken in der App STOP COVID - ProteGO Safe verfolgen.`,
                         "languageISO": "de"
                     },
                     {
                         "title": `COVID-19 в Польше (${dateString})`,
-                        "content": `+${covidStats.newCases} новых заражений, +${covidStats.newDeaths} умерло. Нажмите и посмотрите статистику в приложении STOP COVID - ProteGO Safe.`,
+                        "content": `+${covidStats.newCases} новых заражений, +${covidStats.newDeaths} умерло, +${covidStats.newRecovered} выздоровело. Нажмите и посмотрите статистику в приложении STOP COVID - ProteGO Safe.`,
                         "languageISO": "ru"
                     },
                     {
                         "title": `Polonya'da COVID-19 (${dateString})`,
-                        "content": `+${covidStats.newCases} yeni vaka, +${covidStats.newDeaths} kişi vefat etti. Tıklayın ve istatistikleri STOP COVID - ProteGO Safe uygulamasında görün.`,
+                        "content": `+${covidStats.newCases} yeni vaka, +${covidStats.newDeaths} kişi vefat etti, +${covidStats.newRecovered} kişi iyileşti. Tıklayın ve istatistikleri STOP COVID - ProteGO Safe uygulamasında görün.`,
                         "languageISO": "tr"
                     }
                 ]
