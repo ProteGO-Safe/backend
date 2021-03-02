@@ -6,64 +6,73 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.WriteBatch;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import pl.gov.mc.protegosafe.efgs.repository.DiagnosisKeysRepository;
-import pl.gov.mc.protegosafe.efgs.repository.FailedDiagnosisKeysRepository;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import pl.gov.mc.protegosafe.efgs.repository.model.DiagnosisKey;
 import pl.gov.mc.protegosafe.efgs.secret.CloudBackendConfig;
-import pl.gov.mc.protegosafe.efgs.utils.BatchSignatureUtils;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@Disabled
-class EfgsDiagnosisKeysUploaderTest {
+import static java.lang.System.getenv;
+import static java.util.stream.IntStream.range;
+import static org.testcontainers.utility.DockerImageName.parse;
+
+@Testcontainers
+class EfgsDiagnosisKeysUploaderTest extends IntegrationTests {
+
+    private static final String PROJECT_ID = "project-test";
+    private static final String EFGS_HOST = getenv("EFGS_URL");
+    private static final String NBTLS_CERT = getenv("NBTLS");
+    private static final String NBBS_CERT = getenv("NBBS");
 
     private EfgsDiagnosisKeysUploader efgsDiagnosisKeysUploader;
-
-    @Autowired
     private Firestore firestore;
-    @Autowired
-    private CloudBackendConfig cloudBackendConfig;
-    @Autowired
-    private HttpUploader httpUploader;
-    @Autowired
-    private DiagnosisKeysRepository diagnosisKeysRepository;
-    @Autowired
-    private FailedDiagnosisKeysRepository failedDiagnosisKeysRepository;
-    @Autowired
-    private EfgsFakeDiagnosisKeysFactory efgsFakeDiagnosisKeysFactory;
-    @Autowired
-    private EfgsProtoDiagnosisKeyBatchFactory efgsProtoDiagnosisKeyBatchFactory;
-    @Autowired
-    private BatchSignatureUtils batchSignatureUtils;
+
+    @Container
+    public final GenericContainer container = new GenericContainer<>(parse("pathmotion/firestore-emulator-docker"))
+            .withEnv("FIRESTORE_PROJECT_ID", PROJECT_ID)
+            .withExposedPorts(8088)
+            .waitingFor(
+                    Wait.forHttp("/")
+                            .forStatusCode(200)
+            );
 
     @BeforeEach
     public void beforeEach() {
+        final CloudBackendConfig cloudBackendConfig = provideCloudBackendConfig(
+                new String(Base64.getDecoder().decode(NBTLS_CERT)),
+                new String(Base64.getDecoder().decode(NBBS_CERT))
+        );
+
+        final Properties properties = provideProperties(Mode.UPLOAD_KEYS, PROJECT_ID, EFGS_HOST);
+
+        firestore = FirestoreOptions.newBuilder()
+                .setProjectId(PROJECT_ID)
+                .setEmulatorHost(container.getHost() + ":" + container.getMappedPort(8088))
+                .build()
+                .getService();
+
         efgsDiagnosisKeysUploader = new EfgsDiagnosisKeysUploader(
-                efgsFakeDiagnosisKeysFactory,
-                efgsProtoDiagnosisKeyBatchFactory,
-                batchSignatureUtils,
-                httpUploader,
-                diagnosisKeysRepository,
-                failedDiagnosisKeysRepository,
-                cloudBackendConfig);
+                provideEfgsFakeDiagnosisKeysFactory(),
+                provideEfgsProtoDiagnosisKeyBatchFactory(),
+                provideBatchSignatureUtils(),
+                provideHttpUploader(cloudBackendConfig, properties),
+                provideDiagnosisKeysRepository(firestore, properties),
+                provideFailedDiagnosisKeysRepository(firestore),
+                cloudBackendConfig
+        );
     }
 
     @Test
@@ -82,7 +91,7 @@ class EfgsDiagnosisKeysUploaderTest {
                 .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
                 .contains(
                         Tuple.tuple("started uploading keys to efgs", Level.INFO),
-                        Tuple.tuple("Uploaded successfully", Level.INFO)
+                        Tuple.tuple("Uploaded finished", Level.INFO)
                 );
     }
 
@@ -90,7 +99,7 @@ class EfgsDiagnosisKeysUploaderTest {
         final WriteBatch batch = firestore.batch();
         final CollectionReference diagnosisKeys = firestore.collection("diagnosisKeys");
 
-        IntStream.range(0, 10).forEach(e -> {
+        range(0, 10).forEach(e -> {
             final String id = UUID.randomUUID().toString();
             final DiagnosisKey random = DiagnosisKey.random();
             final Map<String, Object> docData = new HashMap<>();
@@ -105,5 +114,6 @@ class EfgsDiagnosisKeysUploaderTest {
         });
 
         batch.commit().get();
+        Thread.sleep(3000);
     }
 }

@@ -14,9 +14,16 @@ const uploadFailedDiagnosisKeysToGENS = async () => {
     for (const failureUploadingDiagnosisKey of failureUploadingDiagnosisKeys) {
         const {dataAsBase64, tries, id} = failureUploadingDiagnosisKey;
         log(`trying send failed keys to gens, id: ${id}, tries: ${tries}`);
-        await uploadGensDiagnosisKeys(dataAsBase64, (e : Error) => saveFailureAgainUploadingDiagnosisKeys(dataAsBase64, e, failureUploadingDiagnosisKey));
-
+        await uploadGensDiagnosisKeys(
+            dataAsBase64,
+            (e : Error) => saveFailureAgainUploadingDiagnosisKeys(dataAsBase64, e, failureUploadingDiagnosisKey),
+            () => successUploadingDiagnosisKeys(failureUploadingDiagnosisKey));
     }
+};
+
+const successUploadingDiagnosisKeys = (failureUploadingDiagnosisKey: FailureUploadingDiagnosisKeys) => {
+    const {id} = failureUploadingDiagnosisKey;
+    failureUploadingDiagnosisKeysRepository.delete(id);
 };
 
 const saveFailureAgainUploadingDiagnosisKeys = (dataAsBase64: string, e: Error, failureUploadingDiagnosisKey: FailureUploadingDiagnosisKeys) => {
@@ -37,7 +44,7 @@ const saveFailureAgainUploadingDiagnosisKeys = (dataAsBase64: string, e: Error, 
 
         failureUploadingDiagnosisKeysRepository.save(itemToSave);
 
-        log(`saved failure uploading diagnosis keys, id: ${id}, tries: ${tries}`);
+        log(`saved failure uploading diagnosis keys, id: ${id}, tries: ${tries + 1}`);
     }
 };
 

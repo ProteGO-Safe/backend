@@ -1,8 +1,9 @@
 import {Bucket, Storage} from "@google-cloud/storage";
 import config from "../config";
 import CovidStats from "./CovidStats";
-import {error} from "firebase-functions/lib/logger";
 import {secretManager} from "../services";
+import errorLogger from "../functions/logger/errorLogger";
+import errorEntryLabels from "../functions/logger/errorEntryLabels";
 
 class CovidStatisticsRepository {
     private bucket: Bucket;
@@ -26,6 +27,12 @@ class CovidStatisticsRepository {
             content.covidStats.totalDeaths ?? null,
             content.covidStats.newRecovered ?? null,
             content.covidStats.totalRecovered ?? null,
+            content.covidStats.newVaccinations ?? null,
+            content.covidStats.totalVaccinations ?? null,
+            content.covidStats.newVaccinationsDose1 ?? null,
+            content.covidStats.totalVaccinationsDose1 ?? null,
+            content.covidStats.newVaccinationsDose2 ?? null,
+            content.covidStats.totalVaccinationsDose2 ?? null,
         );
     }
 
@@ -38,7 +45,7 @@ class CovidStatisticsRepository {
             .file(config.statistics.fileName)
             .save(
                 JSON.stringify(fileContent),
-            err => {err ? error(`Cannot save file`, err) : undefined}
+            err => {err ? errorLogger.error(errorEntryLabels(`Cannot save file`), err) : undefined}
             );
     }
 
@@ -48,7 +55,7 @@ class CovidStatisticsRepository {
         return new Promise((resolve, reject) => {
             bucket.file(config.statistics.fileName).download((err, contents) => {
                 if (err) {
-                    error(`cannot read covidStats file`, err);
+                    errorLogger.error(errorEntryLabels(`cannot read covidStats file`), err);
                     reject(err);
                 }
 

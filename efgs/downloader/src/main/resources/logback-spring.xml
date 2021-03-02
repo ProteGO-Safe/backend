@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <property name="STACKDRIVER_LOG_NAME" value="${STACKDRIVER_LOG_NAME:-spring.log}"/>
-    <property name="STACKDRIVER_LOG_FLUSH_LEVEL" value="${STACKDRIVER_LOG_FLUSH_LEVEL:-WARN}"/>
+    <property name="STACKDRIVER_LOG_FLUSH_LEVEL" value="${STACKDRIVER_LOG_FLUSH_LEVEL:-INFO}"/>
 
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
     <appender name="STACKDRIVER" class="org.springframework.cloud.gcp.logging.LoggingAppender">
         <log>${STACKDRIVER_LOG_NAME}</log>
         <loggingEventEnhancer>pl.gov.mc.protegosafe.efgs.configuration.CloudEnhancer</loggingEventEnhancer>
+        <enhancer>org.springframework.cloud.gcp.logging.TraceIdLoggingEnhancer</enhancer>
         <flushLevel>${STACKDRIVER_LOG_FLUSH_LEVEL}</flushLevel>
     </appender>
 
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-        </encoder>
-    </appender>
-
     <springProfile name="development">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
         <root level="DEBUG">
             <appender-ref ref="CONSOLE"/>
         </root>

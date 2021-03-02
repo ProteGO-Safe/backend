@@ -4,6 +4,8 @@ import {secretManager, subscriptionRepository} from "../../../services";
 import checkSafetyToken from "../safetyTokenChecker";
 import {decode, verify} from "jsonwebtoken";
 import returnBadRequestResponse from "../../returnBadRequestResponse";
+import errorLogger from "../../logger/errorLogger";
+import errorEntryLabels from "../../logger/errorEntryLabels";
 
 const auth = async (token: string | undefined, guid: string | undefined): Promise<boolean> => {
     if (!token || !guid) {
@@ -61,7 +63,8 @@ const getSubscription = async (request: functions.Request, response: functions.R
 
         return response.status(200).send({guid, status});
     } catch (e) {
-        log(e);
+        errorLogger.error(errorEntryLabels(e), e);
+
         return returnBadRequestResponse(response);
     }
 };

@@ -41,7 +41,7 @@ openssl pkcs8 -topk8 -inform PEM -outform DER -in key.pem -out efgs-ta-key.der -
 ```bash
 openssl x509 -in nbtls-pl-cert.crt -noout -hash -sha256 -fingerprint
 ```
-* execute insert (make fingerprint lowercase)
+* execute insert (make fingerprint lowercase without :)
 ```sql
 INSERT INTO fg.`certificate`(`created_at`, `thumbprint`, `country`, `type`, `revoked`, `host`, `signature`, `raw_data`) VALUES (curdate(),'fingerprint_from_nbtls-pl-cert.crt','PL','AUTHENTICATION',false,null, 'signature_from_nbtls-pl-cert.crt', '-----BEGIN CERTIFICATE-----RAW DATA from nbtls-pl-cert.crt-----END CERTIFICATE-----');
 INSERT INTO fg.`certificate`(`created_at`, `thumbprint`, `country`, `type`, `revoked`, `host`, `signature`, `raw_data`) VALUES (curdate(),'fingerprint_from_nbbs-pl-cert.crt','PL','SIGNING',false,null, 'signature_from_nbbs-pl-cert.crt', '-----BEGIN CERTIFICATE-----RAW DATA from nbbs-pl-cert.crt-----END CERTIFICATE-----');

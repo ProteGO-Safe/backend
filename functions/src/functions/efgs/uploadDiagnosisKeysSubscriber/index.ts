@@ -10,9 +10,11 @@ const uploadDiagnosisKeysSubscriber = async (message: any) => {
 
     const {data: dataAsBase64} = message;
 
-    await uploadGensDiagnosisKeys(dataAsBase64, (e: Error) => saveFailureUploadingDiagnosisKeys(dataAsBase64, e));
+    await uploadGensDiagnosisKeys(
+        dataAsBase64,
+        (e: Error) => saveFailureUploadingDiagnosisKeys(dataAsBase64, e),
+        () => null);
 };
-
 
 const saveFailureUploadingDiagnosisKeys = (dataAsBase64: string, e: Error) => {
 

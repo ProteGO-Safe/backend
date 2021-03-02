@@ -4,6 +4,9 @@ import {sha256} from "js-sha256";
 import {v4} from "uuid";
 import TokenRepository from "./TokenRepository";
 import moment = require("moment");
+import {firestore} from "firebase-admin/lib/firestore";
+import DocumentData = firestore.DocumentData;
+import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
 
 class HashedAccessTokensRepository extends TokenRepository {
 
@@ -28,6 +31,10 @@ class HashedAccessTokensRepository extends TokenRepository {
         const hashedAccessToken = sha256(accessToken);
 
         return await this.getCollection().doc(hashedAccessToken).get();
+    }
+
+    onRemoved(doc: QueryDocumentSnapshot<DocumentData>) {
+        //nothing to do
     }
 }
 
