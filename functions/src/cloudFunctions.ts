@@ -1,7 +1,7 @@
 import * as ff from 'firebase-functions';
 import {applicationIPChecker, secretManager} from "./services";
 
-const region = ff.config().config.region;
+const {region, cdnbucket} = ff.config().config;
 
 export function https(
     handler : (data: any, context: ff.https.CallableContext) => any | Promise<any>,
@@ -66,7 +66,9 @@ export function storage(
     return ff
         .runWith(runtimeOpt)
         .region(region)
-        .storage.object().onFinalize(async (object : ff.storage.ObjectMetadata) => {
+        .storage
+        .bucket(cdnbucket)
+        .object().onFinalize(async (object : ff.storage.ObjectMetadata) => {
             return handler(object);
         });
 }

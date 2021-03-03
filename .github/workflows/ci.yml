@@ -318,12 +318,14 @@ jobs:
           echo "PROJECT_ID=${{ secrets[env.PROJECT_ENV] }}" >> $GITHUB_ENV
           echo "REGION=${{ secrets[env.REGION_ENV] }}" >> $GITHUB_ENV
           echo "SECRET_MANAGER_PATH=${{ secrets[env.SECRET_MANAGER_PATH_ENV] }}" >> $GITHUB_ENV
+          echo "CDN_BUCKET=${{ secrets[env.CDN_BUCKET] }}" >> $GITHUB_ENV
         env:
           SECRET_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_HOSTING_SAFE"
           PROJECT_ENV: "${{ env.ENVIRONMENT }}_FIREBASE_PROJECT"
           EV: "${{ env.ENVIRONMENT }}_ENV"
           REGION_ENV: "${{ env.ENVIRONMENT }}_REGION"
           SECRET_MANAGER_PATH_ENV: "${{ env.ENVIRONMENT }}_SECRET_MANAGER_PATH"
+          CDN_BUCKET: "${{ env.ENVIRONMENT }}_CDN_BUCKET"
 
       - uses: actions/setup-node@v1
         with:
@@ -342,7 +344,7 @@ jobs:
       - name: Set firebase envs
         uses: w9jds/firebase-action@master
         with:
-          args: functions:config:set config.region=$REGION config.secretmanagerpath=$SECRET_MANAGER_PATH --project $PROJECT_ID
+          args: functions:config:set config.region=$REGION config.secretmanagerpath=$SECRET_MANAGER_PATH config.cdnbucket=$CDN_BUCKET --project $PROJECT_ID
 
       - name: Deploy to Firebase
         if: ${{ needs.Setup.outputs.ENVIRONMENT }}

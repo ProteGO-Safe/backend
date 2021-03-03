@@ -1,5 +1,6 @@
 import {getMinimumTimeToExecute} from "./StatistiscHelper";
-import {statisticFileRepository, statisticsRepository} from "./services";
+import {statisticsRepository} from "./services";
+import {cdnFileRepository} from "../../services";
 import {addDays, getTimestamp} from "../../utils/dateUtils";
 import config from '../../config'
 import Timestamps from "./Timestamps";
@@ -38,11 +39,11 @@ const publishStatistics = async () => {
         districtsUpdated: statistic.districts.updated,
     } as Timestamps;
 
-    await statisticFileRepository.saveFile(statistic.dashboard, config.statistics.files.dashboard);
-    await statisticFileRepository.saveFile(statistic.details, config.statistics.files.details);
-    await statisticFileRepository.saveFile(statistic.districts, config.statistics.files.districts);
-    await statisticFileRepository.saveFile(statistic.covidInfo, config.statistics.files.covidInfo);
-    await statisticFileRepository.saveFile(timestamps, config.statistics.files.timestamps);
+    await cdnFileRepository.saveFile(statistic.dashboard, config.statistics.files.dashboard);
+    await cdnFileRepository.saveFile(statistic.details, config.statistics.files.details);
+    await cdnFileRepository.saveFile(statistic.districts, config.statistics.files.districts);
+    await cdnFileRepository.saveFile(statistic.covidInfo, config.statistics.files.covidInfo);
+    await cdnFileRepository.saveFile(timestamps, config.statistics.files.timestamps);
 
     statistic.published = true;
 

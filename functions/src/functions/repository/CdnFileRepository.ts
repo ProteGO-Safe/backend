@@ -1,10 +1,10 @@
 import {Bucket, Storage} from "@google-cloud/storage";
+import * as ff from 'firebase-functions';
 import {log} from "firebase-functions/lib/logger";
-import {secretManager} from "../../../services";
-import errorLogger from "../../logger/errorLogger";
-import errorEntryLabels from "../../logger/errorEntryLabels";
+import errorLogger from "../logger/errorLogger";
+import errorEntryLabels from "../logger/errorEntryLabels";
 
-class StatisticFileRepository {
+class CdnFileRepository {
     private bucket: Bucket;
 
     async getBucket(): Promise<Bucket> {
@@ -30,10 +30,11 @@ class StatisticFileRepository {
     }
 
     private async init(): Promise<void> {
-        const {bucketName} = await secretManager.getConfig('statistics');
 
-        this.bucket = new Storage().bucket(bucketName);
+        const {cdnbucket} = ff.config().config;
+
+        this.bucket = new Storage().bucket(cdnbucket);
     }
 }
 
-export default StatisticFileRepository;
+export default CdnFileRepository;
