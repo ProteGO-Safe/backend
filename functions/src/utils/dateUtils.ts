@@ -1,13 +1,34 @@
-export const timestampToFormattedDayMonth = (timestampInSeconds: number | null | undefined) => {
-    const date = new Date();
+export const dateToFormattedDayMonth = (date: Date) => {
+    return `${leadingZero(date.getDate())}.${leadingZero(date.getMonth() + 1)}`;
+};
 
-    if (!!timestampInSeconds && isNumeric(timestampInSeconds)) {
-        date.setTime(Number(timestampInSeconds) * 1000);
-    }
+//20210201
+export const getJoinedDateAsString = (date: Date) => {
+    return date.toISOString().split('T')[0].replace(/-/g,'');
+};
 
-    return `${leadingZero(date.getUTCDate())}.${leadingZero(date.getUTCMonth() + 1)}`;
-}
+export const getCurrentTimestamp = () => new Date().getTime() / 1000;
+
+export const getTimestamp = (date: Date) => date.getTime() / 1000;
+
+export const getDate = (timestamp: number) => new Date(timestamp * 1000);
 
 const leadingZero = (val: string | number) => `0${val}`.slice(-2)
 
-const isNumeric = (val: any) => !(val instanceof Array) && (val - parseFloat(val) + 1) >= 0;
+export const addDays = (date: Date, days: number) => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+};
+
+export const getStartOfDay = (date: Date): Date => {
+    const newDate = new Date(date);
+    newDate.setHours(0,0,0,0);
+    return newDate;
+};
+
+export const getEndOfDay = (date: Date): Date => {
+    const newDate = new Date(date);
+    newDate.setHours(23,59,59,999);
+    return newDate;
+};
