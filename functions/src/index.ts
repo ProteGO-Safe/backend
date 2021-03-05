@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import * as ff from "firebase-functions";
 import * as cloudFunctions from "./cloudFunctions";
 import generateCodeWrapper from "./functions/generateCodeWrapper";
 import {clearExpiredData} from "./functions/clearExpiredData";
@@ -21,6 +22,8 @@ import disableCacheOnBucket from "./functions/disableCacheOnBucket";
 import sendStatisticNotification from "./functions/statistics/NotificationSendingProcessor";
 
 admin.initializeApp();
+const {timezone} = ff.config().config;
+process.env.TZ = timezone;
 
 exports.backupTranslations = cloudFunctions.scheduler(backupTranslations, 'every 60 minutes');
 exports.clearExpiredData = cloudFunctions.scheduler(clearExpiredData, 'every 30 minutes');
@@ -35,7 +38,7 @@ exports.getSubscriptionCode = cloudFunctions.httpsOnRequest(getSubscriptionCode)
 exports.sendUploadedKeysOpenCensusMetricSubscriber = cloudFunctions.topicSubscriber(sendUploadedKeysOpenCensusMetricSubscriber);
 exports.statisticsProcessFetchingStatisticsScheduler = cloudFunctions.scheduler(statisticsFetchingProcessor, '0 */1 * * *');
 exports.statisticsProcessInsertingStatisticsDataOnceScheduler = cloudFunctions.scheduler(processInsertingStatisticsData,  '0 0 1 1 1');
-exports.statisticsPublishStatistics = cloudFunctions.scheduler(publishStatistics, '0 */1 * * *');
+exports.statisticsPublishStatistics = cloudFunctions.scheduler(publishStatistics, '35 */1 * * *');
 exports.statisticsSendStatisticNotification = cloudFunctions.storage(sendStatisticNotification);
 exports.updateSubscription = cloudFunctions.httpsOnRequest(updateSubscription);
 exports.uploadDiagnosisKeys = cloudFunctions.httpsOnRequest(uploadDiagnosisKeysHttpHandler);
