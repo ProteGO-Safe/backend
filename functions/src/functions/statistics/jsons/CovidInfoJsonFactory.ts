@@ -30,6 +30,12 @@ const createCovidInfoJson = (
         totalDeaths: globalStatistics.totalDeaths,
         newRecovered: dailyData.newRecovered,
         totalRecovered: globalStatistics.totalRecovered,
+        newVaccinations: dailyData.newVaccinations,
+        totalVaccinations: globalStatistics.totalVaccinations,
+        newVaccinationsDose1: dailyData.newVaccinationsDose1,
+        totalVaccinationsDose1: globalStatistics.totalVaccinationsDose1,
+        newVaccinationsDose2: dailyData.newVaccinationsDose2,
+        totalVaccinationsDose2: globalStatistics.totalVaccinationsDose2
     };
 
     const existsNewestData = checkExistsNewestData(createdVoivodeships, lastStatistic);

@@ -34,6 +34,12 @@ export const dummyCovidStats = {
     totalDeaths: 111,
     newRecovered: 111,
     totalRecovered: 111,
+    newVaccinations: 111,
+    totalVaccinations: 111,
+    newVaccinationsDose1: 111,
+    totalVaccinationsDose1: 111,
+    newVaccinationsDose2: 111,
+    totalVaccinationsDose2: 111
 };
 
 export const dummyCovidInfo = {
