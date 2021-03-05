@@ -65,7 +65,7 @@ const processInsertingStatisticsData = async () => {
         }
     }
 
-    const existingStatisticsRepository = await statisticsRepository.fetchByDate(date);
+    const existingStatisticsRepository = await statisticsRepository.getByTheSameDate(date);
 
     if (!existingStatisticsRepository) {
         const allDistricts = await districtRepository.listAll();

@@ -1,5 +1,6 @@
 import EntityRepository from "../../repository/EntityRepository";
 import Statistic from "./Statistic";
+import {getEndOfDay, getStartOfDay} from "../../../utils/dateUtils";
 
 class StatisticsRepository extends EntityRepository {
 
@@ -12,10 +13,11 @@ class StatisticsRepository extends EntityRepository {
         }
     }
 
-    async fetchByDate(date: Date): Promise<Statistic | null> {
+    async getByTheSameDate(date: Date): Promise<Statistic | null> {
 
         const snapshot = await this.getCollection()
-            .where("date", "==", date)
+            .where('date', '>', getStartOfDay(date))
+            .where('date', '<', getEndOfDay(date))
             .limit(1)
             .get();
 

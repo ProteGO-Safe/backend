@@ -12,14 +12,13 @@ import {notificationRepository} from "../notification/services";
 const sendStatisticNotification = async (metadata: ObjectMetadata) => {
 
     const fileName = metadata.name!;
-    const midnight = new Date();
-    midnight.setHours(0, 0, 0, 0);
+    const now = new Date();
 
     if (fileName && (fileName !== config.statistics.files.timestamps)) {
         return;
     }
 
-    const existingNotification = await notificationRepository.getByTheSameDate(midnight);
+    const existingNotification = await notificationRepository.getByTheSameDate(now);
 
     if (existingNotification) {
         log(`notification already exists`);
@@ -28,7 +27,7 @@ const sendStatisticNotification = async (metadata: ObjectMetadata) => {
 
     log(`Start sending statistic notification`);
 
-    const statistic = await statisticsRepository.fetchByDate(midnight);
+    const statistic = await statisticsRepository.getByTheSameDate(now);
 
     if (!statistic) {
         log(`no statistics`);

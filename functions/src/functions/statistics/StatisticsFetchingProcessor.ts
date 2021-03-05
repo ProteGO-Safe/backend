@@ -20,18 +20,15 @@ const {log} = require("firebase-functions/lib/logger");
 const processFetchingStatistics = async () => {
 
     const now = new Date();
-    now.setMilliseconds(0);
-    const midnight = new Date(now);
-    midnight.setHours(0,0,0,0);
 
-    const existingStatistic = await statisticsRepository.fetchByDate(midnight);
+    const existingStatistic = await statisticsRepository.getByTheSameDate(now);
 
     if (existingStatistic) {
-        log(`statistic for date: ${midnight} already exist`);
+        log(`statistic for date: ${now} already exist`);
         return;
     }
 
-    log(`started process fetching statistics for date: ${midnight}`);
+    log(`started process fetching statistics for date: ${now}`);
 
     const districts = await districtRepository.listAll();
     const voivodeships = await voivodeshipRepository.listAll();
@@ -41,12 +38,12 @@ const processFetchingStatistics = async () => {
     notNull(lastStatistic);
 
     try {
-        const rcbDistrictsFileContent = await statisticsFileReader.readRcbDistrictsFileContentByDate(midnight);
-        const rcbDistrictVaccinationsFileContent = await statisticsFileReader.readRcbDistrictVaccinationsFileContentByDate(midnight);
-        const rcbGlobalFileContent = await statisticsFileReader.readRcbGlobalFileContentByDate(midnight);
-        const rcbGlobalVaccinationsFileContent = await statisticsFileReader.readRcbGlobalVaccinationsFileContentByDate(midnight);
-        const rcbGlobalVaccinationsOtherFileContent = await statisticsFileReader.readRcbGlobalVaccinationsOtherFileContentByDate(midnight);
-        const districtStatesFileContent = await statisticsFileReader.readDistrictStatesFileContentByDate(midnight);
+        const rcbDistrictsFileContent = await statisticsFileReader.readRcbDistrictsFileContentByDate(now);
+        const rcbDistrictVaccinationsFileContent = await statisticsFileReader.readRcbDistrictVaccinationsFileContentByDate(now);
+        const rcbGlobalFileContent = await statisticsFileReader.readRcbGlobalFileContentByDate(now);
+        const rcbGlobalVaccinationsFileContent = await statisticsFileReader.readRcbGlobalVaccinationsFileContentByDate(now);
+        const rcbGlobalVaccinationsOtherFileContent = await statisticsFileReader.readRcbGlobalVaccinationsOtherFileContentByDate(now);
+        const districtStatesFileContent = await statisticsFileReader.readDistrictStatesFileContentByDate(now);
 
         const districtsStatistics = await fetchDistrictsStatistics(districts, rcbDistrictsFileContent, rcbDistrictVaccinationsFileContent);
         const globalStatistics = await fetchGlobalStatistics(rcbGlobalFileContent, rcbGlobalVaccinationsFileContent, rcbGlobalVaccinationsOtherFileContent);
@@ -59,7 +56,7 @@ const processFetchingStatistics = async () => {
         const detailsJson = createDetailsJson(now, voivodeships, districts, districtsStatistics, lastStatistics, districtStates);
         const districtsJson = createDistrictsJson(now, voivodeships, districts, districtStates, lastStatistic);
 
-        const statistic = createStatistic(midnight, covidInfoJson, dashboardJson, detailsJson, districtsJson, dailyData);
+        const statistic = createStatistic(now, covidInfoJson, dashboardJson, detailsJson, districtsJson, dailyData);
         await statisticsRepository.save(statistic);
 
     } catch (e) {
@@ -71,7 +68,7 @@ const processFetchingStatistics = async () => {
         }
     }
 
-    log(`finished process fetching statistics for date: ${midnight}`);
+    log(`finished process fetching statistics for date: ${now}`);
 };
 
 export default processFetchingStatistics;
