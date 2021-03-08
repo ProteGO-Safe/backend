@@ -48,8 +48,7 @@ const processFetchingStatistics = async () => {
         const districtsStatistics = await fetchDistrictsStatistics(districts, rcbDistrictsFileContent, rcbDistrictVaccinationsFileContent);
         const globalStatistics = await fetchGlobalStatistics(rcbGlobalFileContent, rcbGlobalVaccinationsFileContent, rcbGlobalVaccinationsOtherFileContent);
         const districtStates = await fetchDistrictsStates(districts, districtStatesFileContent, lastStatistic!);
-
-        const dailyData = fetchDailyData(districtsStatistics);
+        const dailyData = await fetchDailyData(rcbDistrictsFileContent, rcbGlobalVaccinationsFileContent);
 
         const covidInfoJson = createCovidInfo(now, dailyData, globalStatistics, voivodeships, districts, districtStates, lastStatistic!);
         const dashboardJson = createDashboardJson(now, dailyData, globalStatistics);

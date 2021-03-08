@@ -1,31 +1,57 @@
-import DistrictStatistics from "./DistrictStatistics";
 import DailyData from "./DailyData";
+import {fetchIndexByTitle, parseFile} from "./StatistiscHelper";
 
-const fetchDailyData = (districtsStatistics: DistrictStatistics[]): DailyData => {
+const TITLE_WHOLE_COUNTRY = 'Cały kraj';
+const TITLE_DAILY_CASES = 'liczba_przypadkow';
+const TITLE_DAILY_DEATHS = 'zgony';
+const TITLE_DAILY_RECOVERED = 'liczba_ozdrowiencow';
+const TITLE_DAILY_DEATHS_WITH_COMORBIDITIES = 'zgony_w_wyniku_covid_i_chorob_wspolistniejacych';
+const TITLE_DAILY_DEATHS_WITHOUT_COMORBIDITIES = 'zgony_w_wyniku_covid_bez_chorob_wspolistniejacych';
+const TITLE_DAILY_TESTS = 'liczba_wykonanych_testow';
+const TITLE_DAILY_VACCINATIONS = 'liczba_szczepien_dziennie';
+const TITLE_DAILY_VACCINATIONS_DOSE_2 = 'dawka_2_dziennie';
 
-    return districtsStatistics.reduce((obj, item) => {
-        return {
-            newCases: obj.newCases + item.newCases,
-            newDeaths: obj.newDeaths + item.newDeaths,
-            newRecovered: obj.newRecovered + item.newRecovered,
-            newDeathsWithComorbidities: obj.newDeathsWithComorbidities + item.newDeathsWithComorbidities,
-            newDeathsWithoutComorbidities: obj.newDeathsWithoutComorbidities + item.newDeathsWithoutComorbidities,
-            newTests: obj.newTests + item.newTests,
-            newVaccinations: obj.newVaccinations + item.newVaccinations,
-            newVaccinationsDose1: obj.newVaccinationsDose1 + item.newVaccinationsDose1,
-            newVaccinationsDose2: obj.newVaccinationsDose2 + item.newVaccinationsDose2
-        }
-    }, {
-        newCases: 0,
-        newDeaths: 0,
-        newRecovered: 0,
-        newDeathsWithComorbidities: 0,
-        newDeathsWithoutComorbidities: 0,
-        newTests: 0,
-        newVaccinations: 0,
-        newVaccinationsDose1: 0,
-        newVaccinationsDose2: 0
-    });
+const fetchDailyData = async (
+    rcbDistrictsFileContent: string,
+    rcbGlobalVaccinationsFileContent: string): Promise<DailyData> => {
+
+    const rcbDistrictsStats = await parseFile(rcbDistrictsFileContent);
+    const rcbGlobalVaccinationsStats = await parseFile(rcbGlobalVaccinationsFileContent);
+
+    const wholeCountryData = rcbDistrictsStats.find(array => array[0] === TITLE_WHOLE_COUNTRY);
+
+    const dailyCasesIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_CASES);
+    const dailyDeathsIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_DEATHS);
+    const dailyRecoveredIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_RECOVERED);
+    const dailyDeathsWithComorbiditiesIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_DEATHS_WITH_COMORBIDITIES);
+    const dailyDeathsWithoutComorbiditiesIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_DEATHS_WITHOUT_COMORBIDITIES);
+    const dailyTestsIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_TESTS);
+    const dailyVaccinationsIndex = fetchIndexByTitle(rcbGlobalVaccinationsStats[0], TITLE_DAILY_VACCINATIONS);
+    const dailyVaccinationsDose2Index = fetchIndexByTitle(rcbGlobalVaccinationsStats[0], TITLE_DAILY_VACCINATIONS_DOSE_2);
+
+    const newCases = parseInt(wholeCountryData![dailyCasesIndex]);
+    const newDeaths = parseInt(wholeCountryData![dailyDeathsIndex]);
+    const newRecovered = parseInt(wholeCountryData![dailyRecoveredIndex]);
+    const newDeathsWithComorbidities = parseInt(wholeCountryData![dailyDeathsWithComorbiditiesIndex]);
+    const newDeathsWithoutComorbidities = parseInt(wholeCountryData![dailyDeathsWithoutComorbiditiesIndex]);
+    const newTests = parseInt(wholeCountryData![dailyTestsIndex]);
+    const newVaccinations = parseInt(rcbGlobalVaccinationsStats[1][dailyVaccinationsIndex]);
+    const newVaccinationsDose2 = parseInt(rcbGlobalVaccinationsStats[1][dailyVaccinationsDose2Index]);
+    const newVaccinationsDose1 = newVaccinations - newVaccinationsDose2;
+
+    return {
+        newCases,
+        newDeaths,
+        newRecovered,
+        newDeathsWithComorbidities,
+        newDeathsWithoutComorbidities,
+        newTests,
+        newVaccinations,
+        newVaccinationsDose1,
+        newVaccinationsDose2
+    }
+
+
 };
 
 export default fetchDailyData;
