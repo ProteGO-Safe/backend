@@ -63,7 +63,7 @@ class StatisticsFileReader {
 
         const fileContent = await this.readFileContent(`${dir}/${filename}`);
         const decoded = iconvlite.decode(fileContent, 'win1250');
-        log(`for searchName: ${searchName} and date: ${date} founded content: ${decoded}`);
+        log(`for searchName: ${searchName} and date: ${date} founded file with name ${filename} and content: ${decoded}`);
         return decoded;
     }
 

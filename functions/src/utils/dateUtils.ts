@@ -4,7 +4,10 @@ export const dateToFormattedDayMonth = (date: Date) => {
 
 //20210201
 export const getJoinedDateAsString = (date: Date) => {
-    return date.toISOString().split('T')[0].replace(/-/g,'');
+    const year = date.toLocaleDateString().split('/')[2];
+    const month = date.toLocaleDateString().split('/')[0];
+    const day = date.toLocaleDateString().split('/')[1];
+    return `${year}${leadingZero(month)}${leadingZero(day)}`;
 };
 
 export const getCurrentTimestamp = () => new Date().getTime() / 1000;
