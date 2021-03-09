@@ -30,7 +30,6 @@ const createDetailsJson = (
             vaccinations: [...obj.vaccinations, item.dashboard.newVaccinations],
             vaccinationsDose1: [...obj.vaccinationsDose1, item.dashboard.newVaccinationsDose1],
             vaccinationsDose2: [...obj.vaccinationsDose2, item.dashboard.newVaccinationsDose2],
-            undesirableReactions: [...obj.undesirableReactions, item.dashboard.newUndesirableReaction],
         }
 
     }, {
@@ -43,7 +42,6 @@ const createDetailsJson = (
         vaccinations: [] as number[],
         vaccinationsDose1: [] as number[],
         vaccinationsDose2: [] as number[],
-        undesirableReactions: [] as number[],
     });
 
     return {
@@ -78,13 +76,9 @@ const createDistricts = (
                     newVaccinations: districtStatistic.newVaccinations,
                     newVaccinationsDose1: districtStatistic.newVaccinationsDose1,
                     newVaccinationsDose2: districtStatistic.newVaccinationsDose2,
-                    totalCases:  0, // todo https://titans24.atlassian.net/browse/PSAFE-3496,
-                    totalDeaths:  0, // todo https://titans24.atlassian.net/browse/PSAFE-3496,
-                    totalRecovered:  0, // todo https://titans24.atlassian.net/browse/PSAFE-3496,
                     totalVaccinations: districtStatistic.totalVaccinations,
                     totalVaccinationsDose1: districtStatistic.totalVaccinationsDose1,
                     totalVaccinationsDose2: districtStatistic.totalVaccinationsDose2,
-                    totalUndesirableReaction: 0, // todo https://titans24.atlassian.net/browse/PSAFE-3496,
                 }
             }
             return {
@@ -100,13 +94,9 @@ const createDistricts = (
                 newVaccinations: null,
                 newVaccinationsDose1: null,
                 newVaccinationsDose2: null,
-                totalCases:  null, // todo https://titans24.atlassian.net/browse/PSAFE-3496,
-                totalDeaths:  null, // todo https://titans24.atlassian.net/browse/PSAFE-3496,
-                totalRecovered:  null, // todo https://titans24.atlassian.net/browse/PSAFE-3496,
                 totalVaccinations: null,
                 totalVaccinationsDose1: null,
                 totalVaccinationsDose2: null,
-                totalUndesirableReaction: null, // todo https://titans24.atlassian.net/browse/PSAFE-3496,
             }
         })
 };

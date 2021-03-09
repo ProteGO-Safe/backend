@@ -93,7 +93,6 @@ const processInsertingStatisticsData = async () => {
             newVaccinations: 0,
             newVaccinationsDose1: 0,
             newVaccinationsDose2: 0,
-            newUndesirableReaction: 0,
             totalCases: 0,
             totalDeaths: 0,
             totalRecovered: 0,

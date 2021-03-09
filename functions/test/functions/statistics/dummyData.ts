@@ -60,7 +60,6 @@ export const dummyDashboard = {
     newVaccinations: 111,
     newVaccinationsDose1: 111,
     newVaccinationsDose2: 111,
-    newUndesirableReaction: 111,
     totalCases: 111,
     totalDeaths: 111,
     totalRecovered: 111,
@@ -88,13 +87,9 @@ export const dummyVoivodeships = [
                 newVaccinations: null,
                 newVaccinationsDose1: null,
                 newVaccinationsDose2: null,
-                totalCases: null,
-                totalDeaths: null,
-                totalRecovered: null,
                 totalVaccinations: null,
                 totalVaccinationsDose1: null,
                 totalVaccinationsDose2: null,
-                totalUndesirableReaction: null,
             },
             {
                 id: "idd2",
@@ -109,13 +104,9 @@ export const dummyVoivodeships = [
                 newVaccinations: null,
                 newVaccinationsDose1: null,
                 newVaccinationsDose2: null,
-                totalCases: null,
-                totalDeaths: null,
-                totalRecovered: null,
                 totalVaccinations: null,
                 totalVaccinationsDose1: null,
                 totalVaccinationsDose2: null,
-                totalUndesirableReaction: null,
             }]
     },
     {
@@ -135,13 +126,9 @@ export const dummyVoivodeships = [
                 newVaccinations: null,
                 newVaccinationsDose1: null,
                 newVaccinationsDose2: null,
-                totalCases: null,
-                totalDeaths: null,
-                totalRecovered: null,
                 totalVaccinations: null,
                 totalVaccinationsDose1: null,
                 totalVaccinationsDose2: null,
-                totalUndesirableReaction: null,
             }
         ]
     }];
@@ -156,7 +143,6 @@ export const dummyLastDays = {
     vaccinations: [],
     vaccinationsDose1: [],
     vaccinationsDose2: [],
-    undesirableReactions: [],
 }
 
 export const dummyDetails = {

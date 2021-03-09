@@ -22,7 +22,6 @@ const createDashboardJson = (
         newVaccinations: dailyData.newVaccinations,
         newVaccinationsDose1: dailyData.newVaccinationsDose1,
         newVaccinationsDose2: dailyData.newVaccinationsDose2,
-        newUndesirableReaction: 0, // todo https://titans24.atlassian.net/browse/PSAFE-3496
         totalCases: globalStatistics.totalCases,
         totalDeaths: globalStatistics.totalDeaths,
         totalRecovered: globalStatistics.totalRecovered,

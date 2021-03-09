@@ -13,7 +13,6 @@ interface DetailsJsonViewModel {
         vaccinations: Array<number>,
         vaccinationsDose1: Array<number>,
         vaccinationsDose2: Array<number>,
-        undesirableReactions: Array<number>,
     }
 }
 

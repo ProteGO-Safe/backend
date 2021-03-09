@@ -37,7 +37,6 @@ describe('DashboardJsonFactory tests', () => {
             newDeathsWithoutComorbidities: 5,
             newRecovered: 3,
             newTests: 6,
-            newUndesirableReaction: 0,
             newVaccinations: 7,
             newVaccinationsDose1: 8,
             newVaccinationsDose2: 9,
