@@ -13,6 +13,7 @@ import config from "../../config";
 import {notNull} from "../../utils/AssertHelper";
 import fetchDailyData from "./DailyDataFetcher";
 import createDistrictsJson from "./jsons/DistrictsJsonFactory";
+import fetchVoivodeshipsStatistics from "./VoivodeshipStatisticsProcessor";
 
 const {log} = require("firebase-functions/lib/logger");
 
@@ -40,19 +41,22 @@ const processFetchingStatistics = async () => {
     try {
         const rcbDistrictsFileContent = await statisticsFileReader.readRcbDistrictsFileContentByDate(now);
         const rcbDistrictVaccinationsFileContent = await statisticsFileReader.readRcbDistrictVaccinationsFileContentByDate(now);
+        const rcbVoivodeshipsFileContent = await statisticsFileReader.readRcbVoivodeshipsFileContentByDate(now);
+        const rcbVoivodeshipVaccinationsFileContent = await statisticsFileReader.readRcbVoivodeshipsVaccinationsFileContentByDate(now);
         const rcbGlobalFileContent = await statisticsFileReader.readRcbGlobalFileContentByDate(now);
         const rcbGlobalVaccinationsFileContent = await statisticsFileReader.readRcbGlobalVaccinationsFileContentByDate(now);
         const rcbGlobalVaccinationsOtherFileContent = await statisticsFileReader.readRcbGlobalVaccinationsOtherFileContentByDate(now);
         const districtStatesFileContent = await statisticsFileReader.readDistrictStatesFileContentByDate(now);
 
         const districtsStatistics = await fetchDistrictsStatistics(districts, rcbDistrictsFileContent, rcbDistrictVaccinationsFileContent);
+        const voivodeshipsStatistics = await fetchVoivodeshipsStatistics(voivodeships, rcbVoivodeshipsFileContent, rcbVoivodeshipVaccinationsFileContent);
         const globalStatistics = await fetchGlobalStatistics(rcbGlobalFileContent, rcbGlobalVaccinationsFileContent, rcbGlobalVaccinationsOtherFileContent);
         const districtStates = await fetchDistrictsStates(districts, districtStatesFileContent, lastStatistic!);
         const dailyData = await fetchDailyData(rcbDistrictsFileContent, rcbGlobalVaccinationsFileContent);
 
         const covidInfoJson = createCovidInfo(now, dailyData, globalStatistics, voivodeships, districts, districtStates, lastStatistic!);
         const dashboardJson = createDashboardJson(now, dailyData, globalStatistics);
-        const detailsJson = createDetailsJson(now, voivodeships, districts, districtsStatistics, lastStatistics, districtStates);
+        const detailsJson = createDetailsJson(now, voivodeships, districts, districtsStatistics, voivodeshipsStatistics, lastStatistics, districtStates);
         const districtsJson = createDistrictsJson(now, voivodeships, districts, districtStates, lastStatistic);
 
         const statistic = createStatistic(now, covidInfoJson, dashboardJson, detailsJson, districtsJson, dailyData);

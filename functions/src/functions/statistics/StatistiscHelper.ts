@@ -6,9 +6,9 @@ export const fetchIndexByTitle = (firstRow: Array<string>, title: string): numbe
     return firstRow.findIndex((value) => value === title)
 };
 
-export const parseFile = async (content: string): Promise<Array<Array<string>>> => {
+export const parseFile = async (content: string, delimiter: string = ';'): Promise<Array<Array<string>>> => {
     notNull(content);
-    return await parse(content, {delimiter: ';'});
+    return await parse(content, {delimiter});
 };
 
 export const getMinimumTimeToExecute = (): Date => {

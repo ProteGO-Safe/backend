@@ -6,6 +6,7 @@ import DistrictState from "../../../../src/functions/statistics/DistrictState";
 import DistrictStatistics from "../../../../src/functions/statistics/DistrictStatistics";
 import Statistic from "../../../../src/functions/statistics/repository/Statistic";
 import {dummyStatistic} from "../dummyData";
+import VoivodeshipStatistics from "../../../../src/functions/statistics/VoivodeshipStatistics";
 
 describe('DetailsJsonFactory tests', () => {
     it('should fetch details data', async () => {
@@ -62,6 +63,39 @@ describe('DetailsJsonFactory tests', () => {
                 state: 3
             }
         ] as DistrictState[];
+
+        const voivodeshipsStatistics = [
+            {
+                voivodeshipId: "vid1",
+                newCases: 223,
+                newDeaths: 224,
+                newRecovered: 225,
+                newDeathsWithComorbidities: 226,
+                newDeathsWithoutComorbidities: 227,
+                newTests: 228,
+                newVaccinations: 229,
+                newVaccinationsDose1: 230,
+                newVaccinationsDose2: 231,
+                totalVaccinations: 232,
+                totalVaccinationsDose1: 233,
+                totalVaccinationsDose2: 234,
+            },
+            {
+                voivodeshipId: "vid2",
+                newCases: 243,
+                newDeaths: 244,
+                newRecovered: 245,
+                newDeathsWithComorbidities: 246,
+                newDeathsWithoutComorbidities: 247,
+                newTests: 248,
+                newVaccinations: 249,
+                newVaccinationsDose1: 250,
+                newVaccinationsDose2: 251,
+                totalVaccinations: 252,
+                totalVaccinationsDose1: 253,
+                totalVaccinationsDose2: 254,
+            }
+        ] as VoivodeshipStatistics[];
 
         const districtsStatistics = [
             {
@@ -182,7 +216,7 @@ describe('DetailsJsonFactory tests', () => {
             },
         ] as Statistic[];
 
-        const dashboardJson = createDetailsJson(date, voivodeships, districts, districtsStatistics, lastStatistics, districtStates);
+        const dashboardJson = createDetailsJson(date, voivodeships, districts, districtsStatistics, voivodeshipsStatistics, lastStatistics, districtStates);
 
         expect(dashboardJson).to.be.eql({
             lastDays: {
@@ -234,6 +268,20 @@ describe('DetailsJsonFactory tests', () => {
                         totalVaccinationsDose2: 154
                     }
                 ],
+                details: {
+                    newCases: 223,
+                    newDeaths: 224,
+                    newDeathsWithComorbidities: 226,
+                    newDeathsWithoutComorbidities: 227,
+                    newRecovered: 225,
+                    newTests: 228,
+                    newVaccinations: 229,
+                    newVaccinationsDose1: 230,
+                    newVaccinationsDose2: 231,
+                    totalVaccinations: 232,
+                    totalVaccinationsDose1: 233,
+                    totalVaccinationsDose2: 234
+                },
                 id: "vid1",
                 name: "n1"
             },
@@ -257,6 +305,20 @@ describe('DetailsJsonFactory tests', () => {
                             totalVaccinationsDose2: 174,
                         }
                     ],
+                    details: {
+                        newCases: 243,
+                        newDeaths: 244,
+                        newDeathsWithComorbidities: 246,
+                        newDeathsWithoutComorbidities: 247,
+                        newRecovered: 245,
+                        newTests: 248,
+                        newVaccinations: 249,
+                        newVaccinationsDose1: 250,
+                        newVaccinationsDose2: 251,
+                        totalVaccinations: 252,
+                        totalVaccinationsDose1: 253,
+                        totalVaccinationsDose2: 254
+                    },
                     id: "vid2",
                     name: "n2"
                 }]

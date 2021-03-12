@@ -16,9 +16,15 @@ class StatisticsFileReader {
     async readRcbDistrictsFileContentByDate(date: Date): Promise<string> {
         return await this.readFile('_rap_rcb_pow_eksport.csv', date, config.statistics.sshDirName);
     }
+    async readRcbVoivodeshipsFileContentByDate(date: Date): Promise<string> {
+        return await this.readFile('_rap_rcb_woj_eksport.csv', date, config.statistics.sshDirName);
+    }
 
     async readRcbDistrictVaccinationsFileContentByDate(date: Date): Promise<string> {
         return await this.readFile('_rap_rcb_pow_szczepienia.csv', date, config.statistics.sshDirVaccinationsName);
+    }
+    async readRcbVoivodeshipsVaccinationsFileContentByDate(date: Date): Promise<string> {
+        return await this.readFile('_rap_rcb_woj_szczepienia.csv', date, config.statistics.sshDirVaccinationsName);
     }
 
     async readRcbGlobalFileContentByDate(date: Date): Promise<string> {

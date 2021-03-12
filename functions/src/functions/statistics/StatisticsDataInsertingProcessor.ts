@@ -115,7 +115,7 @@ const processInsertingStatisticsData = async () => {
         };
 
         const covidInfoJson = createCovidInfo(date, neverMindedDailyData, neverMindedGlobalStatistics, allVoivodeships, allDistricts, districtStates, null);
-        const detailsJson = createDetailsJson(date, allVoivodeships, allDistricts, [], [], districtStates);
+        const detailsJson = createDetailsJson(date, allVoivodeships, allDistricts, [], [], [], districtStates);
         const districtsJson = createDistrictsJson(date, allVoivodeships, allDistricts, districtStates, null);
         const statistic = createStatistic(date, covidInfoJson, neverMindedDashboardJson, detailsJson, districtsJson, neverMindedDailyData);
         await statisticsRepository.save(statistic);

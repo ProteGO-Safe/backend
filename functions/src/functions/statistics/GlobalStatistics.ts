@@ -1,10 +1,6 @@
-interface GlobalStatistics {
-    totalCases: number,
-    totalDeaths: number,
-    totalRecovered: number,
-    totalVaccinations: number,
-    totalVaccinationsDose1: number,
-    totalVaccinationsDose2: number,
+import TotalData from "./TotalData";
+
+interface GlobalStatistics extends TotalData {
     totalUndesirableReaction: number,
 }
 

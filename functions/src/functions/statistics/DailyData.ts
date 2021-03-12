@@ -1,13 +1,9 @@
-interface DailyData {
-    newCases: number,
-    newDeaths: number,
-    newRecovered: number,
+import NewData from "./NewData";
+
+interface DailyData extends NewData {
     newDeathsWithComorbidities: number,
     newDeathsWithoutComorbidities: number,
     newTests: number,
-    newVaccinations: number,
-    newVaccinationsDose1: number,
-    newVaccinationsDose2: number
 }
 
 export default DailyData;
