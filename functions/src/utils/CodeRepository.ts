@@ -11,6 +11,7 @@ import {CodeEvent} from "../functions/code/CodeEvent";
 import {firestore} from "firebase-admin/lib/firestore";
 import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
 import DocumentData = firestore.DocumentData;
+import CodeWithId from "./CodeWithId";
 
 class CodeRepository extends TokenRepository {
 
@@ -22,18 +23,24 @@ class CodeRepository extends TokenRepository {
         return "deleteTime"
     }
 
-    async save(code: string, expiryTime: number, deleteTime: number): Promise<string> {
+    async save(code: string, expiryTime: number, deleteTime: number): Promise<CodeWithId> {
         const savedCodes = await this.saveCodes([code], expiryTime, deleteTime);
 
-        return <string>savedCodes.pop();
+        return <CodeWithId>savedCodes.pop();
     }
 
-    async saveCodes(codes: Array<string>, expiryTime: number, deleteTime: number): Promise<Array<string>> {
+    async saveCodes(codes: Array<string>, expiryTime: number, deleteTime: number): Promise<Array<CodeWithId>> {
         const batch = admin.firestore().batch();
         const codeObjects = new Array<any>();
 
-        codes.forEach(code => {
-            const hashedCode = sha256(code), id = v4();
+        const codesWithIds: Array<CodeWithId> = codes.map(code => ({
+            id: v4(),
+            code
+        }));
+
+        codesWithIds.forEach(codeWithId => {
+            const {id, code} = codeWithId;
+            const hashedCode = sha256(code);
             const codeObject = {
                 "id": id,
                 'hashedCode': hashedCode,
@@ -43,7 +50,7 @@ class CodeRepository extends TokenRepository {
 
             batch.set(this.getCollection().doc(hashedCode), codeObject)
             codeObjects.push(codeObject)
-        })
+        });
 
         await batch.commit();
 
@@ -59,7 +66,7 @@ class CodeRepository extends TokenRepository {
             ), `${CodeEvent.GENERATED_CODE} : ${code.hashedCode}`);
         });
 
-        return codes;
+        return codesWithIds;
     }
 
     async remove(code: string): Promise<FirebaseFirestore.WriteResult> {
