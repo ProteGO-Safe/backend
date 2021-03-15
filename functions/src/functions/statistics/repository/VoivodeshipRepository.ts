@@ -5,15 +5,6 @@ class VoivodeshipRepository extends EntityRepository {
 
     collectionName: string = 'voivodeships';
 
-    async existsAny(): Promise<boolean> {
-
-        const snapshot = await this.getCollection()
-            .limit(1)
-            .get();
-
-        return !snapshot.empty;
-    }
-
     async listAll(): Promise<Array<Voivodeship>> {
 
         const snapshot = await this.getCollection()

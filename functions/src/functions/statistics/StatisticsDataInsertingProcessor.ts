@@ -27,10 +27,14 @@ const processInsertingStatisticsData = async () => {
 
     const date = new Date('2020-10-23T09:00:00');
 
-    const existsAnyVoivodeship = await voivodeshipRepository.existsAny();
-    const existsAnyDistrict = await districtRepository.existsAny();
+    const allVoivodeships = await voivodeshipRepository.listAll();
 
-    if (!existsAnyVoivodeship) {
+    if (allVoivodeships.length !== voivodeships.length) {
+
+        if (allVoivodeships.length !== 0) {
+            throw new Error('illegal voivodeships data, please remove all voivodeships data');
+        }
+
         for (const voivodeship of voivodeships) {
             const externalId = voivodeship[1];
             const uiId = parseInt(voivodeship[2]);
@@ -45,9 +49,13 @@ const processInsertingStatisticsData = async () => {
         }
     }
 
-    const allVoivodeships = await voivodeshipRepository.listAll();
+    const allDistricts = await districtRepository.listAll();
 
-    if (!existsAnyDistrict) {
+    if (allDistricts.length !== districts.length) {
+
+        if (allDistricts.length !== 0) {
+            throw new Error('illegal districts data, please remove all districts data');
+        }
 
         for (const district of districts) {
 
@@ -68,7 +76,6 @@ const processInsertingStatisticsData = async () => {
     const existingStatisticsRepository = await statisticsRepository.getByTheSameDate(date);
 
     if (!existingStatisticsRepository) {
-        const allDistricts = await districtRepository.listAll();
 
         const districtStates = await fetchDistrictsStates(allDistricts, districtsStates, null);
 

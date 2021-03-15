@@ -24,15 +24,6 @@ class DistrictRepository extends EntityRepository {
         return snapshot.data() as District;
     }
 
-    async existsAny(): Promise<boolean> {
-
-        const snapshot = await this.getCollection()
-            .limit(1)
-            .get();
-
-        return !snapshot.empty;
-    }
-
     async listAll(): Promise<Array<District> | []> {
 
         const snapshot = await this.getCollection().get();
