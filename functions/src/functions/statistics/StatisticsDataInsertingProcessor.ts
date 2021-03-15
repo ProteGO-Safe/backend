@@ -114,8 +114,28 @@ const processInsertingStatisticsData = async () => {
             newVaccinationsDose2: 0
         };
 
+        const neverMindedDashboardData = {
+            updated: 0,
+            totalUndesirableReaction: 0,
+            newDeathsWithComorbidities: 0,
+            newDeathsWithoutComorbidities: 0,
+            newTests: 0,
+            newCases: 0,
+            newDeaths: 0,
+            newRecovered: 0,
+            newVaccinations: 0,
+            newVaccinationsDose1: 0,
+            newVaccinationsDose2: 0,
+            totalCases: 0,
+            totalDeaths: 0,
+            totalRecovered: 0,
+            totalVaccinations: 0,
+            totalVaccinationsDose1: 0,
+            totalVaccinationsDose2: 0
+        };
+
         const covidInfoJson = createCovidInfo(date, neverMindedDailyData, neverMindedGlobalStatistics, allVoivodeships, allDistricts, districtStates, null);
-        const detailsJson = createDetailsJson(date, allVoivodeships, allDistricts, [], [], [], districtStates);
+        const detailsJson = createDetailsJson(date, allVoivodeships, allDistricts, [], [], [], districtStates, neverMindedDashboardData);
         const districtsJson = createDistrictsJson(date, allVoivodeships, allDistricts, districtStates, null);
         const statistic = createStatistic(date, covidInfoJson, neverMindedDashboardJson, detailsJson, districtsJson, neverMindedDailyData);
         await statisticsRepository.save(statistic);

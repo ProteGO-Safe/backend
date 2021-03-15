@@ -20,7 +20,7 @@ const fetchVoivodeshipsStatistics = async (
     rcbVoivodeshipVaccinationsFileContent: string,
 ): Promise<VoivodeshipStatistics[]> => {
 
-    const rcbVoivodeshipsStats = await parseFile(rcbVoivodeshipsFileContent, ',');
+    const rcbVoivodeshipsStats = await parseFile(rcbVoivodeshipsFileContent);
     const rcbVoivodeshipsVaccinationsStats = await parseFile(rcbVoivodeshipVaccinationsFileContent);
 
     return (voivodeships as any[]).map((voivodeship: Voivodeship) => createVoivodeshipStatistics(voivodeship, rcbVoivodeshipsStats, rcbVoivodeshipsVaccinationsStats));

@@ -56,7 +56,7 @@ const processFetchingStatistics = async () => {
 
         const covidInfoJson = createCovidInfo(now, dailyData, globalStatistics, voivodeships, districts, districtStates, lastStatistic!);
         const dashboardJson = createDashboardJson(now, dailyData, globalStatistics);
-        const detailsJson = createDetailsJson(now, voivodeships, districts, districtsStatistics, voivodeshipsStatistics, lastStatistics, districtStates);
+        const detailsJson = createDetailsJson(now, voivodeships, districts, districtsStatistics, voivodeshipsStatistics, lastStatistics, districtStates, dashboardJson);
         const districtsJson = createDistrictsJson(now, voivodeships, districts, districtStates, lastStatistic);
 
         const statistic = createStatistic(now, covidInfoJson, dashboardJson, detailsJson, districtsJson, dailyData);

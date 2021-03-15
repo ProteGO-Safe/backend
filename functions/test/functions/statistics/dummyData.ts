@@ -50,23 +50,23 @@ export const dummyCovidInfo = {
 };
 
 export const dummyDashboard = {
-    updated: 111,
-    newCases: 111,
-    newDeaths: 111,
-    newRecovered: 111,
-    newDeathsWithComorbidities: 111,
-    newDeathsWithoutComorbidities: 111,
-    newTests: 111,
-    newVaccinations: 111,
-    newVaccinationsDose1: 111,
-    newVaccinationsDose2: 111,
-    totalCases: 111,
-    totalDeaths: 111,
-    totalRecovered: 111,
-    totalVaccinations: 111,
-    totalVaccinationsDose1: 111,
-    totalVaccinationsDose2: 111,
-    totalUndesirableReaction: 111
+    updated: 1111,
+    newCases: 1112,
+    newDeaths: 1113,
+    newRecovered: 1114,
+    newDeathsWithComorbidities: 1115,
+    newDeathsWithoutComorbidities: 1116,
+    newTests: 1117,
+    newVaccinations: 1118,
+    newVaccinationsDose1: 1119,
+    newVaccinationsDose2: 11110,
+    totalCases: 11111,
+    totalDeaths: 11112,
+    totalRecovered: 11113,
+    totalVaccinations: 11114,
+    totalVaccinationsDose1: 11115,
+    totalVaccinationsDose2: 11116,
+    totalUndesirableReaction: 11117
 };
 
 export const dummyVoivodeships = [

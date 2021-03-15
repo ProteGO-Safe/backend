@@ -1,7 +1,7 @@
 interface NewVaccinationsData {
-    newVaccinations: number,
-    newVaccinationsDose1: number,
-    newVaccinationsDose2: number,
+    newVaccinations: number | null,
+    newVaccinationsDose1: number | null,
+    newVaccinationsDose2: number | null,
 }
 
 export default NewVaccinationsData;

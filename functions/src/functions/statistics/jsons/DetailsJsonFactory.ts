@@ -9,6 +9,8 @@ import DistrictDetailsViewModel from "../model/DistrictDetailsViewModel";
 import VoivodeshipDetailsViewModel from "../model/VoivodeshipDetailsViewModel";
 import RegionDetailsViewModel from "../model/RegionDetailsViewModel";
 import VoivodeshipStatistics from "../VoivodeshipStatistics";
+import DashboardJsonViewModel from "../model/DashboardJsonViewModel";
+import LastDaysJsonViewModel from "../model/LastDaysJsonViewModel";
 
 const createDetailsJson = (
     date: Date,
@@ -17,11 +19,13 @@ const createDetailsJson = (
     districtsStatistics: DistrictStatistics[],
     voivodeshipsStatistics: VoivodeshipStatistics[],
     lastStatistics: Statistic[] | [],
-    districtStates: Array<DistrictState>): DetailsJsonViewModel => {
+    districtStates: Array<DistrictState>,
+    dashboardJson: DashboardJsonViewModel): DetailsJsonViewModel => {
 
     const timestamp = getTimestamp(date);
 
-    const lastDays = (lastStatistics as [Statistic]).reduce((obj, item) => {
+    const lastDays: LastDaysJsonViewModel = (lastStatistics as [Statistic])
+        .reduce((obj: any, item) => {
 
         return {
             cases: [...obj.cases, item.dashboard.newCases],
@@ -47,6 +51,16 @@ const createDetailsJson = (
         vaccinationsDose2: [] as number[],
     });
 
+    lastDays.cases = [...lastDays.cases, dashboardJson.newCases];
+    lastDays.recovered = [...lastDays.recovered, dashboardJson.newRecovered];
+    lastDays.deaths = [...lastDays.deaths, dashboardJson.newDeaths];
+    lastDays.deathsWithComorbidities = [...lastDays.deathsWithComorbidities, dashboardJson.newDeathsWithComorbidities];
+    lastDays.deathsWithoutComorbidities = [...lastDays.deathsWithoutComorbidities, dashboardJson.newDeathsWithoutComorbidities];
+    lastDays.tests = [...lastDays.tests, dashboardJson.newTests];
+    lastDays.vaccinations = [...lastDays.vaccinations, dashboardJson.newVaccinations];
+    lastDays.vaccinationsDose1 = [...lastDays.vaccinationsDose1, dashboardJson.newVaccinationsDose1];
+    lastDays.vaccinationsDose2 = [...lastDays.vaccinationsDose2, dashboardJson.newVaccinationsDose2];
+
     return {
         updated: timestamp,
         voivodeships: createDetailsVoivodeships(voivodeships, districts, districtsStatistics, voivodeshipsStatistics, districtStates),
@@ -61,27 +75,46 @@ const createDistricts = (
     districtStates: Array<DistrictState>): Array<DistrictDetailsViewModel> => {
     return districts
         .filter(district => district.voivodeshipId === voivodeshipId)
-        .filter(district => districtsStatistics.map(districtStatistics => districtStatistics.districtId).includes(district.id))
         .map(district => {
             const state = districtStates.find(value => value.districtId === district.id)!.state;
             const districtStatistic = districtsStatistics.find(value => value.districtId === district.id)!;
+
+            if (districtStatistic) {
+                return {
+                    id: district.id,
+                    name: district.name,
+                    state,
+                    newCases: districtStatistic.newCases,
+                    newDeaths: districtStatistic.newDeaths,
+                    newRecovered: districtStatistic.newRecovered,
+                    newDeathsWithComorbidities: districtStatistic.newDeathsWithComorbidities,
+                    newDeathsWithoutComorbidities: districtStatistic.newDeathsWithComorbidities,
+                    newTests: districtStatistic.newTests,
+                    newVaccinations: districtStatistic.newVaccinations,
+                    newVaccinationsDose1: districtStatistic.newVaccinationsDose1,
+                    newVaccinationsDose2: districtStatistic.newVaccinationsDose2,
+                    totalVaccinations: districtStatistic.totalVaccinations,
+                    totalVaccinationsDose1: districtStatistic.totalVaccinationsDose1,
+                    totalVaccinationsDose2: districtStatistic.totalVaccinationsDose2,
+                }
+            }
 
             return {
                 id: district.id,
                 name: district.name,
                 state,
-                newCases: districtStatistic.newCases,
-                newDeaths: districtStatistic.newDeaths,
-                newRecovered: districtStatistic.newRecovered,
-                newDeathsWithComorbidities: districtStatistic.newDeathsWithComorbidities,
-                newDeathsWithoutComorbidities: districtStatistic.newDeathsWithComorbidities,
-                newTests: districtStatistic.newTests,
-                newVaccinations: districtStatistic.newVaccinations,
-                newVaccinationsDose1: districtStatistic.newVaccinationsDose1,
-                newVaccinationsDose2: districtStatistic.newVaccinationsDose2,
-                totalVaccinations: districtStatistic.totalVaccinations,
-                totalVaccinationsDose1: districtStatistic.totalVaccinationsDose1,
-                totalVaccinationsDose2: districtStatistic.totalVaccinationsDose2,
+                newCases: null,
+                newDeaths: null,
+                newRecovered: null,
+                newDeathsWithComorbidities: null,
+                newDeathsWithoutComorbidities: null,
+                newTests: null,
+                newVaccinations: null,
+                newVaccinationsDose1: null,
+                newVaccinationsDose2: null,
+                totalVaccinations: null,
+                totalVaccinationsDose1: null,
+                totalVaccinationsDose2: null,
             }
         })
 };
@@ -89,20 +122,37 @@ const createDistricts = (
 const createRegionDetails = (
     voivodeshipId: string,
     voivodeshipsStatistics: VoivodeshipStatistics[]): RegionDetailsViewModel => {
-    const voivodeshipStatistics = voivodeshipsStatistics.find(value => value.voivodeshipId === voivodeshipId)!;
+    const voivodeshipStatistics = voivodeshipsStatistics.find(value => value.voivodeshipId === voivodeshipId);
+
+    if (voivodeshipStatistics) {
+        return {
+            newCases: voivodeshipStatistics.newCases,
+            newDeaths: voivodeshipStatistics.newDeaths,
+            newRecovered: voivodeshipStatistics.newRecovered,
+            newDeathsWithComorbidities: voivodeshipStatistics.newDeathsWithComorbidities,
+            newDeathsWithoutComorbidities: voivodeshipStatistics.newDeathsWithoutComorbidities,
+            newTests: voivodeshipStatistics.newTests,
+            newVaccinations: voivodeshipStatistics.newVaccinations,
+            newVaccinationsDose1: voivodeshipStatistics.newVaccinationsDose1,
+            newVaccinationsDose2: voivodeshipStatistics.newVaccinationsDose2,
+            totalVaccinations: voivodeshipStatistics.totalVaccinations,
+            totalVaccinationsDose1: voivodeshipStatistics.totalVaccinationsDose1,
+            totalVaccinationsDose2: voivodeshipStatistics.totalVaccinationsDose2,
+        }
+    }
     return {
-        newCases: voivodeshipStatistics.newCases,
-        newDeaths: voivodeshipStatistics.newDeaths,
-        newRecovered: voivodeshipStatistics.newRecovered,
-        newDeathsWithComorbidities: voivodeshipStatistics.newDeathsWithComorbidities,
-        newDeathsWithoutComorbidities: voivodeshipStatistics.newDeathsWithoutComorbidities,
-        newTests: voivodeshipStatistics.newTests,
-        newVaccinations: voivodeshipStatistics.newVaccinations,
-        newVaccinationsDose1: voivodeshipStatistics.newVaccinationsDose1,
-        newVaccinationsDose2: voivodeshipStatistics.newVaccinationsDose2,
-        totalVaccinations: voivodeshipStatistics.totalVaccinations,
-        totalVaccinationsDose1: voivodeshipStatistics.totalVaccinationsDose1,
-        totalVaccinationsDose2: voivodeshipStatistics.totalVaccinationsDose2,
+        newCases: null,
+        newDeaths: null,
+        newRecovered: null,
+        newDeathsWithComorbidities: null,
+        newDeathsWithoutComorbidities: null,
+        newTests: null,
+        newVaccinations: null,
+        newVaccinationsDose1: null,
+        newVaccinationsDose2: null,
+        totalVaccinations: null,
+        totalVaccinationsDose1: null,
+        totalVaccinationsDose2: null,
     }
 };
 

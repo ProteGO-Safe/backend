@@ -1,7 +1,7 @@
 interface TotalVaccinationsData {
-    totalVaccinations: number,
-    totalVaccinationsDose1: number,
-    totalVaccinationsDose2: number
+    totalVaccinations: number | null,
+    totalVaccinationsDose1: number | null,
+    totalVaccinationsDose2: number | null
 }
 
 export default TotalVaccinationsData;

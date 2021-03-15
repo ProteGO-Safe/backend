@@ -5,7 +5,7 @@ import District from "../../../../src/functions/statistics/repository/District";
 import DistrictState from "../../../../src/functions/statistics/DistrictState";
 import DistrictStatistics from "../../../../src/functions/statistics/DistrictStatistics";
 import Statistic from "../../../../src/functions/statistics/repository/Statistic";
-import {dummyStatistic} from "../dummyData";
+import {dummyDashboard, dummyStatistic} from "../dummyData";
 import VoivodeshipStatistics from "../../../../src/functions/statistics/VoivodeshipStatistics";
 
 describe('DetailsJsonFactory tests', () => {
@@ -216,19 +216,19 @@ describe('DetailsJsonFactory tests', () => {
             },
         ] as Statistic[];
 
-        const dashboardJson = createDetailsJson(date, voivodeships, districts, districtsStatistics, voivodeshipsStatistics, lastStatistics, districtStates);
+        const dashboardJson = createDetailsJson(date, voivodeships, districts, districtsStatistics, voivodeshipsStatistics, lastStatistics, districtStates, dummyDashboard);
 
         expect(dashboardJson).to.be.eql({
             lastDays: {
-                cases: [1,2,3],
-                deaths: [1,2,3],
-                deathsWithComorbidities: [1,2,3],
-                deathsWithoutComorbidities: [1,2,3],
-                recovered: [1,2,3],
-                tests: [1,2,3],
-                vaccinations: [1,2,3],
-                vaccinationsDose1: [1,2,3],
-                vaccinationsDose2: [1,2,3],
+                cases: [1,2,3, 1112],
+                deaths: [1,2,3, 1113],
+                deathsWithComorbidities: [1,2,3, 1115],
+                deathsWithoutComorbidities: [1,2,3, 1116],
+                recovered: [1,2,3, 1114],
+                tests: [1,2,3, 1117],
+                vaccinations: [1,2,3, 1118],
+                vaccinationsDose1: [1,2,3, 1119],
+                vaccinationsDose2: [1,2,3, 11110],
             },
             updated: 1612178612,
             voivodeships: [{
