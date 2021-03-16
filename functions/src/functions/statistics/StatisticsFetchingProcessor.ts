@@ -9,7 +9,6 @@ import {createStatistic} from "./StatisticFactory";
 import fetchDistrictsStates from "./DistrictsStatesProcessor";
 import createDashboardJson from "./jsons/DashboardJsonFactory";
 import createDetailsJson from "./jsons/DetailsJsonFactory";
-import config from "../../config";
 import {notNull} from "../../utils/AssertHelper";
 import fetchDailyData from "./DailyDataFetcher";
 import createDistrictsJson from "./jsons/DistrictsJsonFactory";
@@ -34,7 +33,6 @@ const processFetchingStatistics = async () => {
     const districts = await districtRepository.listAll();
     const voivodeships = await voivodeshipRepository.listAll();
     const lastStatistic = await statisticsRepository.fetchLast();
-    const lastStatistics = await statisticsRepository.listLastWithLimit(config.statistics.lastDaysDetails);
 
     notNull(lastStatistic);
 
@@ -56,7 +54,7 @@ const processFetchingStatistics = async () => {
 
         const covidInfoJson = createCovidInfo(now, dailyData, globalStatistics, voivodeships, districts, districtStates, lastStatistic!);
         const dashboardJson = createDashboardJson(now, dailyData, globalStatistics);
-        const detailsJson = createDetailsJson(now, voivodeships, districts, districtsStatistics, voivodeshipsStatistics, lastStatistics, districtStates, dashboardJson);
+        const detailsJson = createDetailsJson(now, voivodeships, districts, districtsStatistics, voivodeshipsStatistics, lastStatistic, districtStates, dashboardJson, globalStatistics);
         const districtsJson = createDistrictsJson(now, voivodeships, districts, districtStates, lastStatistic);
 
         const statistic = createStatistic(now, covidInfoJson, dashboardJson, detailsJson, districtsJson, dailyData);

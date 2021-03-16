@@ -174,6 +174,7 @@ export const dummyLastDays = {
     vaccinations: [],
     vaccinationsDose1: [],
     vaccinationsDose2: [],
+    undesirableReactions: [],
 };
 
 export const dummyDetails = {

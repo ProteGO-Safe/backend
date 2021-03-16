@@ -8,6 +8,7 @@ interface LastDaysJsonViewModel {
     vaccinations: (number|null)[],
     vaccinationsDose1: (number|null)[],
     vaccinationsDose2: (number|null)[],
+    undesirableReactions: (number|null)[],
 }
 
 export default LastDaysJsonViewModel;

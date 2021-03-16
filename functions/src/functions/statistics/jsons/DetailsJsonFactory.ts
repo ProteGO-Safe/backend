@@ -10,7 +10,8 @@ import VoivodeshipDetailsViewModel from "../model/VoivodeshipDetailsViewModel";
 import RegionDetailsViewModel from "../model/RegionDetailsViewModel";
 import VoivodeshipStatistics from "../VoivodeshipStatistics";
 import DashboardJsonViewModel from "../model/DashboardJsonViewModel";
-import LastDaysJsonViewModel from "../model/LastDaysJsonViewModel";
+import GlobalStatistics from "../GlobalStatistics";
+import createLastDays from "./LastDaysFactory";
 
 const createDetailsJson = (
     date: Date,
@@ -18,48 +19,14 @@ const createDetailsJson = (
     districts: District[],
     districtsStatistics: DistrictStatistics[],
     voivodeshipsStatistics: VoivodeshipStatistics[],
-    lastStatistics: Statistic[] | [],
+    lastStatistic: Statistic | null,
     districtStates: Array<DistrictState>,
-    dashboardJson: DashboardJsonViewModel): DetailsJsonViewModel => {
+    dashboardJson: DashboardJsonViewModel,
+    globalStatistics: GlobalStatistics): DetailsJsonViewModel => {
 
     const timestamp = getTimestamp(date);
 
-    const lastDays: LastDaysJsonViewModel = (lastStatistics as [Statistic])
-        .reduce((obj: any, item) => {
-
-        return {
-            cases: [...obj.cases, item.dashboard.newCases],
-            recovered: [...obj.recovered, item.dashboard.newRecovered],
-            deaths: [...obj.deaths, item.dashboard.newDeaths],
-            deathsWithComorbidities: [...obj.deathsWithComorbidities, item.dashboard.newDeathsWithComorbidities],
-            deathsWithoutComorbidities: [...obj.deathsWithoutComorbidities, item.dashboard.newDeathsWithoutComorbidities],
-            tests: [...obj.tests, item.dashboard.newTests],
-            vaccinations: [...obj.vaccinations, item.dashboard.newVaccinations],
-            vaccinationsDose1: [...obj.vaccinationsDose1, item.dashboard.newVaccinationsDose1],
-            vaccinationsDose2: [...obj.vaccinationsDose2, item.dashboard.newVaccinationsDose2],
-        }
-
-    }, {
-        cases: [] as number[],
-        recovered: [] as number[],
-        deaths: [] as number[],
-        deathsWithComorbidities: [] as number[],
-        deathsWithoutComorbidities: [] as number[],
-        tests: [] as number[],
-        vaccinations: [] as number[],
-        vaccinationsDose1: [] as number[],
-        vaccinationsDose2: [] as number[],
-    });
-
-    lastDays.cases = [...lastDays.cases, dashboardJson.newCases];
-    lastDays.recovered = [...lastDays.recovered, dashboardJson.newRecovered];
-    lastDays.deaths = [...lastDays.deaths, dashboardJson.newDeaths];
-    lastDays.deathsWithComorbidities = [...lastDays.deathsWithComorbidities, dashboardJson.newDeathsWithComorbidities];
-    lastDays.deathsWithoutComorbidities = [...lastDays.deathsWithoutComorbidities, dashboardJson.newDeathsWithoutComorbidities];
-    lastDays.tests = [...lastDays.tests, dashboardJson.newTests];
-    lastDays.vaccinations = [...lastDays.vaccinations, dashboardJson.newVaccinations];
-    lastDays.vaccinationsDose1 = [...lastDays.vaccinationsDose1, dashboardJson.newVaccinationsDose1];
-    lastDays.vaccinationsDose2 = [...lastDays.vaccinationsDose2, dashboardJson.newVaccinationsDose2];
+    const lastDays = createLastDays(lastStatistic, dashboardJson, globalStatistics);
 
     return {
         updated: timestamp,

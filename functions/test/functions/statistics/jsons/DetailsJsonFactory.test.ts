@@ -7,6 +7,7 @@ import DistrictStatistics from "../../../../src/functions/statistics/DistrictSta
 import Statistic from "../../../../src/functions/statistics/repository/Statistic";
 import {dummyDashboard, dummyStatistic} from "../dummyData";
 import VoivodeshipStatistics from "../../../../src/functions/statistics/VoivodeshipStatistics";
+import GlobalStatistics from "../../../../src/functions/statistics/GlobalStatistics";
 
 describe('DetailsJsonFactory tests', () => {
     it('should fetch details data', async () => {
@@ -147,88 +148,50 @@ describe('DetailsJsonFactory tests', () => {
                 totalVaccinationsDose2: 174,
             }
         ] as DistrictStatistics[];
-        const lastStatistics = [
-            {
-                ...dummyStatistic,
-                dashboard: {
-                    updated: 1,
-                    newCases: 1,
-                    newDeaths: 1,
-                    newRecovered: 1,
-                    newDeathsWithComorbidities: 1,
-                    newDeathsWithoutComorbidities: 1,
-                    newTests: 1,
-                    newVaccinations: 1,
-                    newVaccinationsDose1: 1,
-                    newVaccinationsDose2: 1,
-                    totalCases: 1,
-                    totalDeaths: 1,
-                    totalRecovered: 1,
-                    totalVaccinations: 1,
-                    totalVaccinationsDose1: 1,
-                    totalVaccinationsDose2: 1,
-                    totalUndesirableReaction: 1
-                }
-            },
-            {
-                ...dummyStatistic,
-                dashboard: {
-                    updated: 2,
-                    newCases: 2,
-                    newDeaths: 2,
-                    newRecovered: 2,
-                    newDeathsWithComorbidities: 2,
-                    newDeathsWithoutComorbidities: 2,
-                    newTests: 2,
-                    newVaccinations: 2,
-                    newVaccinationsDose1: 2,
-                    newVaccinationsDose2: 2,
-                    totalCases: 2,
-                    totalDeaths: 2,
-                    totalRecovered: 2,
-                    totalVaccinations: 2,
-                    totalVaccinationsDose1: 2,
-                    totalVaccinationsDose2: 2,
-                    totalUndesirableReaction: 2
-                }
-            },
-            {
-                ...dummyStatistic,
-                dashboard: {
-                    updated: 3,
-                    newCases: 3,
-                    newDeaths: 3,
-                    newRecovered: 3,
-                    newDeathsWithComorbidities: 3,
-                    newDeathsWithoutComorbidities: 3,
-                    newTests: 3,
-                    newVaccinations: 3,
-                    newVaccinationsDose1: 3,
-                    newVaccinationsDose2: 3,
-                    totalCases: 3,
-                    totalDeaths: 3,
-                    totalRecovered: 3,
-                    totalVaccinations: 3,
-                    totalVaccinationsDose1: 3,
-                    totalVaccinationsDose2: 3,
-                    totalUndesirableReaction: 3
-                }
-            },
-        ] as Statistic[];
 
-        const dashboardJson = createDetailsJson(date, voivodeships, districts, districtsStatistics, voivodeshipsStatistics, lastStatistics, districtStates, dummyDashboard);
+        const statistic = {
+            ...dummyStatistic,
+            details : {
+                ...dummyStatistic.details,
+                lastDays: {
+                    cases: [12,3],
+                    recovered: [45,3],
+                    deaths: [12,4],
+                    deathsWithComorbidities: [54,76],
+                    deathsWithoutComorbidities: [76,4],
+                    tests: [32],
+                    vaccinations: [433,54,3],
+                    vaccinationsDose1: [21,3,4],
+                    vaccinationsDose2: [1],
+                    undesirableReactions: [11, 4]
+                }
+            }
+        } as Statistic;
+
+        const globalStatistics = {
+            totalUndesirableReaction: 100,
+            totalCases: 1,
+            totalDeaths: 1,
+            totalRecovered: 1,
+            totalVaccinations: 1,
+            totalVaccinationsDose1: 1,
+            totalVaccinationsDose2: 1
+        } as GlobalStatistics;
+
+        const dashboardJson = createDetailsJson(date, voivodeships, districts, districtsStatistics, voivodeshipsStatistics, statistic, districtStates, dummyDashboard, globalStatistics);
 
         expect(dashboardJson).to.be.eql({
             lastDays: {
-                cases: [1,2,3, 1112],
-                deaths: [1,2,3, 1113],
-                deathsWithComorbidities: [1,2,3, 1115],
-                deathsWithoutComorbidities: [1,2,3, 1116],
-                recovered: [1,2,3, 1114],
-                tests: [1,2,3, 1117],
-                vaccinations: [1,2,3, 1118],
-                vaccinationsDose1: [1,2,3, 1119],
-                vaccinationsDose2: [1,2,3, 11110],
+                cases: [12,3,1112],
+                recovered: [45,3,1114],
+                deaths: [12,4,1113],
+                deathsWithComorbidities: [54,76,1115],
+                deathsWithoutComorbidities: [76,4,1116],
+                tests: [32,1117],
+                vaccinations: [433,54,3,1118],
+                vaccinationsDose1: [21,3,4,1119],
+                vaccinationsDose2: [1,11110],
+                undesirableReactions: [11, 4, 100]
             },
             updated: 1612178612,
             voivodeships: [{

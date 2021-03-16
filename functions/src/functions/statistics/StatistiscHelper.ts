@@ -3,7 +3,7 @@ import {notNull} from "../../utils/AssertHelper";
 import config from "../../config";
 
 export const fetchIndexByTitle = (firstRow: Array<string>, title: string): number => {
-    return firstRow.findIndex((value) => value === title)
+    return firstRow.findIndex((value) => value.includes(title))
 };
 
 export const parseFile = async (content: string, delimiter: string = ';'): Promise<Array<Array<string>>> => {
