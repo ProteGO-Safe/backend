@@ -82,6 +82,7 @@ const createDistricts = (
             if (districtStatistic) {
                 return {
                     id: district.id,
+                    uiId: district.uiId,
                     name: district.name,
                     state,
                     newCases: districtStatistic.newCases,
@@ -101,6 +102,7 @@ const createDistricts = (
 
             return {
                 id: district.id,
+                uiId: district.uiId,
                 name: district.name,
                 state,
                 newCases: null,

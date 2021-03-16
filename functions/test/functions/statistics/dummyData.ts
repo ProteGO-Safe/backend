@@ -90,6 +90,7 @@ export const dummyVoivodeships = [
         districts: [
             {
                 id: "idd1",
+                uiId: 21,
                 name: "n1",
                 state: 1,
                 newCases: 321,
@@ -107,6 +108,7 @@ export const dummyVoivodeships = [
             },
             {
                 id: "idd2",
+                uiId: 22,
                 name: "n2",
                 state: 2,
                 newCases: 2,
@@ -143,6 +145,7 @@ export const dummyVoivodeships = [
         districts: [
             {
                 id: "idd3",
+                uiId: 23,
                 name: "n3",
                 state: 3,
                 newCases: 4,

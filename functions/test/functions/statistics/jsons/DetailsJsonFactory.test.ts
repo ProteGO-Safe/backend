@@ -235,6 +235,7 @@ describe('DetailsJsonFactory tests', () => {
                 districts: [
                     {
                         id: "did1",
+                        uiId: 2,
                         name: "n1",
                         newCases: 123,
                         newDeaths: 124,
@@ -252,6 +253,7 @@ describe('DetailsJsonFactory tests', () => {
                     },
                     {
                         id: "did2",
+                        uiId: 3,
                         name: "n2",
                         newCases: 143,
                         newDeaths: 144,
@@ -289,6 +291,7 @@ describe('DetailsJsonFactory tests', () => {
                     districts: [
                         {
                             id: "did3",
+                            uiId: 4,
                             name: "n3",
                             newCases: 163,
                             newDeaths: 164,
