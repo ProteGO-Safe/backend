@@ -1,4 +1,4 @@
-import {dateToFormattedDayMonth, getJoinedDateAsString} from "../../src/utils/dateUtils";
+import {dateToFormattedDayMonth, getJoinedDateAsString, getTimestamp} from "../../src/utils/dateUtils";
 import {expect} from 'chai';
 
 describe('dateUtils tests', () => {
@@ -24,5 +24,12 @@ describe('dateUtils tests', () => {
         process.env.TZ = 'Europe/Warsaw';
         const dateString = getJoinedDateAsString(new Date(1639785642 * 1000));
         expect(dateString).to.be.eq("20211218");
+    });
+
+    it('should create timestamp as integer', () => {
+        process.env.TZ = 'Europe/Warsaw';
+        const date = new Date(1639785643.123 * 1000);
+        const dateString = getTimestamp(date);
+        expect(dateString).to.be.eq(1639785643);
     });
 });

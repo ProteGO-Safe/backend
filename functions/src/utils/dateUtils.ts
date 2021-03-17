@@ -12,7 +12,7 @@ export const getJoinedDateAsString = (date: Date) => {
 
 export const getCurrentTimestamp = () => new Date().getTime() / 1000;
 
-export const getTimestamp = (date: Date) => date.getTime() / 1000;
+export const getTimestamp = (date: Date) => Math.round(date.getTime() / 1000);
 
 export const getDate = (timestamp: number) => new Date(timestamp * 1000);
 
