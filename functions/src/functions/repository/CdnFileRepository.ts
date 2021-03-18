@@ -1,5 +1,6 @@
 import {Bucket, Storage} from "@google-cloud/storage";
 import * as ff from 'firebase-functions';
+import iconvlite = require('iconv-lite');
 import {log} from "firebase-functions/lib/logger";
 import errorLogger from "../logger/errorLogger";
 import errorEntryLabels from "../logger/errorEntryLabels";
@@ -27,6 +28,19 @@ class CdnFileRepository {
                 }
             );
         log(`saved file ${fileName}`);
+    }
+
+    async readFile(fileName: string): Promise<string> {
+        log(`reading file ${fileName}`);
+        const bucket = await this.getBucket();
+        const response = await bucket
+            .file(fileName)
+            .download();
+        const data = response[0];
+
+        log(`readed file ${fileName}`);
+
+        return iconvlite.decode(data, 'win1250');
     }
 
     private async init(): Promise<void> {

@@ -20,6 +20,7 @@ import processInsertingStatisticsData from "./functions/statistics/StatisticsDat
 import publishStatistics from "./functions/statistics/StatistiscPublishProcessor";
 import disableCacheOnBucket from "./functions/disableCacheOnBucket";
 import sendStatisticNotification from "./functions/statistics/NotificationSendingProcessor";
+import insertStatisticsLastDaysData from "./functions/statistics/StatisticsInsertingLastDaysDataProcessor";
 
 admin.initializeApp();
 const {timezone} = ff.config().config;
@@ -40,6 +41,7 @@ exports.statisticsProcessFetchingStatisticsScheduler = cloudFunctions.scheduler(
 exports.statisticsProcessInsertingStatisticsDataOnceScheduler = cloudFunctions.scheduler(processInsertingStatisticsData,  '0 0 1 1 1');
 exports.statisticsPublishStatistics = cloudFunctions.scheduler(publishStatistics, '*/15 10,11 * * *');
 exports.statisticsSendStatisticNotification = cloudFunctions.storage(sendStatisticNotification);
+exports.statisticsInsertLastDaysData = cloudFunctions.storage(insertStatisticsLastDaysData);
 exports.updateSubscription = cloudFunctions.httpsOnRequest(updateSubscription);
 exports.uploadDiagnosisKeys = cloudFunctions.httpsOnRequest(uploadDiagnosisKeysHttpHandler);
 exports.uploadDiagnosisKeysSubscriber = cloudFunctions.topicSubscriber(uploadDiagnosisKeysSubscriber);

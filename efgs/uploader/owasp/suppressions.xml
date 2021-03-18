@@ -37,6 +37,7 @@
         <cve>CVE-2021-24122</cve>
         <cve>CVE-2021-25122</cve>
         <cve>CVE-2021-25329</cve>
+        <cve>CVE-2020-9484</cve>
     </suppress>
     <suppress>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket.*$</packageUrl>
@@ -45,5 +46,6 @@
         <cve>CVE-2021-24122</cve>
         <cve>CVE-2021-25122</cve>
         <cve>CVE-2021-25329</cve>
+        <cve>CVE-2020-9484</cve>
     </suppress>
 </suppressions>
