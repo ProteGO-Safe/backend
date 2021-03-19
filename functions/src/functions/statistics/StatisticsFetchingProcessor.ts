@@ -57,7 +57,7 @@ const processFetchingStatistics = async () => {
         const detailsJson = createDetailsJson(now, voivodeships, districts, districtsStatistics, voivodeshipsStatistics, lastStatistic, districtStates, dashboardJson, globalStatistics);
         const districtsJson = createDistrictsJson(now, voivodeships, districts, districtStates, lastStatistic);
 
-        const statistic = createStatistic(now, covidInfoJson, dashboardJson, detailsJson, districtsJson, dailyData);
+        const statistic = createStatistic(now, covidInfoJson, dashboardJson, detailsJson, districtsJson);
         await statisticsRepository.save(statistic);
 
     } catch (e) {

@@ -4,7 +4,6 @@ import Statistic from "./repository/Statistic";
 import DashboardJsonViewModel from "./model/DashboardJsonViewModel";
 import DetailsJsonViewModel from "./model/DetailsJsonViewModel";
 import DistrictsJsonViewModel from "./model/DistrictsJsonViewModel";
-import DailyData from "./DailyData";
 
 
 export const createStatistic = (
@@ -13,7 +12,6 @@ export const createStatistic = (
     dashboardJson: DashboardJsonViewModel,
     detailsJson: DetailsJsonViewModel,
     districtsJson: DistrictsJsonViewModel,
-    dailyData: DailyData
     ): Statistic => {
 
     return {
@@ -23,7 +21,6 @@ export const createStatistic = (
         dashboard: dashboardJson,
         details: detailsJson,
         districts: districtsJson,
-        dailyData,
         published: false
     }
 };

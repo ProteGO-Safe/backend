@@ -55,7 +55,7 @@ const fetchTopic = async (platform: Platform) => {
 
 const getPayload = async (statistic: Statistic, platform: Platform): Promise<any> => {
 
-    const {dailyData, date} = statistic;
+    const {date, dashboard} = statistic;
     const dateString = dateToFormattedDayMonth(date);
     const topic = await fetchTopic(platform);
 
@@ -66,32 +66,32 @@ const getPayload = async (statistic: Statistic, platform: Platform): Promise<any
                 "localizedNotifications": [
                     {
                         "title": `COVID-19 w Polsce (${dateString})`,
-                        "content": `Szczepienia: +${dailyData.newVaccinations} wykonanych szczepień, +${dailyData.newVaccinationsDose1} z 1 dawką i +${dailyData.newVaccinationsDose2} z 2 dawką. COVID-19: +${dailyData.newCases} nowych zakażeń, +${dailyData.newDeaths} zmarło, +${dailyData.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`,
+                        "content": `Szczepienia: +${dashboard.newVaccinations} wykonanych szczepień, +${dashboard.newVaccinationsDose1} z 1 dawką i +${dashboard.newVaccinationsDose2} z 2 dawką. COVID-19: +${dashboard.newCases} nowych zakażeń, +${dashboard.newDeaths} zmarło, +${dashboard.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`,
                         "languageISO": "pl"
                     },
                     {
                         "title": `COVID-19 in Poland (${dateString})`,
-                        "content": `Vaccinations: +${dailyData.newVaccinations} new vaccinations, +${dailyData.newVaccinationsDose1} with 1st dose and +${dailyData.newVaccinationsDose2} with 2nd dose. COVID-19: +${dailyData.newCases} new infections, +${dailyData.newDeaths} deaths, +${dailyData.newRecovered} recoveries. Click and see the statistics in STOP COVID - ProteGO Safe application.`,
+                        "content": `Vaccinations: +${dashboard.newVaccinations} new vaccinations, +${dashboard.newVaccinationsDose1} with 1st dose and +${dashboard.newVaccinationsDose2} with 2nd dose. COVID-19: +${dashboard.newCases} new infections, +${dashboard.newDeaths} deaths, +${dashboard.newRecovered} recoveries. Click and see the statistics in STOP COVID - ProteGO Safe application.`,
                         "languageISO": "en"
                     },
                     {
                         "title": `COVID-19 в Польщі (${dateString})`,
-                        "content": `Щеплення: +${dailyData.newVaccinations} нових щеплень, +${dailyData.newVaccinationsDose1} щеплень одною дозою та +${dailyData.newVaccinationsDose2} щеплень другою дозою. COVID-19: +${dailyData.newCases} нових заражень, +${dailyData.newDeaths} померло, +${dailyData.newRecovered} одужало. Клацніть і перегляньте статистику в додатку STOP COVID - ProteGO Safe.`,
+                        "content": `Щеплення: +${dashboard.newVaccinations} нових щеплень, +${dashboard.newVaccinationsDose1} щеплень одною дозою та +${dashboard.newVaccinationsDose2} щеплень другою дозою. COVID-19: +${dashboard.newCases} нових заражень, +${dashboard.newDeaths} померло, +${dashboard.newRecovered} одужало. Клацніть і перегляньте статистику в додатку STOP COVID - ProteGO Safe.`,
                         "languageISO": "uk"
                     },
                     {
                         "title": `COVID-19 in Polen (${dateString})`,
-                        "content": `Impfungen: +${dailyData.newVaccinations} neu Geimpfte, +${dailyData.newVaccinationsDose1} mit der 1. Dosis und +${dailyData.newVaccinationsDose2} mit der 2. Dosis. COVID-19: +${dailyData.newCases} neu Infizierte, +${dailyData.newDeaths} Verstorbene, +${dailyData.newRecovered} Genesene. Hier klicken und die Statistik in der App STOP COVID - ProteGO Safe anzeigen.`,
+                        "content": `Impfungen: +${dashboard.newVaccinations} neu Geimpfte, +${dashboard.newVaccinationsDose1} mit der 1. Dosis und +${dashboard.newVaccinationsDose2} mit der 2. Dosis. COVID-19: +${dashboard.newCases} neu Infizierte, +${dashboard.newDeaths} Verstorbene, +${dashboard.newRecovered} Genesene. Hier klicken und die Statistik in der App STOP COVID - ProteGO Safe anzeigen.`,
                         "languageISO": "de"
                     },
                     {
                         "title": `COVID-19 в Польше (${dateString})`,
-                        "content": `Вакцинация: +${dailyData.newVaccinations} новых прививок, +${dailyData.newVaccinationsDose1} прививок одной дозой и +${dailyData.newVaccinationsDose2} прививок второй дозой. COVID-19: +${dailyData.newCases} новых заражений, +${dailyData.newDeaths} умерло, +${dailyData.newRecovered} выздоровело. Кликните и посмотрите статистику в приложении STOP COVID - ProteGO Safe.`,
+                        "content": `Вакцинация: +${dashboard.newVaccinations} новых прививок, +${dashboard.newVaccinationsDose1} прививок одной дозой и +${dashboard.newVaccinationsDose2} прививок второй дозой. COVID-19: +${dashboard.newCases} новых заражений, +${dashboard.newDeaths} умерло, +${dashboard.newRecovered} выздоровело. Кликните и посмотрите статистику в приложении STOP COVID - ProteGO Safe.`,
                         "languageISO": "ru"
                     },
                     {
                         "title": `Polonya'da COVID-19 (${dateString})`,
-                        "content": `Aşı: +${dailyData.newVaccinations} yeni aşılama, +${dailyData.newVaccinationsDose1} ilk doz ve +${dailyData.newVaccinationsDose2} ikinci doz. COVID-19: +${dailyData.newCases} yeni vaka, +${dailyData.newDeaths} vefat, +${dailyData.newRecovered} iyileşen. İstatistikleri STOP COVID-ProteGo Safe uygulamasında görmek için tıklayın.`,
+                        "content": `Aşı: +${dashboard.newVaccinations} yeni aşılama, +${dashboard.newVaccinationsDose1} ilk doz ve +${dashboard.newVaccinationsDose2} ikinci doz. COVID-19: +${dashboard.newCases} yeni vaka, +${dashboard.newDeaths} vefat, +${dashboard.newRecovered} iyileşen. İstatistikleri STOP COVID-ProteGo Safe uygulamasında görmek için tıklayın.`,
                         "languageISO": "tr"
                     }
                 ]
@@ -99,7 +99,7 @@ const getPayload = async (statistic: Statistic, platform: Platform): Promise<any
             "route": {
                 "name": "home",
             },
-            covidStats: dailyData
+            covidStats: dashboard
         }
     };
 
@@ -109,7 +109,7 @@ const getPayload = async (statistic: Statistic, platform: Platform): Promise<any
             "click_action": "dailyDataCategoryId",
             "mutable_content": true,
             "title": `COVID-19 w Polsce (${dateString})`,
-            "body": `Szczepienia: +${dailyData.newVaccinations} wykonanych szczepień, +${dailyData.newVaccinationsDose1} z 1 dawką i +${dailyData.newVaccinationsDose2} z 2 dawką. COVID-19: +${dailyData.newCases} nowych zakażeń, +${dailyData.newDeaths} zmarło, +${dailyData.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
+            "body": `Szczepienia: +${dashboard.newVaccinations} wykonanych szczepień, +${dashboard.newVaccinationsDose1} z 1 dawką i +${dashboard.newVaccinationsDose2} z 2 dawką. COVID-19: +${dashboard.newCases} nowych zakażeń, +${dashboard.newDeaths} zmarło, +${dashboard.newRecovered} wyzdrowiało. Kliknij i zobacz statystyki w aplikacji STOP COVID - ProteGO Safe.`
         }
     } : payload;
 };
