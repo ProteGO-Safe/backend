@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.4.6
+
+### Added
+- Vaccination statistics
+- Increased COVID-19 statistics in Poland
+- Automation of sending notifications with statistics
+- Unit tests artifact
+
+### Changed
+- Rolling start number in fakes keys
+
+### Fixed
+- Returned ID in the generateSubscriptionCode function
+
+## 4.4.5
+
+### Fixed
+- translations
+
 ## 4.4.4
 
 ### Added
