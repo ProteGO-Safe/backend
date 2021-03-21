@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
-        <notes>see https://github.com/jeremylong/DependencyCheck/issues/1827></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto.*$</packageUrl>
         <cve>CVE-2018-1258</cve>
-        <cve>CVE-2020-17527</cve>
+    </suppress>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/com\.google\.cloud/google\-cloud\-logging\-logback.*$</packageUrl>
         <cve>CVE-2017-5929</cve>
     </suppress>
     <suppress>
@@ -25,5 +27,25 @@
     <suppress>
         <packageUrl regex="true">^pkg:maven/com\.google\.http\-client/google\-http\-client.*$</packageUrl>
         <cve>CVE-2020-13956</cve>
+    </suppress>
+    <suppress>
+        <cve>CVE-2021-21290</cve>
+    </suppress>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core.*$</packageUrl>
+        <cve>CVE-2020-17527</cve>
+        <cve>CVE-2021-24122</cve>
+        <cve>CVE-2021-25122</cve>
+        <cve>CVE-2021-25329</cve>
+        <cve>CVE-2020-9484</cve>
+    </suppress>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket.*$</packageUrl>
+        <cve>CVE-2017-5929</cve>
+        <cve>CVE-2020-17527</cve>
+        <cve>CVE-2021-24122</cve>
+        <cve>CVE-2021-25122</cve>
+        <cve>CVE-2021-25329</cve>
+        <cve>CVE-2020-9484</cve>
     </suppress>
 </suppressions>

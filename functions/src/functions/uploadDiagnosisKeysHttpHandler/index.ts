@@ -15,6 +15,14 @@ import moment = require("moment");
 
 const pubsub = new PubSub();
 
+const parseErrorText = (errorText: string): any => {
+    try {
+        return JSON.parse(errorText)
+    } catch (e) {
+        return ''
+    }
+};
+
 export async function uploadDiagnosisKeysHttpHandler(request: functions.Request, response: functions.Response) {
     const body = request.body;
     if (!await auth(body.data.verificationPayload)) {
@@ -29,7 +37,9 @@ export async function uploadDiagnosisKeysHttpHandler(request: functions.Request,
             const errorMessage = `failed uploading keys from user to gens, keys: ${temporaryExposureKeys.length}, return code: ${error.response.error.status}, isInteroperabilityEnabled: ${isInteroperabilityEnabled}`;
             errorLogger.error(errorEntryLabels(errorMessage), errorMessage);
 
-            return response.status(error.response.error.status).send(JSON.parse(error.response.error.text));
+            return response.status(error.response.error.status).send(parseErrorText(error.response.error.text));
+        } else {
+            return response.status(error.response.status).send({result: ""});
         }
     }
 

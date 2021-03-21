@@ -1,7 +1,7 @@
 import * as ff from 'firebase-functions';
 import {applicationIPChecker, secretManager} from "./services";
 
-const region = ff.config().config.region;
+const {region, cdnbucket, timezone} = ff.config().config;
 
 export function https(
     handler : (data: any, context: ff.https.CallableContext) => any | Promise<any>,
@@ -49,7 +49,11 @@ export function scheduler(
     schedule: string,
     runtime: ff.RuntimeOptions = {memory: '256MB', timeoutSeconds: 30}
 ) {
-    return ff.runWith(runtime).region(region).pubsub.schedule(schedule).onRun(handler)
+    return ff.runWith(runtime)
+        .region(region)
+        .pubsub.schedule(schedule)
+        .timeZone(timezone)
+        .onRun(handler)
 }
 
 export const topicSubscriber = (handler : (data: any) => any | Promise<any>) => {
@@ -66,7 +70,9 @@ export function storage(
     return ff
         .runWith(runtimeOpt)
         .region(region)
-        .storage.object().onFinalize(async (object : ff.storage.ObjectMetadata) => {
+        .storage
+        .bucket(cdnbucket)
+        .object().onFinalize(async (object : ff.storage.ObjectMetadata) => {
             return handler(object);
         });
 }

@@ -11,7 +11,6 @@ import java.util.Base64;
 import java.util.List;
 
 import static org.apache.commons.lang3.RandomUtils.nextInt;
-import static org.apache.commons.lang3.RandomUtils.nextLong;
 
 @Getter
 public class DiagnosisKey {
@@ -60,20 +59,18 @@ public class DiagnosisKey {
 
     public static DiagnosisKey random() {
 
-        long minimumRollingStart = Instant
+        SecureRandom ranGen = new SecureRandom();
+        int daysBefore = ranGen.nextInt(15);
+
+        long rollingStartIntervalNumber = Instant
                 .now()
                 .truncatedTo(ChronoUnit.DAYS)
-                .minus(14, ChronoUnit.DAYS)
+                .minus(daysBefore, ChronoUnit.DAYS)
                 .getEpochSecond() / ROLLING_START_INTERVAL_LENGTH;
-
-        long maximumRollingStart = Instant
-                .now()
-                .getEpochSecond() / ROLLING_START_INTERVAL_LENGTH;
-        maximumRollingStart += 1;
 
         return new DiagnosisKey(
                 generateRandomKey(),
-                nextLong(minimumRollingStart, maximumRollingStart),
+                rollingStartIntervalNumber,
                 nextInt(1, MAX_ROLLING_PERIOD),
                 nextInt(1, MAX_RISK_LEVEL),
                 VISITED_COUNTRIES,

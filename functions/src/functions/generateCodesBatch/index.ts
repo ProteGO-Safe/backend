@@ -41,7 +41,10 @@ const generateCodesBatch = async (data : any, context: CallableContext) => {
     const chunkedBatch =
         ArrayHelper.chunkArray(Array(numberOfCodes).fill(true), maxBatchSave)
             .map(fillWithCodes)
-            .map(async (chunk) => await codeRepository.saveCodes(await chunk, expiryTime, expiryTime));
+            .map(async (chunk) => {
+                const codesWithIds = await codeRepository.saveCodes(await chunk, expiryTime, expiryTime);
+                return codesWithIds.map(value => value.code);
+            });
 
     const batch = await Promise.all(chunkedBatch);
 
