@@ -37,7 +37,7 @@
     "jsdom": "^16.4.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
-    "netmask": "^1.0.6",
+    "netmask": "^2.0.1",
     "node-forge": "0.10.0",
     "ssh2": "^0.8.9",
     "ssh2-streams": "^0.4.10",
