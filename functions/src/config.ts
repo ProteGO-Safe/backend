@@ -31,7 +31,17 @@ const config = {
     },
     statistics: {
         fileName: 'covid_info.json',
-        sshDirName: '/home/stopcovid'
+        sshDirName: '/home/stopcovid',
+        sshDirVaccinationsName: '/home/stopcovid/SzczepieniaRCB',
+        publishTime: '10:30',
+        lastDaysDetails: 14,
+        files: {
+            covidInfo: 'covid_info.json',
+            timestamps: '2/timestamps.json',
+            dashboard: '2/dashboard.json',
+            details: '2/details.json',
+            districts: '2/districts.json',
+        }
     },
     metrics: {
         uploadedKeyMetricTopicName: `firebase-subscription-sendUploadedKeysOpenCensusMetricSubscriber-${region}`,

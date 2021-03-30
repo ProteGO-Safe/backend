@@ -8,7 +8,7 @@ export const generateCode = async (expiryTime: number, deleteTime?: number): Pro
         code = codeGenerator.generate();
     } while ((await codeRepository.get(code)).exists);
 
-    const codeId = await codeRepository.save(code, expiryTime, deleteTime || expiryTime);
+    const {id} = await codeRepository.save(code, expiryTime, deleteTime || expiryTime);
 
-    return {id: codeId, code};
+    return {id, code};
 };
