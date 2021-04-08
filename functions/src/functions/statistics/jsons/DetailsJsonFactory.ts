@@ -56,7 +56,7 @@ const createDistricts = (
                     newDeaths: districtStatistic.newDeaths,
                     newRecovered: districtStatistic.newRecovered,
                     newDeathsWithComorbidities: districtStatistic.newDeathsWithComorbidities,
-                    newDeathsWithoutComorbidities: districtStatistic.newDeathsWithComorbidities,
+                    newDeathsWithoutComorbidities: districtStatistic.newDeathsWithoutComorbidities,
                     newTests: districtStatistic.newTests,
                     newVaccinations: districtStatistic.newVaccinations,
                     newVaccinationsDose1: districtStatistic.newVaccinationsDose1,

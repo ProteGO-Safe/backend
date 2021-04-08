@@ -3,7 +3,7 @@ dolnoœl¹skie;dzier¿oniowski;t0202;241
 dolnoœl¹skie;g³ogowski;t0203;242
 dolnoœl¹skie;górowski;t0204;270
 dolnoœl¹skie;jaworski;t0205;218
-dolnoœl¹skie;jeleniogórski;t0206;306
+dolnoœl¹skie;karkonoski;t0206;306
 dolnoœl¹skie;kamiennogórski;t0207;219
 dolnoœl¹skie;k³odzki;t0208;309
 dolnoœl¹skie;legnicki;t0209;325
@@ -67,7 +67,7 @@ lubelskie;parczewski;t0613;55
 lubelskie;pu³awski;t0614;56
 lubelskie;radzyñski;t0615;57
 lubelskie;rycki;t0616;58
-lubelskie;œwidnicki;t0617;324
+lubelskie;œwidnicki;t0617;59
 lubelskie;tomaszowski;t0618;60
 lubelskie;w³odawski;t0619;62
 lubelskie;zamojski;t0620;63
@@ -104,7 +104,7 @@ lubuskie;m. Zielona Góra;t0862;106
 ³ódzkie;rawski;t1013;356
 ³ódzkie;sieradzki;t1014;97
 ³ódzkie;skierniewicki;t1015;357
-³ódzkie;tomaszowski;t1016;60
+³ódzkie;tomaszowski;t1016;98
 ³ódzkie;wieluñski;t1017;99
 ³ódzkie;wieruszowski;t1018;101
 ³ódzkie;zduñskowolski;t1019;100
@@ -177,7 +177,7 @@ mazowieckie;m. P³ock;t1462;152
 mazowieckie;m. Radom;t1463;130
 mazowieckie;m. Siedlce;t1464;144
 mazowieckie;m. st. Warszawa;t1465;133
-opolskie;brzeski;t1601;67
+opolskie;brzeski;t1601;127
 opolskie;g³ubczycki;t1602;141
 opolskie;kêdzierzyñsko-kozielski;t1603;150
 opolskie;kluczborski;t1604;151
@@ -185,7 +185,7 @@ opolskie;krapkowicki;t1605;142
 opolskie;namys³owski;t1606;145
 opolskie;nyski;t1607;135
 opolskie;oleski;t1608;136
-opolskie;opolski;t1609;54
+opolskie;opolski;t1609;148
 opolskie;prudnicki;t1610;149
 opolskie;strzelecki;t1611;139
 opolskie;m. Opole;t1661;140
@@ -195,7 +195,7 @@ podkarpackie;dêbicki;t1803;118
 podkarpackie;jaros³awski;t1804;119
 podkarpackie;jasielski;t1805;121
 podkarpackie;kolbuszowski;t1806;120
-podkarpackie;kroœnieñski;t1807;109
+podkarpackie;kroœnieñski;t1807;122
 podkarpackie;le¿ajski;t1808;123
 podkarpackie;lubaczowski;t1809;360
 podkarpackie;³añcucki;t1810;124
@@ -240,7 +240,7 @@ pomorskie;koœcierski;t2206;195
 pomorskie;kwidzyñski;t2207;275
 pomorskie;lêborski;t2208;194
 pomorskie;malborski;t2209;211
-pomorskie;nowodworski;t2210;15
+pomorskie;nowodworski;t2210;212
 pomorskie;pucki;t2211;197
 pomorskie;s³upski;t2212;198
 pomorskie;starogardzki;t2213;208
@@ -252,7 +252,7 @@ pomorskie;m. Gdynia;t2262;274
 pomorskie;m. S³upsk;t2263;207
 pomorskie;m. Sopot;t2264;369
 œl¹skie;bêdziñski;t2401;252
-œl¹skie;bielski;t2402;178
+œl¹skie;bielski;t2402;251
 œl¹skie;cieszyñski;t2403;253
 œl¹skie;czêstochowski;t2404;223
 œl¹skie;gliwicki;t2405;278
@@ -326,7 +326,7 @@ wielkopolskie;chodzieski;t3001;128
 wielkopolskie;czarnkowsko-trzcianecki;t3002;146
 wielkopolskie;gnieŸnieñski;t3003;188
 wielkopolskie;gostyñski;t3004;162
-wielkopolskie;grodziski;t3005;348
+wielkopolskie;grodziski;t3005;367
 wielkopolskie;jarociñski;t3006;189
 wielkopolskie;kaliski;t3007;190
 wielkopolskie;kêpiñski;t3008;165
@@ -338,7 +338,7 @@ wielkopolskie;leszczyñski;t3013;137
 wielkopolskie;miêdzychodzki;t3014;138
 wielkopolskie;nowotomyski;t3015;134
 wielkopolskie;obornicki;t3016;361
-wielkopolskie;ostrowski;t3017;16
+wielkopolskie;ostrowski;t3017;147
 wielkopolskie;ostrzeszowski;t3018;129
 wielkopolskie;pilski;t3019;143
 wielkopolskie;pleszewski;t3020;363
@@ -346,7 +346,7 @@ wielkopolskie;poznañski;t3021;181
 wielkopolskie;rawicki;t3022;184
 wielkopolskie;s³upecki;t3023;186
 wielkopolskie;szamotulski;t3024;185
-wielkopolskie;œredzki;t3025;321
+wielkopolskie;œredzki;t3025;157
 wielkopolskie;œremski;t3026;158
 wielkopolskie;turecki;t3027;177
 wielkopolskie;w¹growiecki;t3028;365
