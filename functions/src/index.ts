@@ -14,7 +14,7 @@ import getSubscription from "./functions/freeTest/getSubscription";
 import uploadDiagnosisKeysSubscriber from "./functions/efgs/uploadDiagnosisKeysSubscriber";
 import uploadFailedDiagnosisKeysToGENS from "./functions/efgs/uploadFailedDiagnosisKeysToGENS";
 import generateCodesBatch from "./functions/generateCodesBatch";
-import sendUploadedKeysOpenCensusMetricSubscriber from "./functions/metrics/sendUploadedKeysOpenCensusMetricSubscriber";
+import sendUploadedKeysOpenCensusMetricScheduler from "./functions/metrics/sendUploadedKeysOpenCensusMetricScheduler";
 import statisticsFetchingProcessor from "./functions/statistics/StatisticsFetchingProcessor";
 import processInsertingStatisticsData from "./functions/statistics/StatisticsDataInsertingProcessor";
 import publishStatistics from "./functions/statistics/StatistiscPublishProcessor";
@@ -36,7 +36,7 @@ exports.generateSubscriptionCode = cloudFunctions.httpsOnRequest(generateSubscri
 exports.getAccessToken = cloudFunctions.https(getAccessToken);
 exports.getSubscription = cloudFunctions.httpsOnRequest(getSubscription);
 exports.getSubscriptionCode = cloudFunctions.httpsOnRequest(getSubscriptionCode);
-exports.sendUploadedKeysOpenCensusMetricSubscriber = cloudFunctions.topicSubscriber(sendUploadedKeysOpenCensusMetricSubscriber);
+exports.sendUploadedKeysOpenCensusMetricScheduler = cloudFunctions.scheduler(sendUploadedKeysOpenCensusMetricScheduler, '* * * * *');
 exports.statisticsProcessFetchingStatisticsScheduler = cloudFunctions.scheduler(statisticsFetchingProcessor, '*/2 09,10,11 * * *');
 exports.statisticsProcessInsertingStatisticsDataOnceScheduler = cloudFunctions.scheduler(processInsertingStatisticsData,  '0 0 1 1 1');
 exports.statisticsPublishStatistics = cloudFunctions.scheduler(publishStatistics, '*/15 10,11 * * *');

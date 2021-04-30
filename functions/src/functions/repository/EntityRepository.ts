@@ -18,6 +18,19 @@ abstract class EntityRepository {
                 throw new Error(reason)
             });
     }
+
+    async delete(entityId: string) {
+        await this.getCollection()
+            .doc(entityId)
+            .delete();
+    }
+
+    async getById(id: string): Promise<Entity | null> {
+
+        const snapshot = await this.getCollection().doc(id).get();
+
+        return snapshot.data() as Entity;
+    }
 }
 
 export default EntityRepository;
