@@ -105,7 +105,7 @@ jobs:
         shell: bash
 
       - name: mvn test
-        run: 'mvn test --log-file efgs-downloader-tests-result.txt'
+        run: 'mvn test | tee efgs-downloader-tests-result.txt'
         shell: bash
 
       - name: Archive test results
@@ -184,7 +184,7 @@ jobs:
           architecture: x64
 
       - name: mvn test
-        run: 'mvn test --log-file efgs-uploader-tests-result.txt'
+        run: 'mvn test | tee efgs-uploader-tests-result.txt'
         if: env.ENVIRONMENT != 'PROD' || env.PUSH_MODE == 'true'
         shell: bash
 
