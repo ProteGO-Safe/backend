@@ -21,6 +21,7 @@ import publishStatistics from "./functions/statistics/StatistiscPublishProcessor
 import disableCacheOnBucket from "./functions/disableCacheOnBucket";
 import sendStatisticNotification from "./functions/statistics/NotificationSendingProcessor";
 import insertStatisticsLastDaysData from "./functions/statistics/StatisticsInsertingLastDaysDataProcessor";
+import logStatisticsPublishingStatus from "./functions/statistics/StatisticsLoggingPublishingProcessor";
 
 admin.initializeApp();
 const {timezone} = ff.config().config;
@@ -37,11 +38,12 @@ exports.getAccessToken = cloudFunctions.https(getAccessToken);
 exports.getSubscription = cloudFunctions.httpsOnRequest(getSubscription);
 exports.getSubscriptionCode = cloudFunctions.httpsOnRequest(getSubscriptionCode);
 exports.sendUploadedKeysOpenCensusMetricScheduler = cloudFunctions.scheduler(sendUploadedKeysOpenCensusMetricScheduler, '* * * * *');
+exports.statisticsInsertLastDaysData = cloudFunctions.storage(insertStatisticsLastDaysData);
+exports.statisticsLogStatisticsPublishingStatus = cloudFunctions.scheduler(logStatisticsPublishingStatus, '5 12 * * *');
 exports.statisticsProcessFetchingStatisticsScheduler = cloudFunctions.scheduler(statisticsFetchingProcessor, '*/2 09,10,11 * * *');
 exports.statisticsProcessInsertingStatisticsDataOnceScheduler = cloudFunctions.scheduler(processInsertingStatisticsData,  '0 0 1 1 1');
 exports.statisticsPublishStatistics = cloudFunctions.scheduler(publishStatistics, '*/15 10,11 * * *');
 exports.statisticsSendStatisticNotification = cloudFunctions.storage(sendStatisticNotification);
-exports.statisticsInsertLastDaysData = cloudFunctions.storage(insertStatisticsLastDaysData);
 exports.updateSubscription = cloudFunctions.httpsOnRequest(updateSubscription);
 exports.uploadDiagnosisKeys = cloudFunctions.httpsOnRequest(uploadDiagnosisKeysHttpHandler);
 exports.uploadDiagnosisKeysSubscriber = cloudFunctions.topicSubscriber(uploadDiagnosisKeysSubscriber);
