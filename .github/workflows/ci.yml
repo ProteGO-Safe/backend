@@ -354,7 +354,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - run: npm --prefix functions install
-      - run: npm --prefix functions audit --audit-level moderate
 
       - run: echo "FUNCTIONS=$(cat functions/src/index.ts | sed -n '/exports/,/cloudFunctions/p' | sed -e 's/exports\(.*\)cloudFunctions/\1/' | sed 's/ = ..*;//' | sed 's/\./functions:/g' |tr '\n' ',')" >> $GITHUB_ENV
         shell: bash
