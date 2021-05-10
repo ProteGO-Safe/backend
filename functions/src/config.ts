@@ -32,7 +32,7 @@ const config = {
     statistics: {
         fileName: 'covid_info.json',
         sshDirName: '/home/stopcovid',
-        sshDirVaccinationsName: '/home/stopcovid/SzczepieniaRCB',
+        sshDirVaccinationsName: '/home/stopcovid/SzczepieniaESRI',
         publishTime: '10:30',
         lastDaysDetails: 14,
         files: {
