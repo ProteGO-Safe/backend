@@ -101,11 +101,11 @@ jobs:
         if: env.ENVIRONMENT != 'PROD' || env.ENVIRONMENT != 'STAGE'
 
       - name: mvn package
-        run: 'mvn package -ntp -DskipTests'
+        run: 'mvn package -ntp -DskipTests -Ddependency-check.skip=true'
         shell: bash
 
       - name: mvn test
-        run: 'mvn test --log-file efgs-downloader-tests-result.txt'
+        run: 'mvn test -Ddependency-check.skip=true --log-file efgs-downloader-tests-result.txt'
         shell: bash
 
       - name: Archive test results
@@ -184,7 +184,7 @@ jobs:
           architecture: x64
 
       - name: mvn test
-        run: 'mvn test --log-file efgs-uploader-tests-result.txt'
+        run: 'mvn test -Ddependency-check.skip=true --log-file efgs-uploader-tests-result.txt'
         if: env.ENVIRONMENT != 'PROD' || env.PUSH_MODE == 'true'
         shell: bash
 
@@ -244,7 +244,7 @@ jobs:
         if: env.ENVIRONMENT != 'PROD' || env.ENVIRONMENT != 'STAGE'
 
       - name: mvn package
-        run: 'mvn package -ntp -Dmaven.test.skip=true'
+        run: 'mvn package -ntp -Dmaven.test.skip=true -Ddependency-check.skip=true'
         shell: bash
 
       - name: Deploy EfgsDiagnosisKeysUploader to Firebase
@@ -302,7 +302,6 @@ jobs:
       - run: npm update
       - run: npm install
       - run: npm run lint
-      - run: npm audit --audit-level moderate
       - run: npm test > nodejs-tests-result.txt
         env:
           CLOUD_RUNTIME_CONFIG: '{"config":{"region":"europe-west1"}}'
