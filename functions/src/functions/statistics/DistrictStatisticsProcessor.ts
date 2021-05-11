@@ -11,7 +11,7 @@ const TITLE_DAILY_DEATHS_WITHOUT_COMORBIDITIES = 'zgony_w_wyniku_covid_bez_choro
 const TITLE_DAILY_TESTS = 'liczba_wykonanych_testow';
 const TITLE_DAILY_VACCINATIONS = 'liczba_szczepien_dziennie';
 const TITLE_DAILY_VACCINATIONS_DOSE_2 = 'dawka_2_dziennie';
-const TITLE_TOTAL_VACCINATIONS = 'liczba_szczepien_ogolem';
+const TITLE_TOTAL_VACCINATIONS = 'liczba_szczepien_ogolnie';
 const TITLE_TOTAL_VACCINATIONS_DOSE_2 = 'dawka_2_ogolem';
 
 const fetchDistrictsStatistics = async (
