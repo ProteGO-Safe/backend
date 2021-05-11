@@ -8,7 +8,7 @@ describe('VoivodeshipsStatisticsProcessor tests', () => {
             'dolnośląskie;909;3.14;2;2;0;48;744;13500;2829;955;1835;39;t02;2021-03-06\n' +
             'zachodniopomorskie;372;2.20;5;0;5;12;382;8264;1802;408;1357;37;t32;2021-03-06\n';
 
-        const rcbVoivodeshipVaccinationsFileContent = 'wojewodztwo;liczba_szczepien_ogolem;liczba_szczepien_dziennie;dawka_2_ogolem;dawka_2_dziennie;teryt\n' +
+        const rcbVoivodeshipVaccinationsFileContent = 'wojewodztwo;liczba_szczepien_ogolnie;liczba_szczepien_dziennie;dawka_2_ogolem;dawka_2_dziennie;teryt\n' +
             'inne_puste_woj;419;13;1;0;\n' +
             'dolnośląskie;176112;7814;54311;3465;t02\n' +
             'zachodniopomorskie;87502;4659;24222;2248;t32\n';
