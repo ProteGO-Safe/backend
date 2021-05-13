@@ -302,6 +302,7 @@ jobs:
       - run: npm update
       - run: npm install
       - run: npm run lint
+
       - run: npm test > nodejs-tests-result.txt
         env:
           CLOUD_RUNTIME_CONFIG: '{"config":{"region":"europe-west1"}}'
@@ -354,6 +355,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - run: npm --prefix functions install
+
 
       - run: echo "FUNCTIONS=$(cat functions/src/index.ts | sed -n '/exports/,/cloudFunctions/p' | sed -e 's/exports\(.*\)cloudFunctions/\1/' | sed 's/ = ..*;//' | sed 's/\./functions:/g' |tr '\n' ',')" >> $GITHUB_ENV
         shell: bash
