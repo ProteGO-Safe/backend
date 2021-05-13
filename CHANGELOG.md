@@ -4,10 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.4.11
+
+### Changed
+- Restore checking vulnerability
+
 ## 4.4.10
 
 ### Changed
-- Temporarily disable checking vulnerability
+- Temporarily disabled checking vulnerability
 - Fix the column title of files with COVID-19 statistics
 
 ## 4.4.9
