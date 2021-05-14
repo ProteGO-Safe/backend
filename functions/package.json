@@ -15,7 +15,8 @@
     "node": "12"
   },
   "resolutions": {
-    "node-forge": "0.10.0"
+    "node-forge": "0.10.0",
+    "json-bigint": "1.0.0"
   },
   "main": "lib/src/index.js",
   "dependencies": {
@@ -26,12 +27,13 @@
     "@opencensus/core": "0.0.22",
     "@opencensus/exporter-stackdriver": "0.0.22",
     "axios": "^0.21.1",
+    "bignumber.js": "^9.0.1",
     "bunyan": "^1.8.15",
     "crypto-random-string": "^3.3.0",
     "csv-parse": "^4.14.2",
     "deep-equal": "^2.0.5",
-    "firebase-admin": "^9.4.2",
-    "firebase-functions": "^3.13.0",
+    "firebase-admin": "^9.8.0",
+    "firebase-functions": "^3.14.0",
     "iconv-lite": "^0.6.2",
     "js-sha256": "^0.9.0",
     "jsdom": "^16.4.0",
@@ -59,7 +61,7 @@
     "@types/uuid": "^8.3.0",
     "chai": "^4.2.0",
     "firebase-functions-test": "^0.2.3",
-    "mocha": "^8.2.1",
+    "mocha": "^8.4.0",
     "ts-mockito": "^2.6.1",
     "ts-node": "^9.1.1",
     "tslint": "^6.1.3",
