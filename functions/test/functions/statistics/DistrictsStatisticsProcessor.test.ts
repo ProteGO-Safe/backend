@@ -9,7 +9,7 @@ describe('DistrictStatisticsProcessor tests', () => {
             'dolnośląskie;dzierżoniowski;18;1.79;0;0;0;21;1;139;131;21;109;1;t0202;2021-02-11\n' +
             'dolnośląskie;milicki;38;10.29;1;1;0;50;20;752;83;39;43;1;t0213;2021-02-11\n' +
             'dolnośląskie;głogowski;11;1.24;0;0;0;17;14;136;78;11;67;0;t0203;2021-02-11';
-        const rcbDistrictVaccinationsFileContent = 'wojewodztwo;powiat_miasto;liczba_szczepien_ogolem;liczba_szczepien_dziennie;dawka_2_ogolem;dawka_2_dziennie;teryt\n' +
+        const rcbDistrictVaccinationsFileContent = 'wojewodztwo;powiat_miasto;liczba_szczepien_ogolnie;liczba_szczepien_dziennie;dawka_2_ogolem;dawka_2_dziennie;teryt\n' +
             'woj_puste;pow_puste;419;13;1;0;t00\n' +
             'dolnośląskie;bolesławiecki;5117;102;1623;64;t0201\n' +
             'dolnośląskie;dzierżoniowski;3855;346;893;234;t0202\n' +

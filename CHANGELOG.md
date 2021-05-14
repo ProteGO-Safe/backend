@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.4.12
+
+### Changed
+- Restore checking vulnerability
+- Updated versions of dependencies
+
+## 4.4.10
+
+### Changed
+- Temporarily disabled checking vulnerability
+- Fix the column title of files with COVID-19 statistics
+
+## 4.4.9
+
+### Changed
+- Restore checking vulnerability
+
+## 4.4.8
+
+### Changed
+- Change ppath to the vaccination statistics directory
+
 ## 4.4.7
 
 ### Changed
