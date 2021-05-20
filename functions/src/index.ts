@@ -16,11 +16,9 @@ import uploadFailedDiagnosisKeysToGENS from "./functions/efgs/uploadFailedDiagno
 import generateCodesBatch from "./functions/generateCodesBatch";
 import sendUploadedKeysOpenCensusMetricScheduler from "./functions/metrics/sendUploadedKeysOpenCensusMetricScheduler";
 import statisticsFetchingProcessor from "./functions/statistics/StatisticsFetchingProcessor";
-import processInsertingStatisticsData from "./functions/statistics/StatisticsDataInsertingProcessor";
 import publishStatistics from "./functions/statistics/StatistiscPublishProcessor";
 import disableCacheOnBucket from "./functions/disableCacheOnBucket";
 import sendStatisticNotification from "./functions/statistics/NotificationSendingProcessor";
-import insertStatisticsLastDaysData from "./functions/statistics/StatisticsInsertingLastDaysDataProcessor";
 import logStatisticsPublishingStatus from "./functions/statistics/StatisticsLoggingPublishingProcessor";
 
 admin.initializeApp();
@@ -38,10 +36,8 @@ exports.getAccessToken = cloudFunctions.https(getAccessToken);
 exports.getSubscription = cloudFunctions.httpsOnRequest(getSubscription);
 exports.getSubscriptionCode = cloudFunctions.httpsOnRequest(getSubscriptionCode);
 exports.sendUploadedKeysOpenCensusMetricScheduler = cloudFunctions.scheduler(sendUploadedKeysOpenCensusMetricScheduler, '* * * * *');
-exports.statisticsInsertLastDaysData = cloudFunctions.storage(insertStatisticsLastDaysData);
 exports.statisticsLogStatisticsPublishingStatus = cloudFunctions.scheduler(logStatisticsPublishingStatus, '5 12 * * *');
 exports.statisticsProcessFetchingStatisticsScheduler = cloudFunctions.scheduler(statisticsFetchingProcessor, '*/2 09,10,11 * * *');
-exports.statisticsProcessInsertingStatisticsDataOnceScheduler = cloudFunctions.scheduler(processInsertingStatisticsData,  '0 0 1 1 1');
 exports.statisticsPublishStatistics = cloudFunctions.scheduler(publishStatistics, '*/15 10,11 * * *');
 exports.statisticsSendStatisticNotification = cloudFunctions.storage(sendStatisticNotification);
 exports.updateSubscription = cloudFunctions.httpsOnRequest(updateSubscription);
