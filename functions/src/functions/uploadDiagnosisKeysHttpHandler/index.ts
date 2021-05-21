@@ -5,15 +5,14 @@ import * as functions from "firebase-functions";
 import {v4} from "uuid";
 import * as admin from "firebase-admin";
 import uploadDiagnosisKeys from "../uploadDiagnosisKeys";
-import config from "../../config";
 import errorEntryLabels from "../logger/errorEntryLabels";
+import {metricRepository} from "../metrics/services";
+import createMetric from "../metrics/MetricFactory";
 
 const {log} = require("firebase-functions/lib/logger");
-const {PubSub} = require('@google-cloud/pubsub');
 
 import moment = require("moment");
-
-const pubsub = new PubSub();
+import {metricTypes} from "../metrics/metricTypes";
 
 const parseErrorText = (errorText: string): any => {
     try {
@@ -96,14 +95,14 @@ export const saveDiagnosisKeys = (body: any) => {
 };
 
 const trackUploadedKeys = async (temporaryExposureKeysLength: number, isInteroperabilityEnabled: boolean) => {
-    const topic = pubsub.topic(config.metrics.uploadedKeyMetricTopicName);
     const message = {
         temporaryExposureKeysLength,
         isInteroperabilityEnabled,
     };
-    const messageBuffer = Buffer.from(JSON.stringify(message), 'utf8');
 
-    await topic.publish(messageBuffer).catch((reason: any) => {
+    const metric = createMetric(message, metricTypes.uploadedKeys);
+
+    await metricRepository.save(metric).catch((reason: any) => {
         const errorMessage = `Failed to send tracked data: ${reason}`;
         errorLogger.error(errorEntryLabels(errorMessage), errorMessage);
     });

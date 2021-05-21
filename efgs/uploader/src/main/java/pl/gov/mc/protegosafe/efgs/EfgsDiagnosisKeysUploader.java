@@ -55,6 +55,7 @@ public class EfgsDiagnosisKeysUploader extends DiagnosisKeysUploader implements 
 
         if (!shouldFinishUploading) {
             failedDiagnosisKeysRepository.saveFailedUploadingDiagnosisKeys(diagnosisKeyBatch);
+            log.info("Saved failed uploading keys");
         } else {
             log.info("Uploaded finished");
         }
@@ -62,6 +63,8 @@ public class EfgsDiagnosisKeysUploader extends DiagnosisKeysUploader implements 
         idsWithDiagnosisKeys
                 .keySet()
                 .forEach(this::removeDocuments);
+
+        log.info("finished uploading keys to efgs");
     }
 
     @Override

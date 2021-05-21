@@ -1,7 +1,6 @@
 import * as functions from "firebase-functions";
 const {log} = require("firebase-functions/lib/logger");
 import {secretManager, subscriptionRepository} from "../../../services";
-import checkSafetyToken from "../safetyTokenChecker";
 import {decode, verify} from "jsonwebtoken";
 import returnBadRequestResponse from "../../returnBadRequestResponse";
 import errorLogger from "../../logger/errorLogger";
@@ -28,8 +27,6 @@ const auth = async (token: string | undefined, guid: string | undefined): Promis
 const getSubscription = async (request: functions.Request, response: functions.Response) => {
 
     try {
-        const safetyToken = request.header("Safety-Token")!;
-        const platform = request.header("User-Agent")!;
         const token = request.header("Authorization")!.replace('Bearer ', '');
         const {guid} = request.body;
 
@@ -37,13 +34,6 @@ const getSubscription = async (request: functions.Request, response: functions.R
 
         if (!isAuth) {
             log(`Authorization token is invalid`);
-            return returnBadRequestResponse(response);
-        }
-
-        const isValidSafetyToken = await checkSafetyToken(safetyToken, platform);
-
-        if (!isValidSafetyToken) {
-            log(`Safety token is invalid`);
             return returnBadRequestResponse(response);
         }
 
