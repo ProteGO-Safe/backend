@@ -1,5 +1,4 @@
 import * as functions from "firebase-functions";
-import checkSafetyToken from "../safetyTokenChecker";
 import {generateJwt} from "../../jwtGenerator";
 import {validateCode} from "../../code/codeValidator";
 import returnBadRequestResponse from "../../returnBadRequestResponse";
@@ -32,16 +31,9 @@ const logCodeEventForSubscriptionsForTest = (
 const subscriptionsForTest = async (request: functions.Request, response: functions.Response) => {
 
     try {
-        const safetyToken = request.header("Safety-Token")!;
         const platform = request.header("User-Agent")!;
         const {guid, code} = request.body;
 
-        const isValidSafetyToken = await checkSafetyToken(safetyToken, platform);
-
-        if (!isValidSafetyToken) {
-            log(`Safety token is invalid`);
-            return returnBadRequestResponse(response);
-        }
         const hashedCode = sha256(code);
         const isCodeValid = await validateCode(code);
 

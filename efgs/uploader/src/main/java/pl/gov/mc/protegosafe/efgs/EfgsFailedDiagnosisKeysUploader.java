@@ -54,6 +54,7 @@ public class EfgsFailedDiagnosisKeysUploader extends DiagnosisKeysUploader imple
 
         if (!shouldFinishUploading) {
             failedDiagnosisKeysRepository.updateFailedUploadingDiagnosisKeys(failedDiagnosisKeys);
+            log.info("Updated failed uploading keys");
         } else {
             log.info("Uploaded finished");
             failedDiagnosisKeysRepository
@@ -63,6 +64,7 @@ public class EfgsFailedDiagnosisKeysUploader extends DiagnosisKeysUploader imple
                             .collect(toList())
                     );
         }
+        log.info("finished uploading failed keys to efgs");
     }
 
     @Override
