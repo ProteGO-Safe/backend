@@ -1,6 +1,5 @@
----
-
-name: build and deploy
+--- 
+name: Schedule test
 on:
   schedule:
     - cron: '0 9 * * *'
@@ -8,20 +7,39 @@ on:
 jobs:
   Setup:
     runs-on: ubuntu-latest
+    if: github.repository_owner != 'ProteGO-Safe' && github.event_name == 'schedule' 
     outputs:
       ENVIRONMENT: ${{ env.ENVIRONMENT }}
       NODE_VERSION: 12
       JAVA_VERSION: 11
+      BRANCH_MATRIX: ${{ env.BRANCH_MATRIX }}
     steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Set env to SCHEDULE
-        if: github.repository_owner != 'ProteGO-Safe'
-            && github.event_name == 'schedule'
         run: |
           echo "ENVIRONMENT=SCHEDULE" >> $GITHUB_ENV
+
+      - name: Set matrix branch
+        id: set-matrix
+        run: |
+          last_releases=$(git branch -a --format='%(refname:short)' --sort=-committerdate |sed -e 's|origin/||g;' | grep release | head -n 1)
+          last_active=$(git branch -a --format='%(refname:short)' --sort=-committerdate |sed -e 's|origin/||g; /HEAD/d; /release/d; /snyk/d; /master/d; /dependabot/d;' | head -n 3)
+          matrix="$last_releases $last_active master"
+          matrix=$(printf '%s\n' $matrix | sort | uniq | jq --slurp --raw-input 'split("\n")[:-1]')
+          echo "BRANCH_MATRIX=$(echo $matrix)" >> $GITHUB_ENV
 
   efgs-downloader-build:
     name: Efgs Downloader Build
     if: ${{ needs.Setup.outputs.ENVIRONMENT }}
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix: 
+        branches: ${{ fromJson(needs.Setup.outputs.BRANCH_MATRIX) }}
     needs: Setup
     runs-on: ubuntu-latest
     defaults:
@@ -34,6 +52,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
+        with:
+          ref: ${{ matrix.branches }}
 
       - uses: actions/cache@v2
         env:
@@ -63,8 +83,13 @@ jobs:
 
   efgs-uploader-build:
     name: Efgs Uploader Build
+    continue-on-error: true
     if: ${{ needs.Setup.outputs.ENVIRONMENT }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: 
+         branches: ${{ fromJson(needs.Setup.outputs.BRANCH_MATRIX) }}
     needs: Setup
     defaults:
       run:
@@ -76,6 +101,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
+        with:
+          ref: ${{ matrix.branches }}
 
       - uses: actions/cache@v2
         env:
@@ -84,6 +111,17 @@ jobs:
           path: ~/.m2/repository
           key: ${{ env.cache-name }}-${{ hashFiles('**/efgs/uploader/pom.xml') }}
           restore-keys: ${{ env.cache-name }}-
+
+      - name: Set Env's to run tests for schedule mode
+        run: |
+          echo "EFGS_URL=${{ secrets[env.EFGS_ENV] }}" >> $GITHUB_ENV
+          echo "NBBS=${{ secrets[env.NBBS_ENV] }}" >> $GITHUB_ENV
+          echo "NBTLS=${{ secrets[env.NBTLS_ENV] }}" >> $GITHUB_ENV
+        if: env.ENVIRONMENT == 'SCHEDULE'
+        env:
+          EFGS_ENV: "DEV_EFGS"
+          NBBS_ENV: "DEV_NBBS"
+          NBTLS_ENV: "DEV_NBTLS"
 
       - name: Install java
         uses: actions/setup-java@v1
@@ -106,6 +144,11 @@ jobs:
   Lint_TS:
     name: Lint&Audit TS Functions
     if: ${{ needs.Setup.outputs.ENVIRONMENT }}
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix: 
+         branches: ${{ fromJson(needs.Setup.outputs.BRANCH_MATRIX) }}
     runs-on: ubuntu-latest
     needs: [Setup]
     env:
@@ -115,6 +158,9 @@ jobs:
         working-directory: functions
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ matrix.branches }}
+          
       - uses: actions/cache@v2
         env:
           cache-name: node
@@ -135,7 +181,7 @@ jobs:
           CLOUD_RUNTIME_CONFIG: '{"config":{"region":"europe-west1"}}'
 
   notify:
-    if: always()
+    if: ${{ needs.Setup.outputs.ENVIRONMENT }} && always()
     name: Notify
     needs:
       - Lint_TS
@@ -219,24 +265,42 @@ jobs:
                 if (j.status != "completed") {
                     continue
                 }
-                if (j.conclusion != "success") {
+                if (!(j.conclusion == "skipped" || j.conclusion == "success")) {
                   is_wf_success = false
                 }
                 if (j.conclusion == "failure") {
                   is_wf_failure = true
-                }
-                fields.push({
+                  fields.push({
                     type: "mrkdwn",
                     text: status_icon_func(j.conclusion) + " <" + j.html_url + "|" + j.name + ">\n  \u21b3 completed in " + date_diff_func(new Date(j.started_at), new Date(j.completed_at))
-                })
+                  })
+                }
             }
             var workflow_status = "w_cancelled"
             if (is_wf_success) {
               workflow_status = "w_success"
+              var slack_msg = {
+                blocks: [
+                    {
+                        type: "section",
+                        text: {
+                            type: "mrkdwn",
+                            text: "<https://github.com/${{ github.repository }}|*${{ github.repository }}*>\nfrom *${{ github.ref }}@" + commit + "*"
+                        }
+                    },
+                    {
+                        type: "section",
+                        text: {
+                            type: "mrkdwn",
+                            text: status_icon_func(workflow_status) + " *${{ github.workflow }}* " + pr + "\nWorkflow run <" + wf_run.data.html_url + "|#${{ github.run_number }}> completed in " + date_diff_func(new Date(wf_run.data.created_at), new Date(wf_run.data.updated_at))
+                        }
+                    }
+                ]
+            }
+            
             } else if (is_wf_failure) {
               workflow_status = "w_failure"
-            }
-            var slack_msg = {
+              var slack_msg = {
                 blocks: [
                     {
                         type: "section",
@@ -261,6 +325,8 @@ jobs:
                     }
                 ]
             }
+            }
+
             return slack_msg
 
       - name: Send to Slack

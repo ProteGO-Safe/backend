@@ -13,6 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class Properties {
 
   Downloader downloader = new Downloader();
+  String projectId;
   String api;
   Message message = new Message();
 

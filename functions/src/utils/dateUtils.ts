@@ -35,3 +35,11 @@ export const getEndOfDay = (date: Date): Date => {
     newDate.setHours(23,59,59,999);
     return newDate;
 };
+
+export const isToday = (date: Date): boolean => {
+    const now = new Date();
+    return date.getDate() == now.getDate() &&
+        date.getMonth() == now.getMonth() &&
+        date.getFullYear() == now.getFullYear()
+};
+

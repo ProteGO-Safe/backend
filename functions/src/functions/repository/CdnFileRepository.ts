@@ -19,14 +19,15 @@ class CdnFileRepository {
     async saveFile(data: any, fileName: string): Promise<void> {
         log(`saving file ${fileName}`);
         const bucket = await this.getBucket();
-        bucket
-            .file(fileName)
-            .save(
-                JSON.stringify(data),
-                err => {
-                    err ? errorLogger.error(errorEntryLabels(`Cannot save file`), err) : undefined
-                }
-            );
+        const file = bucket.file(fileName);
+
+        try {
+            await file.save(JSON.stringify(data));
+        } catch (e) {
+            errorLogger.error(errorEntryLabels(`Cannot save file ${fileName}`), e);
+            throw e;
+        }
+
         log(`saved file ${fileName}`);
     }
 
@@ -41,6 +42,17 @@ class CdnFileRepository {
         log(`readed file ${fileName}`);
 
         return iconvlite.decode(data, 'win1250');
+    }
+
+    async readFileCreatedDate(fileName: string): Promise<Date> {
+        log(`reading file ${fileName}`);
+        const bucket = await this.getBucket();
+        const response = await bucket
+            .file(fileName);
+
+        const metadata = (await response.getMetadata())[0];
+
+        return new Date(metadata.timeCreated);
     }
 
     private async init(): Promise<void> {

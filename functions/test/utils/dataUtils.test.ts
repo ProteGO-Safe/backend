@@ -1,4 +1,4 @@
-import {dateToFormattedDayMonth, getJoinedDateAsString, getTimestamp} from "../../src/utils/dateUtils";
+import {dateToFormattedDayMonth, getJoinedDateAsString, getTimestamp, isToday} from "../../src/utils/dateUtils";
 import {expect} from 'chai';
 
 describe('dateUtils tests', () => {
@@ -32,4 +32,21 @@ describe('dateUtils tests', () => {
         const dateString = getTimestamp(date);
         expect(dateString).to.be.eq(1639785643);
     });
+
+    it('should check that date is today', () => {
+        process.env.TZ = 'Europe/Warsaw';
+        const date = new Date();
+        const isTodayValue = isToday(date);
+        expect(isTodayValue).to.be.eq(true);
+    });
+
+    it('should check that date is not today', () => {
+        process.env.TZ = 'Europe/Warsaw';
+        const date = new Date();
+        date.setDate(date.getDate() - 1);
+        const isTodayValue = isToday(date);
+        expect(isTodayValue).to.be.eq(false);
+    });
+
+
 });

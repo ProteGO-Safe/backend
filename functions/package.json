@@ -36,7 +36,7 @@
     "firebase-functions": "^3.14.0",
     "iconv-lite": "^0.6.2",
     "js-sha256": "^0.9.0",
-    "jsdom": "^16.4.0",
+    "jsdom": "^16.6.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "netmask": "^2.0.1",
