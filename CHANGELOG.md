@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 4.5.1
 
 ### Added
+- Multi-branch audit with notification on slack (#282)
 - Check date of file on storage before publish
+
+### Changed
+- Update CI VAR(s) and steps
+- Changed time window for executing statistic's CF (#284)
+- Update pom and remove spring-cloud-gcp-starter-secretmanager
+- Update jsdom
+
+### Fixed
+- Fix vulnerabilities
+- Fix for merge to master
 
 ## 4.5.0
 
