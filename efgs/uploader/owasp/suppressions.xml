@@ -5,10 +5,6 @@
         <cve>CVE-2018-1258</cve>
     </suppress>
     <suppress>
-        <packageUrl regex="true">^pkg:maven/com\.google\.cloud/google\-cloud\-logging\-logback.*$</packageUrl>
-        <cve>CVE-2017-5929</cve>
-    </suppress>
-    <suppress>
         <packageUrl regex="true">^pkg:maven/io\.opencensus/opencensus\-contrib\-grpc\-util@.*$</packageUrl>
         <cve>CVE-2017-8359</cve>
         <cve>CVE-2020-7768</cve>
@@ -38,6 +34,7 @@
         <cve>CVE-2021-25122</cve>
         <cve>CVE-2021-25329</cve>
         <cve>CVE-2020-9484</cve>
+        <cve>CVE-2021-33037</cve>
     </suppress>
     <suppress>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket.*$</packageUrl>
@@ -47,6 +44,7 @@
         <cve>CVE-2021-25122</cve>
         <cve>CVE-2021-25329</cve>
         <cve>CVE-2020-9484</cve>
+        <cve>CVE-2021-33037</cve>
     </suppress>
     <suppress>
         <packageUrl regex="true">^pkg:maven/io\.netty/netty\-transport.*$</packageUrl>
@@ -77,5 +75,20 @@
         <packageUrl regex="true">^pkg:maven/io\.netty/netty\-resolver.*$</packageUrl>
         <cve>CVE-2021-21295</cve>
         <cve>CVE-2021-21409</cve>
+    </suppress>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback\.contrib/logback\-json\-core.*$</packageUrl>
+        <cve>CVE-2017-5929</cve>
+    </suppress>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback\.contrib/logback\-json\-classic.*$</packageUrl>
+        <cve>CVE-2017-5929</cve>
+    </suppress>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-compress.*$</packageUrl>
+        <cve>CVE-2021-35517</cve>
+        <cve>CVE-2021-35516</cve>
+        <cve>CVE-2021-35515</cve>
+        <cve>CVE-2021-36090</cve>
     </suppress>
 </suppressions>

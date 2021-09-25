@@ -1,6 +1,6 @@
 ---
 
-name: build and deploy
+name: Build and Deploy
 on:
   release:
     types:
@@ -54,7 +54,7 @@ jobs:
           echo "PUSH_MODE=true" >> $GITHUB_ENV
 
   deploy-efgs-downloader:
-    name: Deploy Efgs Downloader
+    name: Build&Deploy Efgs Downloader
     needs: Setup
     runs-on: ubuntu-latest
     defaults:
@@ -127,13 +127,14 @@ jobs:
              --allow-unauthenticated \
              --region $REGION \
              --timeout=540s \
-             --set-env-vars EFGS_MESSAGE_PROJECT_ID=$PROJECT_ID,STACKDRIVER_LOG_NAME=EfgsDiagnosisKeysDownloader,EFGS_MESSAGE_TOPIC_ID=firebase-subscription-uploadDiagnosisKeysSubscriber-$REGION,EFGS_API=$EFGS_URL
+             --set-env-vars EFGS_PROJECT_ID=$PROJECT_ID,EFGS_MESSAGE_PROJECT_ID=$PROJECT_ID,STACKDRIVER_LOG_NAME=EfgsDiagnosisKeysDownloader,EFGS_MESSAGE_TOPIC_ID=firebase-subscription-uploadDiagnosisKeysSubscriber-$REGION,EFGS_API=$EFGS_URL
         if: ${{ needs.Setup.outputs.ENVIRONMENT }}
 
   test-efgs-uploader:
     name: Test Efgs Uploader
     runs-on: ubuntu-latest
     needs: Setup
+    if: ${{ needs.Setup.outputs.ENVIRONMENT }}
     defaults:
       run:
         working-directory: ./efgs/uploader
@@ -195,9 +196,9 @@ jobs:
           path: efgs/uploader/efgs-uploader-tests-result.txt
 
   deploy-efgs-uploader:
-    name: Deploy Efgs Uploader
+    name: Build&Deploy Efgs Uploader
     runs-on: ubuntu-latest
-    needs: [Setup, test-efgs-uploader]
+    needs: [Setup]
     defaults:
       run:
         working-directory: ./efgs/uploader
@@ -302,7 +303,7 @@ jobs:
       - run: npm update
       - run: npm install
       - run: npm run lint
-      - run: npm audit --audit-level moderate
+      - run: npm audit --production --audit-level moderate
       - run: npm test > nodejs-tests-result.txt
         env:
           CLOUD_RUNTIME_CONFIG: '{"config":{"region":"europe-west1"}}'
@@ -313,7 +314,7 @@ jobs:
           path: functions/nodejs-tests-result.txt
 
   Deplot_TS:
-    name: Deploy TS Functions
+    name: Build&Deploy TS Functions
     needs: [Setup,Lint_TS,deploy-efgs-uploader,deploy-efgs-downloader]
     runs-on: ubuntu-latest
     if: ${{ needs.Setup.outputs.ENVIRONMENT }}
@@ -355,7 +356,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - run: npm --prefix functions install
-      - run: npm --prefix functions audit --audit-level moderate
+      - run: npm --prefix functions audit --production --audit-level moderate
 
 
       - run: echo "FUNCTIONS=$(cat functions/src/index.ts | sed -n '/exports/,/cloudFunctions/p' | sed -e 's/exports\(.*\)cloudFunctions/\1/' | sed 's/ = ..*;//' | sed 's/\./functions:/g' |tr '\n' ',')" >> $GITHUB_ENV
@@ -380,6 +381,7 @@ jobs:
     if: always()
     name: Notify
     needs:
+      - Deplot_TS
       - Lint_TS
       - deploy-efgs-uploader
       - test-efgs-uploader
@@ -461,7 +463,7 @@ jobs:
                 if (j.status != "completed") {
                     continue
                 }
-                if (j.conclusion != "success") {
+                if (!(j.conclusion == "skipped" || j.conclusion == "success")) {
                   is_wf_success = false
                 }
                 if (j.conclusion == "failure") {

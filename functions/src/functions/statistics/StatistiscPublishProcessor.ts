@@ -1,7 +1,7 @@
 import {getMinimumTimeToExecute} from "./StatistiscHelper";
 import {statisticsRepository} from "./services";
 import {cdnFileRepository} from "../../services";
-import {addDays, getTimestamp} from "../../utils/dateUtils";
+import {addDays, getTimestamp, isToday} from "../../utils/dateUtils";
 import config from '../../config'
 import Timestamps from "./Timestamps";
 
@@ -45,11 +45,19 @@ const publishStatistics = async () => {
     await cdnFileRepository.saveFile(statistic.covidInfo, config.statistics.files.covidInfo);
     await cdnFileRepository.saveFile(timestamps, config.statistics.files.timestamps);
 
-    statistic.published = true;
+    const createdDateOfFile = await cdnFileRepository.readFileCreatedDate(config.statistics.files.timestamps);
 
-    await statisticsRepository.save(statistic);
+    if (isToday(createdDateOfFile)) {
 
-    log(`finished publish timestamps data for date: ${now}, next update ${new Date(nextUpdate * 1000)}`);
+        statistic.published = true;
+
+        await statisticsRepository.save(statistic);
+
+        log(`finished publish timestamps data for date: ${now}, next update ${new Date(nextUpdate * 1000)}`);
+    } else {
+
+        log(`Files were not saved in storage, current date of ${config.statistics.files.timestamps} file is ${createdDateOfFile}`);
+    }
 };
 
 export default publishStatistics;
