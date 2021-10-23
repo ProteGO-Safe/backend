@@ -14,18 +14,14 @@
   "engines": {
     "node": "12"
   },
-  "resolutions": {
-    "node-forge": "0.10.0",
-    "json-bigint": "1.0.0"
-  },
   "main": "lib/src/index.js",
   "dependencies": {
     "@google-cloud/logging-bunyan": "^3.0.1",
     "@google-cloud/pubsub": "2.8.0",
     "@google-cloud/secret-manager": "^3.2.3",
     "@google-cloud/storage": "^5.7.0",
-    "@opencensus/core": "0.0.22",
-    "@opencensus/exporter-stackdriver": "0.0.22",
+    "@opencensus/core": "^0.1.0",
+    "@opencensus/exporter-stackdriver": "^0.1.0",
     "axios": "^0.21.2",
     "bignumber.js": "^9.0.1",
     "bunyan": "^1.8.15",
@@ -41,7 +37,7 @@
     "moment": "^2.29.1",
     "netmask": "^2.0.1",
     "node-forge": "0.10.0",
-    "ssh2": "^0.8.9",
+    "ssh2": "^1.5.0",
     "ssh2-streams": "^0.4.10",
     "superagent": "^6.1.0",
     "uuid": "^8.3.2"
