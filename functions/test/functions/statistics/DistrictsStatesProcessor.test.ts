@@ -1,6 +1,7 @@
 import {expect} from "chai";
 import fetchDistrictsStates from "../../../src/functions/statistics/DistrictsStatesProcessor";
 import {dummyStatistic} from "./dummyData";
+import File from "../../../src/functions/statistics/File";
 
 const districts = [
     {
@@ -32,7 +33,9 @@ describe('DistrictsStatesProcessor tests', () => {
             'dolnośląskie;dzierżoniowski;t0202;2\n' +
             'dolnośląskie;głogowski;t0203;2';
 
-        const districtsStates = await fetchDistrictsStates(districts, districtStatesFileContent, dummyStatistic);
+        const districtsStates = await fetchDistrictsStates(districts,
+            new File("", districtStatesFileContent),
+            dummyStatistic);
 
         expect(districtsStates).to.be.eql([
             {

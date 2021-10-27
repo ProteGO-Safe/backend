@@ -129,3 +129,6 @@ Please check the following: [CERTIFICATIONS.md](./doc/certifications.md)
 TIPS:
 - Function name you can get from `src/index.ts` file. For example: `exports.generateCode = cloudFunctions.https(generateCode);` `generateCode` is function name. 
 - You can deploy many functions at once time. You must separate function names with `,`. Example: `firebase deploy --only functions:functionName1,functionName2` 
+
+## Running tests locally ##
+1) set env CLOUD_RUNTIME_CONFIG: '{"config":{"region":"europe-west1"}}', for example in the ~/.profile add `CLOUD_RUNTIME_CONFIG="{\"config\":{\"region\":\"europe-west1\"}}"; export CLOUD_RUNTIME_CONFIG`

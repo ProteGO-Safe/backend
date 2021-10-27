@@ -1,20 +1,19 @@
-import {fetchIndexByTitle, parseFile} from "./StatistiscHelper";
 import DistrictState from "./DistrictState";
 import District from "./repository/District";
 import Statistic from "./repository/Statistic";
+import File from "./File"
 
 const TITLE_EXTERNAL_ID = 'teryt';
 const TITLE_STATE = 'strefa';
 
-const fetchDistrictsStates = async (
+const fetchDistrictsStates = (
     districts: Array<District> | [],
-    districtStatesFileContent: string | null,
+    districtStatesFile: File | null,
     lastStatistic: Statistic | null
-): Promise<Array<DistrictState>> => {
+): Array<DistrictState> => {
 
-    if (districtStatesFileContent) {
-        const parsed = await parseFile(districtStatesFileContent);
-        return createDistrictsStates(districts, parsed);
+    if (districtStatesFile) {
+        return createDistrictsStates(districts, districtStatesFile);
     }
 
     return createDistrictsStatesFromStatistics(districts, lastStatistic!);
@@ -22,21 +21,17 @@ const fetchDistrictsStates = async (
 
 const createDistrictsStates = (
     allDistricts: Array<District>,
-    districtsStates: Array<Array<string>>,
+    districtStatesFile: File,
 ): Array<DistrictState> => {
 
-    const districtsExternalIdIndex = fetchIndexByTitle(districtsStates[0], TITLE_EXTERNAL_ID);
-    const districtsStateIndex = fetchIndexByTitle(districtsStates[0], TITLE_STATE);
-
-    return districtsStates
-        .filter((value, index) => index !== 0)
-        .map(value => {
-            const id = allDistricts.find(value1 => value1.externalId === value[districtsExternalIdIndex])!.id;
-            return {
-                districtId: id,
-                state: parseInt(value[districtsStateIndex])
-            }
-        });
+    return districtStatesFile.listIdAndValue(TITLE_EXTERNAL_ID, TITLE_STATE, (externalId: string, value: number) => {
+        // tslint:disable-next-line:no-shadowed-variable
+        const id = allDistricts.find(value => value.externalId === externalId)!.id;
+        return {
+            districtId: id,
+            state: value
+        }
+    })
 };
 
 const createDistrictsStatesFromStatistics = (

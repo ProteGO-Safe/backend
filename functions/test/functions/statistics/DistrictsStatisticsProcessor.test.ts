@@ -1,5 +1,6 @@
 import {expect} from "chai";
 import fetchDistrictsStatistics from "../../../src/functions/statistics/DistrictStatisticsProcessor";
+import File from "../../../src/functions/statistics/File";
 
 describe('DistrictStatisticsProcessor tests', () => {
     it('should fetch districts statistics', async () => {
@@ -46,7 +47,10 @@ describe('DistrictStatisticsProcessor tests', () => {
                 name: "milicki"
             }];
 
-        const districtsStatistics = await fetchDistrictsStatistics(districts, rcbDistrictsFileContent, rcbDistrictVaccinationsFileContent);
+        const districtsStatistics = await fetchDistrictsStatistics(districts,
+            new File("", rcbDistrictsFileContent),
+            new File("", rcbDistrictVaccinationsFileContent)
+            );
 
         expect(districtsStatistics).to.be.eql([
             {
