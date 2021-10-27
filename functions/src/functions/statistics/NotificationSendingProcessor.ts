@@ -1,6 +1,4 @@
-import {ObjectMetadata} from "firebase-functions/lib/providers/storage";
 import {log} from "firebase-functions/lib/logger";
-import config from "../../config"
 import {dateToFormattedDayMonth} from "../../utils/dateUtils";
 import {Platform} from "../platform";
 import {statisticsRepository} from "./services";
@@ -8,24 +6,21 @@ import {secretManager} from "../../services";
 import sendNotification from "../notification/sendNotification";
 import Statistic from "./repository/Statistic";
 import {notificationRepository} from "../notification/services";
+import {NotificationType} from "../notification/notificationType";
+import errorLogger from "../logger/errorLogger";
+import errorEntryLabels from "../logger/errorEntryLabels";
+import {Color} from "../colors";
+import SlackMessage from "../slack/SlackMessage";
+import sendSlackMessage from "../slack/SlackMessageSender";
 
-const sendStatisticNotification = async (metadata: ObjectMetadata) => {
+const statisticNotificationsType = {
+    [Platform.ANDROID]: NotificationType.STATISTICS_ANDROID,
+    [Platform.IOS]: NotificationType.STATISTICS_IOS,
+};
 
-    const fileName = metadata.name!;
+const sendStatisticNotification = async () => {
+
     const now = new Date();
-
-    if (fileName && (fileName !== config.statistics.files.timestamps)) {
-        return;
-    }
-
-    const existingNotification = await notificationRepository.getByTheSameDate(now);
-
-    if (existingNotification) {
-        log(`notification already exists`);
-        return;
-    }
-
-    log(`Start sending statistic notification`);
 
     const statistic = await statisticsRepository.getByTheSameDate(now);
 
@@ -34,12 +29,47 @@ const sendStatisticNotification = async (metadata: ObjectMetadata) => {
         return;
     }
 
-    const androidPayload = await getPayload(statistic, Platform.ANDROID);
-    const iosPayload = await getPayload(statistic, Platform.IOS);
+    try {
+        await processStatisticNotification(statistic, now, Platform.ANDROID);
+    } catch (e) {
+        await processError(e, Platform.ANDROID)
+    }
 
-    await sendNotification({android: androidPayload, ios: iosPayload});
+    try {
+        await processStatisticNotification(statistic, now, Platform.IOS);
+    } catch (e) {
+        await processError(e, Platform.ANDROID)
+    }
 
-    log(`Finish sending statistic notification`);
+};
+
+const processError = async (e: any, platform: Platform) => {
+    errorLogger.error(errorEntryLabels(e), e);
+    const slackMessage = {title: `failed sending push to ${platform} :x:`, color: Color.RED, detailsItems: []} as SlackMessage;
+    await sendSlackMessage(slackMessage)
+};
+
+const processStatisticNotification = async (statistic: Statistic, date: Date, platform: Platform) => {
+
+    const notificationType = statisticNotificationsType[platform];
+
+    const existingNotification = await notificationRepository.getByDateAndType(date, notificationType);
+
+    if (existingNotification) {
+        log(`${platform} notification already exists`);
+        return;
+    }
+
+    log(`Start sending statistic ${platform} notification`);
+
+    const payload = await getPayload(statistic, platform);
+
+    await sendNotification(payload, notificationType);
+
+    log(`Finish sending ${platform} android notification`);
+
+    const slackMessage = {title: `success sending push to ${platform} :x:`, color: Color.GREEN, detailsItems: []} as SlackMessage;
+    await sendSlackMessage(slackMessage)
 };
 
 const fetchTopic = async (platform: Platform) => {

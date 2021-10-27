@@ -5,24 +5,38 @@ import sendSlackMessage from "../slack/SlackMessageSender";
 import SlackMessage from "../slack/SlackMessage";
 import {Color} from "../colors";
 import SlackMessageDetailsItem from "../slack/SlackMessageDetailsItem";
+import Statistic from "./repository/Statistic";
+import Notification from "../notification/Notification";
 
 const logStatisticsPublishingStatus = async () => {
 
     const now = new Date();
 
-    const notification = await notificationRepository.getByDateAndType(now, NotificationType.STATISTICS);
+    const iosNotification = await notificationRepository.getByDateAndType(now, NotificationType.STATISTICS_IOS);
+    const androidNotification = await notificationRepository.getByDateAndType(now, NotificationType.STATISTICS_ANDROID);
 
-    if (notification && notification.sent) {
-        await processSuccess(now);
+    const statistic = await statisticsRepository.getByTheSameDate(now);
+
+    if (!statistic) {
+        const slackMessage = {title: "there is no statistic to send push :x:", color: Color.RED, detailsItems: []} as SlackMessage;
+        await sendSlackMessage(slackMessage);
         return;
     }
 
-    await processFailed();
+    await processNotification(iosNotification, statistic, NotificationType.STATISTICS_IOS);
+    await processNotification(androidNotification, statistic, NotificationType.STATISTICS_ANDROID);
 };
 
-const processSuccess = async (date: Date) => {
-    const statistic = await statisticsRepository.getByTheSameDate(date);
-    const {dashboard} = statistic!;
+const processNotification = async (notification: Notification | null, statistic: Statistic, notificationType: NotificationType) => {
+    if (notification && notification.sent) {
+        await processSuccess(statistic, notificationType);
+    } else {
+        await processFailed(notificationType);
+    }
+};
+
+const processSuccess = async (statistic: Statistic, notificationType: NotificationType) => {
+    const {dashboard} = statistic;
     const detailsItems = [
         {title: "newVaccinations", value: String(dashboard.newVaccinations)},
         {title: "newVaccinationsDose1", value: String(dashboard.newVaccinationsDose1)},
@@ -31,12 +45,12 @@ const processSuccess = async (date: Date) => {
         {title: "newDeaths", value: String(dashboard.newDeaths)},
         {title: "newRecovered", value: String(dashboard.newRecovered)}
         ] as SlackMessageDetailsItem[];
-    const slackMessage = {title: "success sending push :heavy_check_mark:", color: Color.GREEN, detailsItems} as SlackMessage;
+    const slackMessage = {title: `success sending push ${notificationType} :heavy_check_mark:`, color: Color.GREEN, detailsItems} as SlackMessage;
     await sendSlackMessage(slackMessage)
 };
 
-const processFailed = async () => {
-    const slackMessage = {title: "failed sending push :x:", color: Color.RED, detailsItems: []} as SlackMessage;
+const processFailed = async (notificationType: NotificationType) => {
+    const slackMessage = {title: `failed sending push ${notificationType} :x:`, color: Color.RED, detailsItems: []} as SlackMessage;
     await sendSlackMessage(slackMessage)
 };
 
