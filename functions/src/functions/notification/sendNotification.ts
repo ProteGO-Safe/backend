@@ -3,18 +3,17 @@ import config from "../../config";
 import * as admin from "firebase-admin";
 import errorLogger from "../logger/errorLogger";
 import errorEntryLabels from "../logger/errorEntryLabels";
-import NotificationPayload from "./NotificationPayload";
 import {notificationRepository} from "./services";
 import createNotification from "./NotificationFactory";
 import {NotificationType} from "./notificationType";
 
 const {log} = require("firebase-functions/lib/logger");
 
-const sendNotification = async (notificationPayload: NotificationPayload) => {
+const sendNotification = async (payload: any, notificationType: NotificationType) => {
 
     log(`Start sending notification`);
 
-    const notification = createNotification(NotificationType.STATISTICS);
+    const notification = createNotification(notificationType);
 
     const token = await admin
         .credential
@@ -22,8 +21,7 @@ const sendNotification = async (notificationPayload: NotificationPayload) => {
         .getAccessToken()
         .then((res) => res["access_token"]);
 
-    await makeRequest(token, notificationPayload.android);
-    await makeRequest(token, notificationPayload.ios);
+    await makeRequest(token, payload);
 
     notification.sent = true;
     await notificationRepository.save(notification);
