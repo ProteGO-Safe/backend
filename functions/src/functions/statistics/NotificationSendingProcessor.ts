@@ -12,6 +12,7 @@ import errorEntryLabels from "../logger/errorEntryLabels";
 import {Color} from "../colors";
 import SlackMessage from "../slack/SlackMessage";
 import sendSlackMessage from "../slack/SlackMessageSender";
+import {getMinimumTimeToExecute} from "./StatistiscHelper";
 
 const statisticNotificationsType = {
     [Platform.ANDROID]: NotificationType.STATISTICS_ANDROID,
@@ -22,10 +23,19 @@ const sendStatisticNotification = async () => {
 
     const now = new Date();
 
+    if (now < getMinimumTimeToExecute()) {
+        return
+    }
+
     const statistic = await statisticsRepository.getByTheSameDate(now);
 
     if (!statistic) {
         log(`no statistics`);
+        return;
+    }
+
+    if (!statistic.published) {
+        log(`statistic wasn't published yet`);
         return;
     }
 
@@ -68,7 +78,7 @@ const processStatisticNotification = async (statistic: Statistic, date: Date, pl
 
     log(`Finish sending ${platform} android notification`);
 
-    const slackMessage = {title: `success sending push to ${platform} :x:`, color: Color.GREEN, detailsItems: []} as SlackMessage;
+    const slackMessage = {title: `success sending push to ${platform} :heavy_check_mark:`, color: Color.GREEN, detailsItems: []} as SlackMessage;
     await sendSlackMessage(slackMessage)
 };
 
