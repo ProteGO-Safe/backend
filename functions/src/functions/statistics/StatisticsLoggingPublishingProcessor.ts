@@ -18,7 +18,7 @@ const logStatisticsPublishingStatus = async () => {
     const statistic = await statisticsRepository.getByTheSameDate(now);
 
     if (!statistic) {
-        const slackMessage = {title: "there is no statistic to send push :x:", color: Color.RED, detailsItems: []} as SlackMessage;
+        const slackMessage = {title: "there is no statistic to send push :x:"} as SlackMessage;
         await sendSlackMessage(slackMessage);
         return;
     }
@@ -50,7 +50,7 @@ const processSuccess = async (statistic: Statistic, notificationType: Notificati
 };
 
 const processFailed = async (notificationType: NotificationType) => {
-    const slackMessage = {title: `failed sending push ${notificationType} :x:`, color: Color.RED, detailsItems: []} as SlackMessage;
+    const slackMessage = {title: `failed sending push ${notificationType} :x:`} as SlackMessage;
     await sendSlackMessage(slackMessage)
 };
 

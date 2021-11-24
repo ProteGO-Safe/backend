@@ -14,7 +14,6 @@ import fetchDailyData from "./DailyDataFetcher";
 import createDistrictsJson from "./jsons/DistrictsJsonFactory";
 import fetchVoivodeshipsStatistics from "./VoivodeshipStatisticsProcessor";
 import NumberFormatError from "./errors/NumberFormatError";
-import {Color} from "../colors";
 import SlackMessage from "../slack/SlackMessage";
 import sendSlackMessage from "../slack/SlackMessageSender";
 import File from "./File";
@@ -70,7 +69,7 @@ const processFetchingStatistics = async () => {
             log(e.message);
         }
         else if (e instanceof NumberFormatError) {
-            const slackMessage = {title: e.message, color: Color.RED, detailsItems: []} as SlackMessage;
+            const slackMessage = {title: e.message} as SlackMessage;
             await sendSlackMessage(slackMessage);
             log(e.message);
         }

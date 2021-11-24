@@ -9,7 +9,6 @@ import {notificationRepository} from "../notification/services";
 import {NotificationType} from "../notification/notificationType";
 import errorLogger from "../logger/errorLogger";
 import errorEntryLabels from "../logger/errorEntryLabels";
-import {Color} from "../colors";
 import SlackMessage from "../slack/SlackMessage";
 import sendSlackMessage from "../slack/SlackMessageSender";
 import {getMinimumTimeToExecute} from "./StatistiscHelper";
@@ -55,7 +54,7 @@ const sendStatisticNotification = async () => {
 
 const processError = async (e: any, platform: Platform) => {
     errorLogger.error(errorEntryLabels(e), e);
-    const slackMessage = {title: `failed sending push to ${platform} :x:`, color: Color.RED, detailsItems: []} as SlackMessage;
+    const slackMessage = {title: `failed sending push to ${platform} :x:`} as SlackMessage;
     await sendSlackMessage(slackMessage)
 };
 
@@ -78,7 +77,7 @@ const processStatisticNotification = async (statistic: Statistic, date: Date, pl
 
     log(`Finish sending ${platform} android notification`);
 
-    const slackMessage = {title: `success sending push to ${platform} :heavy_check_mark:`, color: Color.GREEN, detailsItems: []} as SlackMessage;
+    const slackMessage = {title: `success sending push to ${platform} :heavy_check_mark:`} as SlackMessage;
     await sendSlackMessage(slackMessage)
 };
 
