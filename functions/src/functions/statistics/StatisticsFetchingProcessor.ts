@@ -13,6 +13,10 @@ import {notNull} from "../../utils/AssertHelper";
 import fetchDailyData from "./DailyDataFetcher";
 import createDistrictsJson from "./jsons/DistrictsJsonFactory";
 import fetchVoivodeshipsStatistics from "./VoivodeshipStatisticsProcessor";
+import NumberFormatError from "./errors/NumberFormatError";
+import SlackMessage from "../slack/SlackMessage";
+import sendSlackMessage from "../slack/SlackMessageSender";
+import File from "./File";
 
 const {log} = require("firebase-functions/lib/logger");
 
@@ -37,20 +41,20 @@ const processFetchingStatistics = async () => {
     notNull(lastStatistic);
 
     try {
-        const rcbDistrictsFileContent = await statisticsFileReader.readRcbDistrictsFileContentByDate(now);
-        const rcbDistrictVaccinationsFileContent = await statisticsFileReader.readRcbDistrictVaccinationsFileContentByDate(now);
-        const rcbVoivodeshipsFileContent = await statisticsFileReader.readRcbVoivodeshipsFileContentByDate(now);
-        const rcbVoivodeshipVaccinationsFileContent = await statisticsFileReader.readRcbVoivodeshipsVaccinationsFileContentByDate(now);
-        const rcbGlobalFileContent = await statisticsFileReader.readRcbGlobalFileContentByDate(now);
-        const rcbGlobalVaccinationsFileContent = await statisticsFileReader.readRcbGlobalVaccinationsFileContentByDate(now);
-        const rcbGlobalVaccinationsOtherFileContent = await statisticsFileReader.readRcbGlobalVaccinationsOtherFileContentByDate(now);
-        const districtStatesFileContent = await statisticsFileReader.readDistrictStatesFileContentByDate(now);
+        const rcbDistrictsFile: File = await statisticsFileReader.readRcbDistrictsFileByDate(now);
+        const rcbDistrictVaccinationsFile: File = await statisticsFileReader.readRcbDistrictVaccinationsFileByDate(now);
+        const rcbVoivodeshipsFile: File = await statisticsFileReader.readRcbVoivodeshipsFileByDate(now);
+        const rcbVoivodeshipVaccinationsFile: File = await statisticsFileReader.readRcbVoivodeshipsVaccinationsFileByDate(now);
+        const rcbGlobalFile: File = await statisticsFileReader.readRcbGlobalFileByDate(now);
+        const rcbGlobalVaccinationsFile: File = await statisticsFileReader.readRcbGlobalVaccinationsFileByDate(now);
+        const rcbGlobalVaccinationsOtherFile: File = await statisticsFileReader.readRcbGlobalVaccinationsOtherFileByDate(now);
+        const districtStatesFile: File | null = await statisticsFileReader.readDistrictStatesFileByDate(now);
 
-        const districtsStatistics = await fetchDistrictsStatistics(districts, rcbDistrictsFileContent, rcbDistrictVaccinationsFileContent);
-        const voivodeshipsStatistics = await fetchVoivodeshipsStatistics(voivodeships, rcbVoivodeshipsFileContent, rcbVoivodeshipVaccinationsFileContent);
-        const globalStatistics = await fetchGlobalStatistics(rcbGlobalFileContent, rcbGlobalVaccinationsFileContent, rcbGlobalVaccinationsOtherFileContent);
-        const districtStates = await fetchDistrictsStates(districts, districtStatesFileContent, lastStatistic!);
-        const dailyData = await fetchDailyData(rcbDistrictsFileContent, rcbGlobalVaccinationsFileContent);
+        const districtsStatistics = fetchDistrictsStatistics(districts, rcbDistrictsFile, rcbDistrictVaccinationsFile);
+        const voivodeshipsStatistics = fetchVoivodeshipsStatistics(voivodeships, rcbVoivodeshipsFile, rcbVoivodeshipVaccinationsFile);
+        const globalStatistics = fetchGlobalStatistics(rcbGlobalFile, rcbGlobalVaccinationsFile, rcbGlobalVaccinationsOtherFile);
+        const districtStates = fetchDistrictsStates(districts, districtStatesFile, lastStatistic!);
+        const dailyData = fetchDailyData(rcbDistrictsFile, rcbGlobalVaccinationsFile);
 
         const covidInfoJson = createCovidInfo(now, dailyData, globalStatistics, voivodeships, districts, districtStates, lastStatistic!);
         const dashboardJson = createDashboardJson(now, dailyData, globalStatistics);
@@ -63,7 +67,13 @@ const processFetchingStatistics = async () => {
     } catch (e) {
         if(e instanceof FileNotFoundError) {
             log(e.message);
-        } else {
+        }
+        else if (e instanceof NumberFormatError) {
+            const slackMessage = {title: e.message} as SlackMessage;
+            await sendSlackMessage(slackMessage);
+            log(e.message);
+        }
+        else {
             logError('Error during create statistics');
             throw e;
         }

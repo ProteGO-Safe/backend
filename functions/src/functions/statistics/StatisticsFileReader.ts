@@ -5,6 +5,7 @@ import config from "../../config";
 import SecretManager from "../../utils/SecretManager";
 import {getJoinedDateAsString} from "../../utils/dateUtils";
 import FileNotFoundError from "./errors/FileNotFoundError";
+import File from "./File";
 import iconvlite = require('iconv-lite');
 
 class StatisticsFileReader {
@@ -13,29 +14,29 @@ class StatisticsFileReader {
     constructor(private readonly secretManager: SecretManager) {
     }
 
-    async readRcbDistrictsFileContentByDate(date: Date): Promise<string> {
+    async readRcbDistrictsFileByDate(date: Date): Promise<File> {
         return await this.readFile('_rap_rcb_pow_eksport.csv', date, config.statistics.sshDirName);
     }
-    async readRcbVoivodeshipsFileContentByDate(date: Date): Promise<string> {
+    async readRcbVoivodeshipsFileByDate(date: Date): Promise<File> {
         return await this.readFile('_rap_rcb_woj_eksport.csv', date, config.statistics.sshDirName);
     }
 
-    async readRcbDistrictVaccinationsFileContentByDate(date: Date): Promise<string> {
+    async readRcbDistrictVaccinationsFileByDate(date: Date): Promise<File> {
         return await this.readFile('_rap_rcb_pow_szczepienia.csv', date, config.statistics.sshDirVaccinationsName);
     }
-    async readRcbVoivodeshipsVaccinationsFileContentByDate(date: Date): Promise<string> {
+    async readRcbVoivodeshipsVaccinationsFileByDate(date: Date): Promise<File> {
         return await this.readFile('_rap_rcb_woj_szczepienia.csv', date, config.statistics.sshDirVaccinationsName);
     }
 
-    async readRcbGlobalFileContentByDate(date: Date): Promise<string> {
+    async readRcbGlobalFileByDate(date: Date): Promise<File> {
         return await this.readFile('_rap_rcb_global_eksport.csv', date, config.statistics.sshDirName);
     }
 
-    async readRcbGlobalVaccinationsFileContentByDate(date: Date): Promise<string> {
+    async readRcbGlobalVaccinationsFileByDate(date: Date): Promise<File> {
         return await this.readFile('_rap_rcb_global_szczepienia.csv', date, config.statistics.sshDirVaccinationsName);
     }
 
-    async readDistrictStatesFileContentByDate(date: Date): Promise<string | null> {
+    async readDistrictStatesFileByDate(date: Date): Promise<File | null> {
         try {
             return await this.readFile('_districts_states.csv', date, config.statistics.sshDirName);
         } catch (e) {
@@ -47,11 +48,11 @@ class StatisticsFileReader {
         }
     }
 
-    async readRcbGlobalVaccinationsOtherFileContentByDate(date: Date): Promise<string> {
+    async readRcbGlobalVaccinationsOtherFileByDate(date: Date): Promise<File> {
         return await this.readFile('_rap_rcb_global_szczepienia_inne.csv', date, config.statistics.sshDirVaccinationsName);
     }
 
-    private async readFile(searchName: string, date: Date, dir: string): Promise<string> {
+    private async readFile(searchName: string, date: Date, dir: string): Promise<File> {
         const filesList = await this.readDir(dir);
 
         const dateAsString = getJoinedDateAsString(date);
@@ -70,7 +71,7 @@ class StatisticsFileReader {
         const fileContent = await this.readFileContent(`${dir}/${filename}`);
         const decoded = iconvlite.decode(fileContent, 'win1250');
         log(`for searchName: ${searchName} and date: ${date} founded file with name ${filename} and content: ${decoded}`);
-        return decoded;
+        return new File(filename, decoded);
     }
 
     private async resolveSftpClient(): Promise<SFTPWrapper> {

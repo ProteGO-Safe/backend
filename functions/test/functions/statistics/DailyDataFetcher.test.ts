@@ -1,5 +1,6 @@
 import {expect} from "chai";
 import fetchDailyData from "../../../src/functions/statistics/DailyDataFetcher";
+import File from "../../../src/functions/statistics/File";
 
 describe('DailyDataFetcher tests', () => {
     it('should fetch daily data', async () => {
@@ -13,7 +14,8 @@ describe('DailyDataFetcher tests', () => {
         const rcbGlobalVaccinationsFileContent = "liczba_szczepien_ogolem;liczba_szczepien_dziennie;dawka_2_ogolem;dawka_2_dziennie;szczepienia_plec_nieustalono;szczepienia_kobiety;szczepienia_mezczyzni;szczepienia0_17;szczepienia18_30;szczepienia31_40;szczepienia41_50;szczepienia51_60;szczepienia61_70;szczepienia71_75;szczepienia75_;szczepienia_wiek_nieustalono;dawka_1_suma\n" +
             "1993739;105253;580607;53712;3245;1369401;621093;0;201447;227003;313021;348275;228638;118337;553004;4014;1413132\n";
 
-        const dailyData = await fetchDailyData(rcbDistrictsFileContent, rcbGlobalVaccinationsFileContent);
+        const dailyData = await fetchDailyData(new File("", rcbDistrictsFileContent),
+            new File("", rcbGlobalVaccinationsFileContent));
 
         expect(dailyData).to.be.eql({
             newCases: 13574,

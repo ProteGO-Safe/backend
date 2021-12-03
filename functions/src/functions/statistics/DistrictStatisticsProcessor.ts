@@ -1,6 +1,6 @@
 import District from "./repository/District";
 import DistrictStatistics from "./DistrictStatistics";
-import {fetchIndexByTitle, parseFile} from "./StatistiscHelper";
+import File from "./File"
 
 const TITLE_EXTERNAL_ID = 'teryt';
 const TITLE_DAILY_CASES = 'liczba_przypadkow';
@@ -14,58 +14,42 @@ const TITLE_DAILY_VACCINATIONS_DOSE_2 = 'dawka_2_dziennie';
 const TITLE_TOTAL_VACCINATIONS = 'liczba_szczepien_ogolnie';
 const TITLE_TOTAL_VACCINATIONS_DOSE_2 = 'dawka_2_ogolem';
 
-const fetchDistrictsStatistics = async (
+const fetchDistrictsStatistics = (
     districts: District[],
-    rcbDistrictsFileContent: string,
-    rcbDistrictVaccinationsFileContent: string
-): Promise<DistrictStatistics[]> => {
+    rcbDistrictsFile: File,
+    rcbDistrictVaccinationsFile: File
+): DistrictStatistics[] => {
 
-    const rcbDistrictsStats = await parseFile(rcbDistrictsFileContent);
-    const rcbDistrictVaccinationsStats = await parseFile(rcbDistrictVaccinationsFileContent);
-
-    return (districts as any[]).map((district: District) => createDistrictStatistics(district, rcbDistrictsStats, rcbDistrictVaccinationsStats));
+    return (districts as any[]).map((district: District) => createDistrictStatistics(district, rcbDistrictsFile, rcbDistrictVaccinationsFile));
 };
 
 const createDistrictStatistics = (
     district: District,
-    rcbDistrictsStats: Array<Array<string>>,
-    rcbDistrictVaccinationsStats: Array<Array<string>>,
+    rcbDistrictsFile: File,
+    rcbDistrictVaccinationsFile: File,
 ): DistrictStatistics => {
 
-    const districtsExternalIdIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_EXTERNAL_ID);
-    const districtsDailyCasesIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_CASES);
-    const districtsDailyDeathsIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_DEATHS);
-    const districtsDailyRecoveredIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_RECOVERED);
-    const districtsDailyDeathsWithComorbiditiesIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_DEATHS_WITH_COMORBIDITIES);
-    const districtsDailyDeathsWithoutComorbiditiesIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_DEATHS_WITHOUT_COMORBIDITIES);
-    const districtsDailyTestsIndex = fetchIndexByTitle(rcbDistrictsStats[0], TITLE_DAILY_TESTS);
+    const distinctExternalId = district.externalId;
 
-    const vaccinationsExternalIdIndex = fetchIndexByTitle(rcbDistrictVaccinationsStats[0], TITLE_EXTERNAL_ID);
-    const vaccinationsDailyVaccinationsIndex = fetchIndexByTitle(rcbDistrictVaccinationsStats[0], TITLE_DAILY_VACCINATIONS);
-    const vaccinationsDailyVaccinationsDose2Index = fetchIndexByTitle(rcbDistrictVaccinationsStats[0], TITLE_DAILY_VACCINATIONS_DOSE_2);
-    const vaccinationsTotalVaccinationsIndex = fetchIndexByTitle(rcbDistrictVaccinationsStats[0], TITLE_TOTAL_VACCINATIONS);
-    const vaccinationsTotalVaccinationsDose2Index = fetchIndexByTitle(rcbDistrictVaccinationsStats[0], TITLE_TOTAL_VACCINATIONS_DOSE_2);
+    const newVaccinations = rcbDistrictVaccinationsFile.getValueById(TITLE_EXTERNAL_ID, distinctExternalId, TITLE_DAILY_VACCINATIONS);
+    const newVaccinationsDose2 = rcbDistrictVaccinationsFile.getValueById(TITLE_EXTERNAL_ID, distinctExternalId, TITLE_DAILY_VACCINATIONS_DOSE_2);
 
-    const rcbDistrictsStat = rcbDistrictsStats.find(value => value[districtsExternalIdIndex] === district.externalId);
-    const vaccinationsStat = rcbDistrictVaccinationsStats.find(value => value[vaccinationsExternalIdIndex] === district.externalId);
-
-    const newVaccinations = parseInt(vaccinationsStat![vaccinationsDailyVaccinationsIndex]);
-    const newVaccinationsDose2 = parseInt(vaccinationsStat![vaccinationsDailyVaccinationsDose2Index]);
     const newVaccinationsDose1 = newVaccinations - newVaccinationsDose2;
 
-    const totalVaccinations = parseInt(vaccinationsStat![vaccinationsTotalVaccinationsIndex]);
-    const totalVaccinationsDose2 = parseInt(vaccinationsStat![vaccinationsTotalVaccinationsDose2Index]);
+    const totalVaccinations = rcbDistrictVaccinationsFile.getValueById(TITLE_EXTERNAL_ID, distinctExternalId, TITLE_TOTAL_VACCINATIONS);
+    const totalVaccinationsDose2 = rcbDistrictVaccinationsFile.getValueById(TITLE_EXTERNAL_ID, distinctExternalId, TITLE_TOTAL_VACCINATIONS_DOSE_2);
+
     const totalVaccinationsDose1 = totalVaccinations - totalVaccinationsDose2;
 
     return {
         districtId: district.id,
         voivodeshipId: district.voivodeshipId,
-        newCases: parseInt(rcbDistrictsStat![districtsDailyCasesIndex]),
-        newDeaths: parseInt(rcbDistrictsStat![districtsDailyDeathsIndex]),
-        newRecovered: parseInt(rcbDistrictsStat![districtsDailyRecoveredIndex]),
-        newDeathsWithComorbidities: parseInt(rcbDistrictsStat![districtsDailyDeathsWithComorbiditiesIndex]),
-        newDeathsWithoutComorbidities: parseInt(rcbDistrictsStat![districtsDailyDeathsWithoutComorbiditiesIndex]),
-        newTests: parseInt(rcbDistrictsStat![districtsDailyTestsIndex]),
+        newCases: rcbDistrictsFile.getValueById(TITLE_EXTERNAL_ID, distinctExternalId, TITLE_DAILY_CASES),
+        newDeaths: rcbDistrictsFile.getValueById(TITLE_EXTERNAL_ID, distinctExternalId, TITLE_DAILY_DEATHS),
+        newRecovered: rcbDistrictsFile.getValueById(TITLE_EXTERNAL_ID, distinctExternalId, TITLE_DAILY_RECOVERED),
+        newDeathsWithComorbidities: rcbDistrictsFile.getValueById(TITLE_EXTERNAL_ID, distinctExternalId, TITLE_DAILY_DEATHS_WITH_COMORBIDITIES),
+        newDeathsWithoutComorbidities: rcbDistrictsFile.getValueById(TITLE_EXTERNAL_ID, distinctExternalId, TITLE_DAILY_DEATHS_WITHOUT_COMORBIDITIES),
+        newTests: rcbDistrictsFile.getValueById(TITLE_EXTERNAL_ID, distinctExternalId, TITLE_DAILY_TESTS),
         newVaccinations,
         newVaccinationsDose1,
         newVaccinationsDose2,
