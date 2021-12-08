@@ -1,5 +1,6 @@
 import {expect} from "chai";
 import fetchVoivodeshipsStatistics from "../../../src/functions/statistics/VoivodeshipStatisticsProcessor";
+import File from "../../../src/functions/statistics/File";
 
 describe('VoivodeshipsStatisticsProcessor tests', () => {
     it('should fetch districts statistics', async () => {
@@ -27,7 +28,10 @@ describe('VoivodeshipsStatisticsProcessor tests', () => {
                 name: "zachodniopomorskie"
             }];
 
-        const districtsStatistics = await fetchVoivodeshipsStatistics(voivodeships, rcbVoivodeshipsFileContent, rcbVoivodeshipVaccinationsFileContent);
+        const districtsStatistics = await fetchVoivodeshipsStatistics(voivodeships,
+            new File("", rcbVoivodeshipsFileContent),
+            new File("", rcbVoivodeshipVaccinationsFileContent),
+            );
 
         expect(districtsStatistics).to.be.eql([
             {

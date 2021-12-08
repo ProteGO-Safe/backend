@@ -14,21 +14,6 @@ class NotificationRepository extends EntityRepository {
         }
     }
 
-    async getByTheSameDate(date: Date): Promise<Notification | null> {
-
-        const snapshot = await this.getCollection()
-            .where('date', '>', getStartOfDay(date))
-            .where('date', '<', getEndOfDay(date))
-            .limit(1)
-            .get();
-        if (snapshot.empty) {
-            return null;
-        }
-        return snapshot.docs
-            .map((item) => item.data())
-            .map(NotificationRepository.createNotification)[0];
-    }
-
     async getByDateAndType(date: Date, type: NotificationType): Promise<Notification | null> {
 
         const snapshot = await this.getCollection()

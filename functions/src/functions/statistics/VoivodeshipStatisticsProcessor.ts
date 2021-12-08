@@ -1,6 +1,6 @@
-import {fetchIndexByTitle, parseFile} from "./StatistiscHelper";
 import Voivodeship from "./repository/Voivodeship";
 import VoivodeshipStatistics from "./VoivodeshipStatistics";
+import File from "./File"
 
 const TITLE_EXTERNAL_ID = 'teryt';
 const TITLE_DAILY_CASES = 'liczba_przypadkow';
@@ -14,57 +14,39 @@ const TITLE_DAILY_VACCINATIONS_DOSE_2 = 'dawka_2_dziennie';
 const TITLE_TOTAL_VACCINATIONS = 'liczba_szczepien_ogolnie';
 const TITLE_TOTAL_VACCINATIONS_DOSE_2 = 'dawka_2_ogolem';
 
-const fetchVoivodeshipsStatistics = async (
+const fetchVoivodeshipsStatistics = (
     voivodeships: Voivodeship[],
-    rcbVoivodeshipsFileContent: string,
-    rcbVoivodeshipVaccinationsFileContent: string,
-): Promise<VoivodeshipStatistics[]> => {
+    rcbVoivodeshipsFile: File,
+    rcbVoivodeshipVaccinationsFile: File,
+): VoivodeshipStatistics[] => {
 
-    const rcbVoivodeshipsStats = await parseFile(rcbVoivodeshipsFileContent);
-    const rcbVoivodeshipsVaccinationsStats = await parseFile(rcbVoivodeshipVaccinationsFileContent);
-
-    return (voivodeships as any[]).map((voivodeship: Voivodeship) => createVoivodeshipStatistics(voivodeship, rcbVoivodeshipsStats, rcbVoivodeshipsVaccinationsStats));
+    return (voivodeships as any[]).map((voivodeship: Voivodeship) => createVoivodeshipStatistics(voivodeship, rcbVoivodeshipsFile, rcbVoivodeshipVaccinationsFile));
 };
 
 const createVoivodeshipStatistics = (
     voivodeship: Voivodeship,
-    rcbVoivodeshipsStats: Array<Array<string>>,
-    rcbVoivodeshipsVaccinationsStats: Array<Array<string>>,
+    rcbVoivodeshipsFile: File,
+    rcbVoivodeshipVaccinationsFile: File,
 ): VoivodeshipStatistics => {
 
-    const voivodeshipsExternalIdIndex = fetchIndexByTitle(rcbVoivodeshipsStats[0], TITLE_EXTERNAL_ID);
-    const voivodeshipsDailyCasesIndex = fetchIndexByTitle(rcbVoivodeshipsStats[0], TITLE_DAILY_CASES);
-    const voivodeshipsDailyDeathsIndex = fetchIndexByTitle(rcbVoivodeshipsStats[0], TITLE_DAILY_DEATHS);
-    const voivodeshipsDailyRecoveredIndex = fetchIndexByTitle(rcbVoivodeshipsStats[0], TITLE_DAILY_RECOVERED);
-    const voivodeshipsDailyDeathsWithComorbiditiesIndex = fetchIndexByTitle(rcbVoivodeshipsStats[0], TITLE_DAILY_DEATHS_WITH_COMORBIDITIES);
-    const voivodeshipsDailyDeathsWithoutComorbiditiesIndex = fetchIndexByTitle(rcbVoivodeshipsStats[0], TITLE_DAILY_DEATHS_WITHOUT_COMORBIDITIES);
-    const voivodeshipsDailyTestsIndex = fetchIndexByTitle(rcbVoivodeshipsStats[0], TITLE_DAILY_TESTS);
+    const voivodeshipExternalId = voivodeship.externalId;
 
-    const vaccinationsExternalIdIndex = fetchIndexByTitle(rcbVoivodeshipsVaccinationsStats[0], TITLE_EXTERNAL_ID);
-    const vaccinationsDailyVaccinationsIndex = fetchIndexByTitle(rcbVoivodeshipsVaccinationsStats[0], TITLE_DAILY_VACCINATIONS);
-    const vaccinationsDailyVaccinationsDose2Index = fetchIndexByTitle(rcbVoivodeshipsVaccinationsStats[0], TITLE_DAILY_VACCINATIONS_DOSE_2);
-    const vaccinationsTotalVaccinationsIndex = fetchIndexByTitle(rcbVoivodeshipsVaccinationsStats[0], TITLE_TOTAL_VACCINATIONS);
-    const vaccinationsTotalVaccinationsDose2Index = fetchIndexByTitle(rcbVoivodeshipsVaccinationsStats[0], TITLE_TOTAL_VACCINATIONS_DOSE_2);
-
-    const rcbVoivodeshipStat = rcbVoivodeshipsStats.find(value => value[voivodeshipsExternalIdIndex] === voivodeship.externalId);
-    const vaccinationsStat = rcbVoivodeshipsVaccinationsStats.find(value => value[vaccinationsExternalIdIndex] === voivodeship.externalId);
-
-    const newVaccinations = parseInt(vaccinationsStat![vaccinationsDailyVaccinationsIndex]);
-    const newVaccinationsDose2 = parseInt(vaccinationsStat![vaccinationsDailyVaccinationsDose2Index]);
+    const newVaccinations = rcbVoivodeshipVaccinationsFile.getValueById(TITLE_EXTERNAL_ID, voivodeshipExternalId, TITLE_DAILY_VACCINATIONS);
+    const newVaccinationsDose2 = rcbVoivodeshipVaccinationsFile.getValueById(TITLE_EXTERNAL_ID, voivodeshipExternalId, TITLE_DAILY_VACCINATIONS_DOSE_2);
     const newVaccinationsDose1 = newVaccinations - newVaccinationsDose2;
 
-    const totalVaccinations = parseInt(vaccinationsStat![vaccinationsTotalVaccinationsIndex]);
-    const totalVaccinationsDose2 = parseInt(vaccinationsStat![vaccinationsTotalVaccinationsDose2Index]);
+    const totalVaccinations = rcbVoivodeshipVaccinationsFile.getValueById(TITLE_EXTERNAL_ID, voivodeshipExternalId, TITLE_TOTAL_VACCINATIONS);
+    const totalVaccinationsDose2 = rcbVoivodeshipVaccinationsFile.getValueById(TITLE_EXTERNAL_ID, voivodeshipExternalId, TITLE_TOTAL_VACCINATIONS_DOSE_2);
     const totalVaccinationsDose1 = totalVaccinations - totalVaccinationsDose2;
 
     return {
         voivodeshipId: voivodeship.id,
-        newCases: parseInt(rcbVoivodeshipStat![voivodeshipsDailyCasesIndex]),
-        newDeaths: parseInt(rcbVoivodeshipStat![voivodeshipsDailyDeathsIndex]),
-        newRecovered: parseInt(rcbVoivodeshipStat![voivodeshipsDailyRecoveredIndex]),
-        newDeathsWithComorbidities: parseInt(rcbVoivodeshipStat![voivodeshipsDailyDeathsWithComorbiditiesIndex]),
-        newDeathsWithoutComorbidities: parseInt(rcbVoivodeshipStat![voivodeshipsDailyDeathsWithoutComorbiditiesIndex]),
-        newTests: parseInt(rcbVoivodeshipStat![voivodeshipsDailyTestsIndex]),
+        newCases: rcbVoivodeshipsFile.getValueById(TITLE_EXTERNAL_ID, voivodeshipExternalId, TITLE_DAILY_CASES),
+        newDeaths: rcbVoivodeshipsFile.getValueById(TITLE_EXTERNAL_ID, voivodeshipExternalId, TITLE_DAILY_DEATHS),
+        newRecovered: rcbVoivodeshipsFile.getValueById(TITLE_EXTERNAL_ID, voivodeshipExternalId, TITLE_DAILY_RECOVERED),
+        newDeathsWithComorbidities: rcbVoivodeshipsFile.getValueById(TITLE_EXTERNAL_ID, voivodeshipExternalId, TITLE_DAILY_DEATHS_WITH_COMORBIDITIES),
+        newDeathsWithoutComorbidities: rcbVoivodeshipsFile.getValueById(TITLE_EXTERNAL_ID, voivodeshipExternalId, TITLE_DAILY_DEATHS_WITHOUT_COMORBIDITIES),
+        newTests: rcbVoivodeshipsFile.getValueById(TITLE_EXTERNAL_ID, voivodeshipExternalId, TITLE_DAILY_TESTS),
         newVaccinations,
         newVaccinationsDose1,
         newVaccinationsDose2,

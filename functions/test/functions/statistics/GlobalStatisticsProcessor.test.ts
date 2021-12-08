@@ -1,5 +1,6 @@
 import {expect} from "chai";
 import fetchGlobalStatistics from "../../../src/functions/statistics/GlobalStatisticsProcessor";
+import File from "../../../src/functions/statistics/File";
 
 describe('GlobalStatisticsProcessor tests', () => {
     it('should fetch global statistics', async () => {
@@ -10,7 +11,11 @@ describe('GlobalStatisticsProcessor tests', () => {
         const rcbGlobalVaccinationsOtherFileContent = 'ď»żodczyny_niepozadane;dawki_utracone;stan_magazyn;liczba_dawek_punkty;suma_dawek_polska\n' +
             '1683;3630;98500;2334140;2432640\n';
 
-        const globalStatistics = await fetchGlobalStatistics(rcbGlobalFileContent, rcbGlobalVaccinationsFileContent, rcbGlobalVaccinationsOtherFileContent);
+        const globalStatistics = await fetchGlobalStatistics(
+            new File("", rcbGlobalFileContent),
+            new File("", rcbGlobalVaccinationsFileContent),
+            new File("", rcbGlobalVaccinationsOtherFileContent),
+        );
 
         expect(globalStatistics).to.be.eql({
             totalCases: 1577036,
